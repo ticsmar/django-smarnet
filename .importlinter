@@ -1,0 +1,56 @@
+[importlinter]
+root_packages =
+    shared
+    users
+
+[importlinter:contract:shared-domain-isolation]
+name = Shared domain layer isolation
+type = forbidden
+source_modules =
+    shared.domain
+forbidden_modules =
+    shared.application
+    shared.infrastructure
+    shared.presentation
+
+[importlinter:contract:users-layers]
+name = Users layer dependencies
+type = layers
+layers =
+    users.presentation
+    users.application
+    users.domain
+
+[importlinter:contract:users-domain-isolation]
+name = Users domain layer isolation
+type = forbidden
+source_modules =
+    users.domain
+forbidden_modules =
+    users.application
+    users.infrastructure
+    users.presentation
+
+[importlinter:contract:users-app-no-presentation]
+name = Users application cannot import presentation
+type = forbidden
+source_modules =
+    users.application
+forbidden_modules =
+    users.presentation
+
+[importlinter:contract:users-infra-boundary]
+name = Users infrastructure boundary
+type = forbidden
+source_modules =
+    users.infrastructure
+forbidden_modules =
+    users.application
+    users.presentation
+
+[importlinter:contract:domain-independence]
+name = Domains are independent
+type = independence
+modules =
+    shared
+    users
