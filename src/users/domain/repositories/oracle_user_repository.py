@@ -9,3 +9,6 @@ class OracleUserRepository(Protocol):
 
     def create_user(self, username: str, password: str) -> None:
         """Create a new Oracle user with the given credentials."""
+
+    def ensure_user_exists(self, username: str) -> None:
+        """Ensure a Django auth user exists for the Oracle username."""

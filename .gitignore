@@ -1,5 +1,41 @@
+# Environment
 .env
+.env.*
+!.env.example
+
+# Python
 .venv/
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Testing & coverage
 .coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+
+# Type checking & linting
+.mypy_cache/
+.ruff_cache/
+.import_linter_cache/
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+# Node / frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# OS & editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+openspec/

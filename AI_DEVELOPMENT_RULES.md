@@ -32,6 +32,15 @@ All generated code must follow:
 - Fat use cases, thin views
 - No business logic in serializers
 
+## Django REST Framework
+
+- Views delegate to use cases; no `try/except` for domain exceptions in views
+- Register domain exception maps in `{domain}/presentation/exception_mappings.py`
+- Use `IsOracleAuthenticated` for session-protected routes
+- Annotate views with `@extend_schema` for OpenAPI documentation
+- Login endpoint uses `authentication_classes = []` and `AllowAny`
+- Self-registration is disabled by default (`ALLOW_PUBLIC_REGISTER=false`); user creation goes through `/api/admin/users/`
+
 ## Testing
 
 Every public use case must have:
@@ -107,6 +116,6 @@ When creating a domain (e.g. `src/sales/`):
    - `{domain}-domain-isolation` (type: `forbidden`) — `domain` cannot import other layers
    - `{domain}-app-no-presentation` (type: `forbidden`) — `application` cannot import `presentation`
    - `{domain}-infra-boundary` (type: `forbidden`) — `infrastructure` cannot import `application` or `presentation`
-3. Add the domain to the `domain-independence` module list in `.importlinter`.
+3. Add the domain to the `domain-independence` module list in `.importlinter` (business domains only; `shared` is a kernel imported by all domains).
 4. Add the domain to `[tool.coverage.run].source` in `pyproject.toml`.
 5. Update `root_packages` in `.importlinter` if using multiple root packages.

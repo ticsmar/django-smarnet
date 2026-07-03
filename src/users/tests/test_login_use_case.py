@@ -31,7 +31,8 @@ def session_store() -> DjangoAuthSessionStore:
 def test_login_success(session_store: DjangoAuthSessionStore) -> None:
     auth_repository = Mock()
     auth_repository.authenticate.return_value = True
-    use_case = LoginUseCase(auth_repository, session_store)
+    user_repository = Mock()
+    use_case = LoginUseCase(auth_repository, session_store, user_repository)
 
     result = use_case.execute(LoginInputDTO(username="oracle_user", password="secret"))
 
@@ -39,12 +40,14 @@ def test_login_success(session_store: DjangoAuthSessionStore) -> None:
     assert session_store.is_authenticated()
     assert session_store.get_username() == "oracle_user"
     auth_repository.authenticate.assert_called_once_with("oracle_user", "secret")
+    user_repository.ensure_user_exists.assert_called_once_with("oracle_user")
 
 
 def test_login_invalid_credentials(session_store: DjangoAuthSessionStore) -> None:
     auth_repository = Mock()
     auth_repository.authenticate.return_value = False
-    use_case = LoginUseCase(auth_repository, session_store)
+    user_repository = Mock()
+    use_case = LoginUseCase(auth_repository, session_store, user_repository)
 
     with pytest.raises(InvalidCredentialsError):
         use_case.execute(LoginInputDTO(username="bad", password="wrong"))
@@ -66,7 +69,8 @@ def test_login_empty_credentials(
     password: str,
 ) -> None:
     auth_repository = Mock()
-    use_case = LoginUseCase(auth_repository, session_store)
+    user_repository = Mock()
+    use_case = LoginUseCase(auth_repository, session_store, user_repository)
 
     with pytest.raises(EmptyCredentialsError):
         use_case.execute(LoginInputDTO(username=username, password=password))

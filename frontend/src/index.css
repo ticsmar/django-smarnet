@@ -1,0 +1,215 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ============================================================
+   * SMARNET DESIGN SYSTEM — DESIGN TOKENS
+   * All colors are HSL (no hex/rgb in components).
+   * Light theme (default).
+   * ============================================================ */
+  :root {
+    /* ── Surfaces (warm off-white hierarchy) ── */
+    --background: 30 20% 98%;
+    --foreground: 200 5% 11%;
+
+    --surface: 30 20% 98%;
+    --surface-container-low: 20 12% 95%;
+    --surface-container: 20 10% 93%;
+    --surface-container-high: 15 8% 91%;
+    --surface-container-highest: 15 6% 89%;
+
+    --card: 20 12% 95%;
+    --card-foreground: 200 5% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 5% 11%;
+
+    /* ── Brand: Deep Navy (primary) ── */
+    --primary: 210 100% 13%;
+    --primary-foreground: 0 0% 100%;
+    --primary-container: 210 100% 20%;
+
+    /* ── Secondary: Slate Blue-Gray (neutral pair, distinct from accent) ── */
+    --secondary: 215 18% 48%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* ── Tertiary: Amber/Gold (industrial accent) ── */
+    --tertiary: 42 100% 23%;
+    --tertiary-foreground: 0 0% 100%;
+
+    /* ── Accent: Teal (interactive highlights) ── */
+    --accent: 185 78% 25%;
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 20 10% 93%;
+    --muted-foreground: 200 5% 40%;
+
+    /* ── Status colors ── */
+    --success: 142 70% 38%;
+    --success-foreground: 0 0% 100%;
+    --warning: 22 95% 50%;
+    --warning-foreground: 0 0% 100%;
+    --alert: 48 96% 50%;
+    --alert-foreground: 30 30% 15%;
+    --info: 210 100% 45%;
+    --info-foreground: 0 0% 100%;
+    --destructive: 0 72% 41%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Legacy status aliases (still consumed by some modules) */
+    --status-success: 142 70% 38%;
+    --status-warning: 22 95% 50%;
+    --status-error: 0 72% 41%;
+    --status-info: 210 100% 45%;
+    --status-pending: 48 96% 50%;
+    --status-operational: 142 70% 38%;
+
+    /* ── Form & focus ── */
+    --border: 20 8% 88%;
+    --input: 15 6% 89%;
+    --ring: 210 100% 13%;
+
+    /* ── Geometry ── */
+    --radius: 1rem;
+
+    /* ── Sidebar (always dark, navy) ── */
+    --sidebar-background: 210 100% 13%;
+    --sidebar-foreground: 210 40% 90%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 210 100% 13%;
+    --sidebar-accent: 210 100% 20%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 210 80% 18%;
+    --sidebar-ring: 185 78% 25%;
+  }
+
+
+  .dark {
+    --background: 220 20% 7%;
+    --foreground: 210 20% 92%;
+    
+    --surface: 220 20% 7%;
+    --surface-container-low: 220 18% 10%;
+    --surface-container: 220 16% 13%;
+    --surface-container-high: 220 14% 16%;
+    --surface-container-highest: 220 12% 20%;
+    
+    --card: 220 18% 10%;
+    --card-foreground: 210 20% 92%;
+    
+    --popover: 220 16% 13%;
+    --popover-foreground: 210 20% 92%;
+    
+    --primary: 210 60% 60%;
+    --primary-foreground: 220 20% 7%;
+    --primary-container: 210 80% 30%;
+    
+    --secondary: 215 16% 65%;
+    --secondary-foreground: 220 20% 7%;
+    
+    --tertiary: 42 80% 50%;
+    --tertiary-foreground: 220 20% 7%;
+    
+    --muted: 220 16% 16%;
+    --muted-foreground: 210 10% 55%;
+    
+    --accent: 185 60% 40%;
+    --accent-foreground: 220 20% 7%;
+    
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --success: 142 60% 45%;
+    --success-foreground: 220 20% 7%;
+    --warning: 22 90% 55%;
+    --warning-foreground: 220 20% 7%;
+    --alert: 48 90% 55%;
+    --alert-foreground: 220 20% 7%;
+    --info: 210 80% 60%;
+    --info-foreground: 220 20% 7%;
+    
+    --border: 220 12% 20%;
+    --input: 220 12% 20%;
+    --ring: 210 60% 60%;
+    
+    --sidebar-background: 220 25% 5%;
+    --sidebar-foreground: 210 20% 85%;
+    --sidebar-primary: 210 60% 60%;
+    --sidebar-primary-foreground: 220 20% 7%;
+    --sidebar-accent: 220 20% 12%;
+    --sidebar-accent-foreground: 210 20% 92%;
+    --sidebar-border: 220 15% 15%;
+    --sidebar-ring: 185 60% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-container)));
+  }
+  
+  .gradient-hero {
+    background: linear-gradient(160deg, hsl(210 100% 8%), hsl(210 100% 16%), hsl(200 60% 20%));
+  }
+  
+  .glass {
+    background: hsl(var(--surface-container-highest) / 0.6);
+    backdrop-filter: blur(20px);
+  }
+  
+  .glass-dark {
+    background: hsl(var(--primary) / 0.8);
+    backdrop-filter: blur(20px);
+  }
+  
+  .shadow-ambient {
+    box-shadow: 0 8px 40px hsl(var(--foreground) / 0.06);
+  }
+  
+  .shadow-ambient-lg {
+    box-shadow: 0 16px 60px hsl(var(--foreground) / 0.08);
+  }
+  
+  .status-beacon {
+    @apply w-1 rounded-full absolute left-0 top-2 bottom-2;
+  }
+
+  /* Sidebar scrollbar — matches dark menu palette */
+  .sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--sidebar-border)) transparent;
+  }
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--sidebar-border));
+    border-radius: 9999px;
+  }
+  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--sidebar-accent));
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+}

@@ -2,8 +2,10 @@
 
 from django.contrib.sessions.backends.base import SessionBase
 
-SESSION_ORACLE_USERNAME = "oracle_username"
-SESSION_AUTHENTICATED = "authenticated"
+from shared.presentation.auth.session_keys import (
+    SESSION_AUTHENTICATED,
+    SESSION_ORACLE_USERNAME,
+)
 
 
 class DjangoAuthSessionStore:

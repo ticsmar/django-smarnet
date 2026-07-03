@@ -3,7 +3,7 @@
 ## Stack
 
 - Python 3.13
-- Django
+- Django + Django REST Framework + drf-spectacular
 - Oracle Database
 - React + TypeScript
 - Docker
@@ -20,6 +20,7 @@ Application code lives under `src/`:
 src/
 ├── config/          # Django settings, URLs, WSGI/ASGI
 ├── shared/          # Shared kernel (cross-domain primitives)
+│   └── presentation/  # DRF auth, permissions, exception handler
 └── users/           # Users bounded context
     ├── domain/
     ├── application/
@@ -100,8 +101,10 @@ Contains:
 
 Contains:
 
-- REST APIs
-- Serializers
+- REST APIs (Django REST Framework `APIView`)
+- Serializers (request/response formatting only)
 - Controllers
+- Domain exception mappings (`exception_mappings.py`)
+- OpenAPI annotations (`@extend_schema`)
 
-Business rules are forbidden in this layer.
+Business rules are forbidden in this layer. Domain exceptions are mapped to HTTP status codes in `{domain}/presentation/exception_mappings.py` and handled globally via `config.drf.exception_handler`. Session-protected routes use `IsOracleAuthenticated` from `shared.presentation`.

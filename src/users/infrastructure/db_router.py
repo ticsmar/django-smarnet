@@ -4,7 +4,17 @@ from django.db import models
 
 from users.infrastructure.middleware.smar_database_middleware import get_use_smar
 
-_DEFAULT_DB_APPS = frozenset({"auth", "contenttypes", "sessions", "admin"})
+_DEFAULT_DB_APPS = frozenset(
+    {
+        "auth",
+        "contenttypes",
+        "sessions",
+        "admin",
+        # FK para auth.User — deve ficar no mesmo alias que auth
+        "branch_auth_infrastructure",
+        "users_infrastructure",
+    }
+)
 
 
 class SmarDatabaseRouter:

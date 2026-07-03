@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 130" width="100%" height="100%">
+  <text x="200" y="75"
+        font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-size="62"
+        font-weight="900"
+        font-style="italic"
+        fill="#FFFFFF"
+        text-anchor="middle"
+        letter-spacing="-1.5">smarnet</text>
+  <text x="200" y="108"
+        font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-size="14"
+        font-weight="700"
+        fill="#FFFFFF"
+        text-anchor="middle"
+        letter-spacing="9">INTRANET</text>
+</svg>

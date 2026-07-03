@@ -4,7 +4,7 @@ from collections.abc import Callable
 
 from django.http import HttpRequest, HttpResponse
 
-from users.infrastructure.session.django_auth_session_store import SESSION_AUTHENTICATED
+from shared.presentation.auth.session_keys import SESSION_AUTHENTICATED
 
 _use_smar: bool = False
 

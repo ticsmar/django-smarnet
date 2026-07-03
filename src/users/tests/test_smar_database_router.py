@@ -41,3 +41,18 @@ def test_router_keeps_auth_models_on_default_when_authenticated(
 
     assert router.db_for_read(User) == "default"
     assert router.db_for_write(User) == "default"
+
+
+def test_router_keeps_branch_auth_on_default_when_authenticated(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from branch_auth.infrastructure.models import AccessToken
+
+    monkeypatch.setattr(
+        "users.infrastructure.db_router.get_use_smar",
+        lambda: True,
+    )
+    router = SmarDatabaseRouter()
+
+    assert router.db_for_read(AccessToken) == "default"
+    assert router.db_for_write(AccessToken) == "default"

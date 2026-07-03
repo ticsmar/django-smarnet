@@ -1,5 +1,6 @@
 [importlinter]
 root_packages =
+    branch_auth
     shared
     users
 
@@ -48,9 +49,52 @@ forbidden_modules =
     users.application
     users.presentation
 
+[importlinter:contract:shared-presentation-isolation]
+name = Shared presentation cannot import domain modules
+type = forbidden
+source_modules =
+    shared.presentation
+forbidden_modules =
+    users
+
+
+[importlinter:contract:branch_auth-layers]
+name = BranchAuth layer dependencies
+type = layers
+layers =
+    branch_auth.presentation
+    branch_auth.application
+    branch_auth.domain
+
+[importlinter:contract:branch_auth-domain-isolation]
+name = BranchAuth domain layer isolation
+type = forbidden
+source_modules =
+    branch_auth.domain
+forbidden_modules =
+    branch_auth.application
+    branch_auth.infrastructure
+    branch_auth.presentation
+
+[importlinter:contract:branch_auth-app-no-presentation]
+name = BranchAuth application cannot import presentation
+type = forbidden
+source_modules =
+    branch_auth.application
+forbidden_modules =
+    branch_auth.presentation
+
+[importlinter:contract:branch_auth-infra-boundary]
+name = BranchAuth infrastructure boundary
+type = forbidden
+source_modules =
+    branch_auth.infrastructure
+forbidden_modules =
+    branch_auth.application
+    branch_auth.presentation
 [importlinter:contract:domain-independence]
 name = Domains are independent
 type = independence
 modules =
-    shared
+    branch_auth
     users

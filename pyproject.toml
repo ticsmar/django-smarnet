@@ -20,6 +20,7 @@ select = [
     "ANN",
     "TCH",
     "PLR",
+    "PLR0915",
     "RUF",
     "TID",
 ]
@@ -29,7 +30,14 @@ select = [
 "*/infrastructure/*" = ["TID251"]
 "*/presentation/*" = ["TID251"]
 "src/config/*" = ["TID251", "E402"]
+"src/shared/presentation/*" = ["TID251"]
+"*/presentation/views/*" = ["RUF012"]
+"*/migrations/*" = ["ANN", "RUF012", "E501"]
+"src/branch_auth/infrastructure/models.py" = ["ANN", "E501", "RUF012"]
+"src/branch_auth/presentation/**/*.py" = ["ANN", "E501", "RUF005", "RUF012"]
+"src/branch_auth/tests/*.py" = ["E501"]
 "manage.py" = ["TID251"]
+"tools/**/*.py" = ["TID251", "E402"]
 
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
 "django".msg = "Domain layer must not import Django (Architecture.md)."
@@ -55,6 +63,23 @@ module = "users.tests.*"
 disallow_untyped_defs = false
 disable_error_code = ["arg-type"]
 [[tool.mypy.overrides]]
+module = "shared.presentation.tests.*"
+disallow_untyped_defs = false
+disable_error_code = ["assignment", "arg-type"]
+[[tool.mypy.overrides]]
+module = "config.tests.*"
+disallow_untyped_defs = false
+[[tool.mypy.overrides]]
+module = "branch_auth.*"
+disallow_untyped_defs = false
+disable_error_code = [
+    "no-untyped-def",
+    "no-untyped-call",
+    "type-arg",
+    "assignment",
+    "misc",
+]
+[[tool.mypy.overrides]]
 module = "environ"
 ignore_missing_imports = true
 [tool.django-stubs]
@@ -69,7 +94,7 @@ norecursedirs = [".agents", ".cursor", ".git", "node_modules"]
 DJANGO_SETTINGS_MODULE = "config.settings"
 
 [tool.coverage.run]
-source = ["shared", "users"]
+source = ["shared", "users", "branch_auth"]
 omit = ["*/tests/*", "*/migrations/*"]
 
 [tool.coverage.report]
