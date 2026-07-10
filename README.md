@@ -11,15 +11,9 @@ Modular monolith ERP backend built with Django, Clean Architecture, and Oracle D
 ## Project layout
 
 ```
-src/
-├── config/     # Django settings, URLs, WSGI/ASGI
-├── shared/     # Shared kernel
-└── users/      # Users bounded context (domain / application / infrastructure / presentation / tests)
+backend/            # Django API (see backend/README.md)
 frontend/           # Minimal React SPA (Vite + TypeScript + Tailwind)
 smar-nova-vision/   # Full ERP UI shell integrated with Django API
-manage.py
-conftest.py
-pyproject.toml
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for layer rules and [AI_DEVELOPMENT_RULES.md](AI_DEVELOPMENT_RULES.md) for coding standards.
@@ -27,15 +21,17 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for layer rules and [AI_DEVELOPMENT_RULES
 ## Setup
 
 ```bash
+cd backend
 python -m venv .venv
 .venv\Scripts\activate          # Windows
-pip install -r requirements.txt -r requirements-dev.txt
+pip install -r requirements/development.txt
 cp .env.example .env              # then fill in Oracle credentials
 ```
 
 ## Run
 
 ```bash
+cd backend
 python manage.py runserver
 ```
 
@@ -71,7 +67,7 @@ npm run dev
 
 Runs at `http://localhost:8080`. Vite proxies `/api` to Django in development.
 
-Ensure Django `.env` includes CORS for both frontends:
+Ensure `backend/.env` includes CORS for both frontends:
 
 ```
 CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000,http://localhost:8080,http://127.0.0.1:8080
@@ -88,7 +84,7 @@ Branch managers (Django group `branch_managers`) can list, create, and revoke ac
 ## Quality checks
 
 ```bash
-$env:PYTHONPATH = "src"   # PowerShell; use export PYTHONPATH=src on Linux/macOS
+cd backend
 ruff check .
 ruff format --check .
 mypy .
@@ -97,3 +93,11 @@ pytest
 ```
 
 CI runs the same checks on every push/PR to `master`.
+
+## Docker
+
+```bash
+docker compose up --build
+```
+
+The API runs from `backend/` inside the container.

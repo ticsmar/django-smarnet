@@ -26,12 +26,11 @@ COPY --from=builder /opt/oracle /opt/oracle
 ENV ORACLE_HOME=/opt/oracle/instantclient_21_13
 ENV LD_LIBRARY_PATH=$ORACLE_HOME:$LD_LIBRARY_PATH
 
-WORKDIR /app/src
+WORKDIR /app/backend
 
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r /app/requirements.txt
+COPY backend/requirements/ requirements/
+RUN pip install --no-cache-dir -r requirements/production.txt
 
-COPY . /app/
+COPY backend/ .
 
-# Ajuste conforme seu entrypoint real (gunicorn recomendado em produção)
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]

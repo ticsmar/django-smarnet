@@ -1,0 +1,98 @@
+[importlinter]
+root_packages =
+    apps
+
+[importlinter:contract:shared-domain-isolation]
+name = Shared domain layer isolation
+type = forbidden
+source_modules =
+    apps.shared.domain
+forbidden_modules =
+    apps.shared.application
+    apps.shared.infrastructure
+    apps.shared.presentation
+
+[importlinter:contract:users-layers]
+name = Users layer dependencies
+type = layers
+layers =
+    apps.users.presentation
+    apps.users.application
+    apps.users.domain
+
+[importlinter:contract:users-domain-isolation]
+name = Users domain layer isolation
+type = forbidden
+source_modules =
+    apps.users.domain
+forbidden_modules =
+    apps.users.application
+    apps.users.infrastructure
+    apps.users.presentation
+
+[importlinter:contract:users-app-no-presentation]
+name = Users application cannot import presentation
+type = forbidden
+source_modules =
+    apps.users.application
+forbidden_modules =
+    apps.users.presentation
+
+[importlinter:contract:users-infra-boundary]
+name = Users infrastructure boundary
+type = forbidden
+source_modules =
+    apps.users.infrastructure
+forbidden_modules =
+    apps.users.application
+    apps.users.presentation
+
+[importlinter:contract:shared-presentation-isolation]
+name = Shared presentation cannot import domain modules
+type = forbidden
+source_modules =
+    apps.shared.presentation
+forbidden_modules =
+    apps.users
+
+
+[importlinter:contract:branch_auth-layers]
+name = BranchAuth layer dependencies
+type = layers
+layers =
+    apps.branch_auth.presentation
+    apps.branch_auth.application
+    apps.branch_auth.domain
+
+[importlinter:contract:branch_auth-domain-isolation]
+name = BranchAuth domain layer isolation
+type = forbidden
+source_modules =
+    apps.branch_auth.domain
+forbidden_modules =
+    apps.branch_auth.application
+    apps.branch_auth.infrastructure
+    apps.branch_auth.presentation
+
+[importlinter:contract:branch_auth-app-no-presentation]
+name = BranchAuth application cannot import presentation
+type = forbidden
+source_modules =
+    apps.branch_auth.application
+forbidden_modules =
+    apps.branch_auth.presentation
+
+[importlinter:contract:branch_auth-infra-boundary]
+name = BranchAuth infrastructure boundary
+type = forbidden
+source_modules =
+    apps.branch_auth.infrastructure
+forbidden_modules =
+    apps.branch_auth.application
+    apps.branch_auth.presentation
+[importlinter:contract:domain-independence]
+name = Domains are independent
+type = independence
+modules =
+    apps.branch_auth
+    apps.users

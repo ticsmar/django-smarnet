@@ -24,24 +24,7 @@ htmlcov/
 *.log
 db.sqlite3
 db.sqlite3-journal
-
-# Node / frontend
-**/node_modules/
-dist/
-dist-ssr/
-*.local
-.lovable/
-test-results/
-playwright-report/
-blob-report/
-
-# AI / editor tooling (local)
-.agents/
-.cursor/
-
-# Scratch files
-Untitled
-Untitled*
+staticfiles/
 
 # OS & editor
 .DS_Store
@@ -50,4 +33,3 @@ Thumbs.db
 .vscode/
 *.swp
 *~
-openspec/

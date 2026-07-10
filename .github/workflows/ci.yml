@@ -6,11 +6,15 @@ on:
         branches:
             - master
 
+defaults:
+    run:
+        working-directory: backend
+
 jobs:
     quality:
         runs-on: ubuntu-latest
         env:
-            PYTHONPATH: src
+            PYTHONPATH: .
 
         steps:
             - uses: actions/checkout@v4
@@ -19,7 +23,7 @@ jobs:
               with:
                   python-version: "3.13"
 
-            - run: pip install -r requirements.txt -r requirements-dev.txt
+            - run: pip install -r requirements/development.txt
 
             - run: ruff check .
 

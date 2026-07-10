@@ -1,0 +1,108 @@
+[project]
+name = "erp"
+version = "0.0.0"
+requires-python = ">=3.13"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+exclude = [".agents", ".cursor", ".git"]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "UP",
+    "B",
+    "SIM",
+    "ANN",
+    "TCH",
+    "PLR",
+    "PLR0915",
+    "RUF",
+    "TID",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"*/tests/*" = ["ANN", "PLR2004", "TID251"]
+"*/infrastructure/*" = ["TID251"]
+"*/presentation/*" = ["TID251"]
+"config/*" = ["TID251", "E402"]
+"apps/shared/presentation/*" = ["TID251"]
+"*/presentation/views/*" = ["RUF012"]
+"*/migrations/*" = ["ANN", "RUF012", "E501"]
+"apps/branch_auth/infrastructure/models.py" = ["ANN", "E501", "RUF012"]
+"apps/branch_auth/presentation/**/*.py" = ["ANN", "E501", "RUF005", "RUF012"]
+"apps/branch_auth/tests/*.py" = ["E501"]
+"apps/users/tests/*.py" = ["E501"]
+"manage.py" = ["TID251"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"django".msg = "Domain layer must not import Django (Architecture.md)."
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+disallow_any_explicit = true
+disallow_untyped_defs = true
+warn_return_any = true
+exclude = [".agents", ".cursor"]
+mypy_path = "."
+
+plugins = ["mypy_django_plugin.main"]
+[[tool.mypy.overrides]]
+module = "apps.users.tests.*"
+disallow_untyped_defs = false
+disable_error_code = ["arg-type", "no-untyped-def"]
+[[tool.mypy.overrides]]
+module = "apps.users.*"
+disallow_untyped_defs = false
+disable_error_code = [
+    "no-untyped-def",
+    "no-untyped-call",
+    "type-arg",
+    "assignment",
+    "misc",
+    "no-any-return",
+    "return-value",
+    "list-item",
+]
+[[tool.mypy.overrides]]
+module = "apps.shared.presentation.tests.*"
+disallow_untyped_defs = false
+disable_error_code = ["assignment", "arg-type"]
+[[tool.mypy.overrides]]
+module = "config.tests.*"
+disallow_untyped_defs = false
+[[tool.mypy.overrides]]
+module = "apps.branch_auth.*"
+disallow_untyped_defs = false
+disable_error_code = [
+    "no-untyped-def",
+    "no-untyped-call",
+    "type-arg",
+    "assignment",
+    "misc",
+]
+[[tool.mypy.overrides]]
+module = "environ"
+ignore_missing_imports = true
+[tool.django-stubs]
+django_settings_module = "config.settings.development"
+
+[tool.pytest.ini_options]
+testpaths = ["apps", "config"]
+pythonpath = ["."]
+python_files = ["test_*.py"]
+addopts = "--cov --cov-report=term-missing --cov-fail-under=80"
+norecursedirs = [".agents", ".cursor", ".git", "node_modules"]
+DJANGO_SETTINGS_MODULE = "config.settings.testing"
+
+[tool.coverage.run]
+source = ["apps"]
+omit = ["*/tests/*", "*/migrations/*"]
+
+[tool.coverage.report]
+fail_under = 80

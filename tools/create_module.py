@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scaffold a new Django bounded-context module under src/.
+"""Scaffold a new Django bounded-context module under backend/apps/.
 
 Usage:
     python tools/create_module.py sales
@@ -18,11 +18,13 @@ import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_SRC_DIR = PROJECT_ROOT / "src"
+BACKEND_DIR = PROJECT_ROOT / "backend"
+DEFAULT_SRC_DIR = BACKEND_DIR / "apps"
 
 DOMAIN_INDEPENDENCE_MARKER = "[importlinter:contract:domain-independence]"
 USERS_EXCEPTION_IMPORT = (
-    "from users.presentation.exception_mappings import AUTH_EXCEPTION_STATUS_MAP\n"
+    "from apps.users.presentation.exception_mappings import "
+    "AUTH_EXCEPTION_STATUS_MAP\n"
 )
 SINGLE_EXCEPTION_HANDLER = (
     "exception_handler = build_exception_handler(AUTH_EXCEPTION_STATUS_MAP)\n"
@@ -30,7 +32,11 @@ SINGLE_EXCEPTION_HANDLER = (
 
 RESERVED_NAMES = frozenset(
     {
+        "apps",
+        "backend",
+        "common",
         "config",
+        "infrastructure",
         "shared",
         "django",
         "test",
@@ -93,7 +99,7 @@ from django.apps import AppConfig
 
 class {pascal}PresentationConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "{module}.presentation"
+    name = "apps.{module}.presentation"
     label = "{module}_presentation"
 '''
 
@@ -191,18 +197,10 @@ def create_module(
 
 
 def integrate_importlinter(module: str, *, dry_run: bool) -> list[str]:
-    path = PROJECT_ROOT / ".importlinter"
+    path = BACKEND_DIR / ".importlinter"
     text = path.read_text(encoding="utf-8")
     messages: list[str] = []
     changed = False
-
-    root_line = f"    {module}\n"
-    if module not in text.split("root_packages =", 1)[1].split("\n\n", 1)[0]:
-        marker = "root_packages =\n"
-        idx = text.index(marker) + len(marker)
-        text = text[:idx] + root_line + text[idx:]
-        changed = True
-        messages.append(f"added {module!r} to root_packages")
 
     pascal = to_pascal_case(module)
     contracts = f"""
@@ -210,36 +208,36 @@ def integrate_importlinter(module: str, *, dry_run: bool) -> list[str]:
 name = {pascal} layer dependencies
 type = layers
 layers =
-    {module}.presentation
-    {module}.application
-    {module}.domain
+    apps.{module}.presentation
+    apps.{module}.application
+    apps.{module}.domain
 
 [importlinter:contract:{module}-domain-isolation]
 name = {pascal} domain layer isolation
 type = forbidden
 source_modules =
-    {module}.domain
+    apps.{module}.domain
 forbidden_modules =
-    {module}.application
-    {module}.infrastructure
-    {module}.presentation
+    apps.{module}.application
+    apps.{module}.infrastructure
+    apps.{module}.presentation
 
 [importlinter:contract:{module}-app-no-presentation]
 name = {pascal} application cannot import presentation
 type = forbidden
 source_modules =
-    {module}.application
+    apps.{module}.application
 forbidden_modules =
-    {module}.presentation
+    apps.{module}.presentation
 
 [importlinter:contract:{module}-infra-boundary]
 name = {pascal} infrastructure boundary
 type = forbidden
 source_modules =
-    {module}.infrastructure
+    apps.{module}.infrastructure
 forbidden_modules =
-    {module}.application
-    {module}.presentation
+    apps.{module}.application
+    apps.{module}.presentation
 """
     if f"[importlinter:contract:{module}-layers]" not in text:
         independence_marker = DOMAIN_INDEPENDENCE_MARKER
@@ -248,14 +246,14 @@ forbidden_modules =
         changed = True
         messages.append(f"added Import-Linter contracts for {module!r}")
 
-    module_line = f"    {module}\n"
+    module_line = f"    apps.{module}\n"
     independence_section = text.split(DOMAIN_INDEPENDENCE_MARKER, 1)[1]
     if module_line not in independence_section:
         modules_marker = "modules =\n"
         idx = text.rindex(modules_marker) + len(modules_marker)
         text = text[:idx] + module_line + text[idx:]
         changed = True
-        messages.append(f"added {module!r} to domain-independence modules")
+        messages.append(f"added apps.{module!r} to domain-independence modules")
 
     if changed:
         if dry_run:
@@ -271,7 +269,7 @@ forbidden_modules =
 
 
 def integrate_pyproject(module: str, *, dry_run: bool) -> list[str]:
-    path = PROJECT_ROOT / "pyproject.toml"
+    path = BACKEND_DIR / "pyproject.toml"
     text = path.read_text(encoding="utf-8")
     coverage_section = text.split("[tool.coverage.run]", 1)[1].split(
         "[tool.coverage.report]", 1
@@ -298,13 +296,13 @@ def integrate_pyproject(module: str, *, dry_run: bool) -> list[str]:
 
 
 def integrate_settings(module: str, *, dry_run: bool) -> list[str]:
-    path = PROJECT_ROOT / "src" / "config" / "settings.py"
+    path = BACKEND_DIR / "config" / "settings" / "base.py"
     text = path.read_text(encoding="utf-8")
-    app_entry = f'    "{module}.presentation",\n'
+    app_entry = f'    "apps.{module}.presentation",\n'
     if app_entry.strip() in text:
         return [f"skipped {path.relative_to(PROJECT_ROOT)} (already integrated)"]
 
-    marker = '    "users.presentation",\n'
+    marker = '    "apps.users.presentation",\n'
     if marker not in text:
         return [
             "TODO: manually add "
@@ -319,15 +317,17 @@ def integrate_settings(module: str, *, dry_run: bool) -> list[str]:
 
 
 def integrate_urls(module: str, *, dry_run: bool) -> list[str]:
-    path = PROJECT_ROOT / "src" / "config" / "urls.py"
+    path = BACKEND_DIR / "config" / "urls.py"
     text = path.read_text(encoding="utf-8")
-    route = f'    path("api/{module}/", include("{module}.presentation.api.urls")),\n'
+    route = (
+        f'    path("api/{module}/", include("apps.{module}.presentation.api.urls")),\n'
+    )
     if route.strip() in text:
         return [f"skipped {path.relative_to(PROJECT_ROOT)} (already integrated)"]
 
-    marker = '    path("api/users/", include("users.presentation.api.urls")),\n'
+    marker = '    path("api/users/", include("apps.users.presentation.api.urls")),\n'
     if marker not in text:
-        return [f"TODO: manually add api/{module}/ route to src/config/urls.py"]
+        return [f"TODO: manually add api/{module}/ route to backend/config/urls.py"]
 
     updated = text.replace(marker, marker + route, 1)
     if dry_run:
@@ -337,11 +337,11 @@ def integrate_urls(module: str, *, dry_run: bool) -> list[str]:
 
 
 def integrate_drf(module: str, *, dry_run: bool) -> list[str]:
-    path = PROJECT_ROOT / "src" / "config" / "drf.py"
+    path = BACKEND_DIR / "config" / "drf.py"
     text = path.read_text(encoding="utf-8")
     upper = to_upper_snake_case(module)
     import_line = (
-        f"from {module}.presentation.exception_mappings import "
+        f"from apps.{module}.presentation.exception_mappings import "
         f"{upper}_EXCEPTION_STATUS_MAP\n"
     )
     if import_line in text:
@@ -383,7 +383,7 @@ def integrate_drf(module: str, *, dry_run: bool) -> list[str]:
         )
     else:
         return [
-            f"TODO: manually wire {upper}_EXCEPTION_STATUS_MAP in src/config/drf.py"
+            f"TODO: manually wire {upper}_EXCEPTION_STATUS_MAP in backend/config/drf.py"
         ]
 
     if dry_run:
@@ -405,24 +405,26 @@ def integrate_project(module: str, *, dry_run: bool) -> list[str]:
 def print_manual_steps(module: str) -> None:
     upper = to_upper_snake_case(module)
     print("\nNext steps (if not using --integrate):")
-    print(f"  1. Add Import-Linter contracts for {module!r} in .importlinter")
-    print(f"  2. Add {module!r} to [tool.coverage.run].source in pyproject.toml")
+    print(f"  1. Add Import-Linter contracts for apps.{module!r} in backend/.importlinter")
+    print(f"  2. Add apps.{module!r} to [tool.coverage.run].source in backend/pyproject.toml")
     print(
-        f'  3. Add "{module}.presentation" to INSTALLED_APPS in src/config/settings.py'
+        f'  3. Add "apps.{module}.presentation" to INSTALLED_APPS in '
+        "backend/config/settings/base.py"
     )
     print(
-        f'  4. Add path("api/{module}/", include("{module}.presentation.api.urls")) '
-        "to src/config/urls.py"
+        f'  4. Add path("api/{module}/", '
+        f'include("apps.{module}.presentation.api.urls")) '
+        "to backend/config/urls.py"
     )
     print(
-        f"  5. Import {upper}_EXCEPTION_STATUS_MAP in src/config/drf.py "
+        f"  5. Import {upper}_EXCEPTION_STATUS_MAP in backend/config/drf.py "
         "and pass it to build_exception_handler()"
     )
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Scaffold a new Django bounded-context module under src/.",
+        description="Scaffold a new Django bounded-context module under backend/apps/.",
         epilog="Example: python tools/create_module.py sales --integrate",
     )
     parser.add_argument(
@@ -465,7 +467,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry_run:
         print(f"\nDry run: {len(build_template_files(name))} files planned.")
     else:
-        print(f"\nCreated {len(created)} files under src/{name}/")
+        print(f"\nCreated {len(created)} files under backend/apps/{name}/")
 
     if args.integrate:
         print("\nIntegrating into project config...")
