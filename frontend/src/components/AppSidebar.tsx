@@ -3,10 +3,13 @@ import {
   LayoutDashboard, Users, Package, UserCheck, Building2, Truck,
   ShoppingCart, Receipt, Warehouse, Settings, HelpCircle,
   ChevronDown, ChevronRight, Factory, Briefcase, UserCog, ClipboardList, Monitor,
+  Droplets,
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { t } from '@/lib/i18n';
+import { DJANGO_ADMIN_URL } from '@/api/client';
 import { useBranchManagerAccess } from '@/modules/device';
+import { COMPRAS_PERMS, hasPermission } from '@/modules/compras';
 import { templateMenuGroups, TemplateMenuItem } from '@/data/templateMenu';
 import { SmarnetLogo, SmarnetMark } from '@/components/SmarnetLogo';
 import * as React from 'react';
@@ -35,6 +38,7 @@ type ErpMenuItem = {
   icon: React.ComponentType<{ size?: number | string }>;
   path: string;
   managerOnly?: boolean;
+  permission?: string;
 };
 
 const erpGroups: {
@@ -90,12 +94,30 @@ const erpGroups: {
       },
     ],
   },
+  {
+    key: 'compras',
+    icon: Droplets,
+    sections: [
+      {
+        label: null,
+        items: [
+          {
+            key: 'compras_fornecedores',
+            icon: Truck,
+            path: '/app/compras/fornecedores',
+            permission: COMPRAS_PERMS.viewFornecedor,
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const groupLabels: Record<string, string> = {
   comercial: 'Comercial',
   producao: 'Produção',
   rh: 'RH',
+  compras: 'Compras',
 };
 
 /* ── Badge colors ── */
@@ -196,13 +218,25 @@ export function AppSidebar() {
   const isActive = (path: string) => currentPath === path;
   const { isManager: canAccessDevices } = useBranchManagerAccess();
 
-  const visibleErpGroups = erpGroups.map((group) => ({
-    ...group,
-    sections: group.sections.map((section) => ({
-      ...section,
-      items: section.items.filter((item) => !item.managerOnly || canAccessDevices),
-    })),
-  }));
+  const visibleErpGroups = erpGroups
+    .map((group) => ({
+      ...group,
+      sections: group.sections
+        .map((section) => ({
+          ...section,
+          items: section.items.filter((item) => {
+            if (item.managerOnly && !canAccessDevices) {
+              return false;
+            }
+            if (item.permission && !hasPermission(user, item.permission)) {
+              return false;
+            }
+            return true;
+          }),
+        }))
+        .filter((section) => section.items.length > 0),
+    }))
+    .filter((group) => group.sections.length > 0);
 
   return (
     <Sidebar collapsible="icon" className="border-r-0">
@@ -370,7 +404,7 @@ export function AppSidebar() {
           {user?.is_branch_manager && (
             <SidebarMenuItem>
               <SidebarMenuButton
-                onClick={() => navigate('/settings')}
+                onClick={() => window.open(DJANGO_ADMIN_URL, '_blank', 'noopener')}
                 className="rounded-xl text-sidebar-foreground/80"
               >
                 <Settings size={16} />

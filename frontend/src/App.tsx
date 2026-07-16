@@ -25,6 +25,7 @@ import { AppLayout } from "./components/AppLayout";
 import { AdminLayout } from "./components/AdminLayout";
 import { DeviceTokensPage, DeviceManagerRoute } from "./modules/device";
 import { AccessAdminRoute } from "./modules/admin";
+import { FornecedoresPage as ComprasFornecedoresPage, FornecedorDetailPage, ComprasFornecedorRoute } from "./modules/compras";
 import { lazy, Suspense } from "react";
 
 // Admin (Settings)
@@ -435,6 +436,10 @@ function AppRoutes() {
         <Route path="estoque" element={<EstoquePage />} />
         <Route path="devices" element={<DeviceManagerRoute />}>
           <Route index element={<DeviceTokensPage />} />
+        </Route>
+        <Route path="compras/fornecedores" element={<ComprasFornecedorRoute />}>
+          <Route index element={<ComprasFornecedoresPage />} />
+          <Route path=":codFornec" element={<FornecedorDetailPage />} />
         </Route>
         <Route path="formularios" element={<FormShowcase />} />
         <Route path="tabelas" element={<TableShowcase />} />

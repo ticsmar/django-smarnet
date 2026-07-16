@@ -7,6 +7,7 @@ import { useApp } from '@/contexts/AppContext';
 import { t, Locale, localeNames } from '@/lib/i18n';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { logout } from '@/api/auth';
+import { DJANGO_ADMIN_URL } from '@/api/client';
 
 export function TopNav() {
   const { locale, setLocale, theme, setTheme, user, setUser } = useApp();
@@ -120,7 +121,7 @@ export function TopNav() {
                   <Lock size={16} className="text-muted-foreground" /> {t('nav.password', locale)}
                 </button>
                 {user?.can_manage_access && (
-                  <button onClick={() => { navigate('/settings'); close(); }}
+                  <button onClick={() => { window.open(DJANGO_ADMIN_URL, '_blank', 'noopener'); close(); }}
                     className="w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-surface-container-low transition-colors text-foreground">
                     <Settings size={16} className="text-muted-foreground" /> App Admin
                   </button>
