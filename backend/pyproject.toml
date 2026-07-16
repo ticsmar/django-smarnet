@@ -37,6 +37,7 @@ select = [
 "apps/branch_auth/presentation/**/*.py" = ["ANN", "E501", "RUF005", "RUF012"]
 "apps/branch_auth/tests/*.py" = ["E501"]
 "apps/users/tests/*.py" = ["E501"]
+"apps/compras/tests/*.py" = ["E501"]
 "manage.py" = ["TID251"]
 
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
@@ -86,6 +87,20 @@ disable_error_code = [
     "assignment",
     "misc",
 ]
+[[tool.mypy.overrides]]
+module = "apps.compras.*"
+disallow_untyped_defs = false
+disable_error_code = [
+    "no-untyped-def",
+    "no-untyped-call",
+    "type-arg",
+    "assignment",
+    "misc",
+]
+[[tool.mypy.overrides]]
+module = "apps.compras.tests.*"
+disallow_untyped_defs = false
+disable_error_code = ["arg-type", "no-untyped-def"]
 [[tool.mypy.overrides]]
 module = "environ"
 ignore_missing_imports = true

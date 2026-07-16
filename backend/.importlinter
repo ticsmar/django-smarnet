@@ -90,9 +90,46 @@ source_modules =
 forbidden_modules =
     apps.branch_auth.application
     apps.branch_auth.presentation
+
+[importlinter:contract:compras-layers]
+name = compras layer dependencies
+type = layers
+layers =
+    apps.compras.presentation
+    apps.compras.application
+    apps.compras.domain
+
+[importlinter:contract:compras-domain-isolation]
+name = compras domain layer isolation
+type = forbidden
+source_modules =
+    apps.compras.domain
+forbidden_modules =
+    apps.compras.application
+    apps.compras.infrastructure
+    apps.compras.presentation
+
+[importlinter:contract:compras-app-no-presentation]
+name = compras application cannot import presentation
+type = forbidden
+source_modules =
+    apps.compras.application
+forbidden_modules =
+    apps.compras.presentation
+
+[importlinter:contract:compras-infra-boundary]
+name = compras infrastructure boundary
+type = forbidden
+source_modules =
+    apps.compras.infrastructure
+forbidden_modules =
+    apps.compras.application
+    apps.compras.presentation
+
 [importlinter:contract:domain-independence]
 name = Domains are independent
 type = independence
 modules =
     apps.branch_auth
     apps.users
+    apps.compras
