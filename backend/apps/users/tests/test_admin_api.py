@@ -221,6 +221,10 @@ def me_access_mocks() -> Generator[MagicMock]:
             return_value=["access_admins"],
         ),
         patch(
+            "apps.users.presentation.serializers.auth_serializers.get_permissions_for_username",
+            return_value=[],
+        ),
+        patch(
             "apps.users.presentation.serializers.auth_serializers.resolve_django_user_by_username",
             return_value=MagicMock(is_superuser=False),
         ),

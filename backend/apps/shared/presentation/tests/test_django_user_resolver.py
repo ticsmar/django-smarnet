@@ -64,3 +64,24 @@ def test_superuser_has_access_admin(mock_resolve: MagicMock) -> None:
 
 def test_branch_managers_constant() -> None:
     assert BRANCH_MANAGERS_GROUP == "branch_managers"
+
+
+@patch(
+    "apps.shared.presentation.auth.django_user_resolver.resolve_django_user_by_username"
+)
+def test_get_permissions_for_username(mock_resolve: MagicMock) -> None:
+    from apps.shared.presentation.auth.django_user_resolver import (
+        get_permissions_for_username,
+    )
+
+    user = MagicMock()
+    user.get_all_permissions.return_value = {
+        "compras_infrastructure.view_fornecedor",
+        "compras_infrastructure.add_forneccontato",
+    }
+    mock_resolve.return_value = user
+
+    assert get_permissions_for_username("ops") == [
+        "compras_infrastructure.add_forneccontato",
+        "compras_infrastructure.view_fornecedor",
+    ]

@@ -37,6 +37,10 @@ def mock_auth_payload() -> Generator[None]:
             return_value=[],
         ),
         patch(
+            "apps.users.presentation.serializers.auth_serializers.get_permissions_for_username",
+            return_value=[],
+        ),
+        patch(
             "apps.users.presentation.serializers.auth_serializers.resolve_django_user_by_username",
             return_value=None,
         ),
@@ -93,6 +97,7 @@ def test_login_success(
         "can_manage_access": False,
         "must_change_password": False,
         "groups": [],
+        "permissions": [],
     }
 
 
@@ -146,6 +151,7 @@ def test_me_authenticated(authenticated_client: APIClient) -> None:
         "can_manage_access": False,
         "must_change_password": False,
         "groups": [],
+        "permissions": [],
     }
 
 
@@ -191,6 +197,7 @@ def test_register_success_when_public_enabled(
         "can_manage_access": False,
         "must_change_password": False,
         "groups": [],
+        "permissions": [],
     }
     mock_repo.create_user.assert_called_once_with("new_user", "secret")
 

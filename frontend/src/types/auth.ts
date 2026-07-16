@@ -5,6 +5,7 @@ export interface User {
   can_manage_access?: boolean;
   must_change_password?: boolean;
   groups?: string[];
+  permissions?: string[];
 }
 
 export interface ChangePasswordInput {

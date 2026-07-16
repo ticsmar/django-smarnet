@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from apps.shared.presentation.auth.django_user_resolver import (
     get_groups_for_username,
+    get_permissions_for_username,
     is_access_admin_for_username,
     is_branch_manager_for_username,
     resolve_django_user_by_username,
@@ -30,6 +31,7 @@ class AuthenticatedUserSerializer(serializers.Serializer):
     can_manage_access = serializers.BooleanField()
     must_change_password = serializers.BooleanField()
     groups = serializers.ListField(child=serializers.CharField())
+    permissions = serializers.ListField(child=serializers.CharField())
 
 
 class ChangePasswordRequestSerializer(serializers.Serializer):
@@ -50,4 +52,5 @@ def build_authenticated_user_payload(
             username
         ),
         "groups": get_groups_for_username(username),
+        "permissions": get_permissions_for_username(username),
     }

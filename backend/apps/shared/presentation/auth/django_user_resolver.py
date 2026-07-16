@@ -61,3 +61,11 @@ def get_groups_for_username(username: str) -> list[str]:
     if django_user is None:
         return []
     return list(django_user.groups.values_list("name", flat=True))
+
+
+def get_permissions_for_username(username: str) -> list[str]:
+    """Return sorted Django permission strings (`app_label.codename`)."""
+    django_user = resolve_django_user_by_username(username)
+    if django_user is None:
+        return []
+    return sorted(django_user.get_all_permissions())
