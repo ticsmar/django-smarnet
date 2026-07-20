@@ -44,9 +44,9 @@ def test_contato_list_requires_view() -> None:
 
 
 def test_contato_create_requires_add() -> None:
-    assert fornec_contato_list_or_grava_perms(
-        _request("post", {"nome": "Joao"})
-    ) == [ADD_FORNEC_CONTATO]
+    assert fornec_contato_list_or_grava_perms(_request("post", {"nome": "Joao"})) == [
+        ADD_FORNEC_CONTATO
+    ]
 
 
 def test_contato_update_requires_change() -> None:

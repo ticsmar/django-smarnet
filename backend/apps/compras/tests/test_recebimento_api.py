@@ -40,10 +40,10 @@ def auth_client(api_client: APIClient) -> APIClient:
         yield api_client
 
 
-@patch("apps.compras.presentation.views.recebimento_views.build_grava_fornecedor_use_case")
-def test_grava_fornecedor_api(
-    mock_build: MagicMock, auth_client: APIClient
-) -> None:
+@patch(
+    "apps.compras.presentation.views.recebimento_views.build_grava_fornecedor_use_case"
+)
+def test_grava_fornecedor_api(mock_build: MagicMock, auth_client: APIClient) -> None:
     use_case = MagicMock()
     use_case.execute.return_value = GravaFornecedorOutputDTO(
         cod_fornec=10,
@@ -75,9 +75,7 @@ def test_grava_fornecedor_api(
 @patch(
     "apps.compras.presentation.views.recebimento_views.build_list_fornecedores_use_case"
 )
-def test_list_fornecedores_api(
-    mock_build: MagicMock, auth_client: APIClient
-) -> None:
+def test_list_fornecedores_api(mock_build: MagicMock, auth_client: APIClient) -> None:
     use_case = MagicMock()
     use_case.execute.return_value = PaginatedFornecedoresOutputDTO(
         items=[
@@ -111,7 +109,9 @@ def test_list_fornecedores_api(
     assert response.data["items"][0]["for_codigo"] == 1
 
 
-@patch("apps.compras.presentation.views.recebimento_views.build_get_fornecedor_use_case")
+@patch(
+    "apps.compras.presentation.views.recebimento_views.build_get_fornecedor_use_case"
+)
 def test_get_fornecedor_api(mock_build: MagicMock, auth_client: APIClient) -> None:
     use_case = MagicMock()
     use_case.execute.return_value = FornecedorOutputDTO(
@@ -138,7 +138,9 @@ def test_get_fornecedor_api(mock_build: MagicMock, auth_client: APIClient) -> No
     assert response.data["for_codigo"] == 7
 
 
-@patch("apps.compras.presentation.views.recebimento_views.build_get_fornecedor_use_case")
+@patch(
+    "apps.compras.presentation.views.recebimento_views.build_get_fornecedor_use_case"
+)
 def test_get_fornecedor_api_404(mock_build: MagicMock, auth_client: APIClient) -> None:
     use_case = MagicMock()
     use_case.execute.side_effect = FornecedorNotFoundError("missing")
@@ -149,10 +151,10 @@ def test_get_fornecedor_api_404(mock_build: MagicMock, auth_client: APIClient) -
     assert response.status_code == 404
 
 
-@patch("apps.compras.presentation.views.recebimento_views.build_ativa_fornecedor_use_case")
-def test_ativa_fornecedor_api(
-    mock_build: MagicMock, auth_client: APIClient
-) -> None:
+@patch(
+    "apps.compras.presentation.views.recebimento_views.build_ativa_fornecedor_use_case"
+)
+def test_ativa_fornecedor_api(mock_build: MagicMock, auth_client: APIClient) -> None:
     mock_build.return_value = MagicMock()
     response = auth_client.post("/api/compras/fornecedores/7/ativar/")
     assert response.status_code == 200
@@ -162,9 +164,7 @@ def test_ativa_fornecedor_api(
 @patch(
     "apps.compras.presentation.views.recebimento_views.build_inativa_fornecedor_use_case"
 )
-def test_inativa_fornecedor_api(
-    mock_build: MagicMock, auth_client: APIClient
-) -> None:
+def test_inativa_fornecedor_api(mock_build: MagicMock, auth_client: APIClient) -> None:
     mock_build.return_value = MagicMock()
     response = auth_client.post("/api/compras/fornecedores/7/inativar/")
     assert response.status_code == 200
@@ -234,9 +234,7 @@ def test_list_fornec_contatos_api(
 @patch(
     "apps.compras.presentation.views.recebimento_views.build_get_fornec_contato_use_case"
 )
-def test_get_fornec_contato_api(
-    mock_build: MagicMock, auth_client: APIClient
-) -> None:
+def test_get_fornec_contato_api(mock_build: MagicMock, auth_client: APIClient) -> None:
     use_case = MagicMock()
     use_case.execute.return_value = FornecContatoOutputDTO(
         fco_codigo=3,
@@ -266,7 +264,9 @@ def test_exclui_fornec_contato_api(
     assert response.data["ok"] is True
 
 
-@patch("apps.compras.presentation.views.recebimento_views.build_list_msg_erros_use_case")
+@patch(
+    "apps.compras.presentation.views.recebimento_views.build_list_msg_erros_use_case"
+)
 def test_list_msg_erros_api(mock_build: MagicMock, auth_client: APIClient) -> None:
     use_case = MagicMock()
     use_case.execute.return_value = PaginatedMsgErrosOutputDTO(
@@ -385,7 +385,9 @@ def test_list_fornecedores_forbidden_without_view_perm(
     assert response.status_code == 403
 
 
-@patch("apps.compras.presentation.views.recebimento_views.build_grava_fornec_contato_use_case")
+@patch(
+    "apps.compras.presentation.views.recebimento_views.build_grava_fornec_contato_use_case"
+)
 def test_grava_fornec_contato_allowed_with_add_perm(
     mock_build: MagicMock,
     api_client: APIClient,
@@ -393,8 +395,8 @@ def test_grava_fornec_contato_allowed_with_add_perm(
     api_client.force_authenticate(user=OracleSessionUser(username="ops"))
     django_user = MagicMock()
     django_user.is_superuser = False
-    django_user.has_perm.side_effect = (
-        lambda perm: perm == "compras_infrastructure.add_forneccontato"
+    django_user.has_perm.side_effect = lambda perm: (
+        perm == "compras_infrastructure.add_forneccontato"
     )
     use_case = MagicMock()
     use_case.execute.return_value = GravaFornecContatoOutputDTO(

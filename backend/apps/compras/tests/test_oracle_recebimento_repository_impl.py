@@ -35,9 +35,7 @@ def _mock_raw_cursor(mock_connections: MagicMock) -> MagicMock:
     django_cursor = MagicMock()
     raw_cursor = MagicMock()
     django_cursor.cursor.cursor = raw_cursor
-    mock_connections.__getitem__.return_value.cursor.return_value.__enter__.return_value = (
-        django_cursor
-    )
+    mock_connections.__getitem__.return_value.cursor.return_value.__enter__.return_value = django_cursor
     return raw_cursor
 
 

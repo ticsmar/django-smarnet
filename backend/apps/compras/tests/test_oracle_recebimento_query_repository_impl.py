@@ -16,9 +16,7 @@ from apps.compras.infrastructure.repositories.oracle_recebimento_query_repositor
     "apps.compras.infrastructure.repositories."
     "oracle_recebimento_query_repository_impl.Fornecedor"
 )
-def test_get_fornecedor_found(
-    mock_fornecedor: MagicMock, mock_pais: MagicMock
-) -> None:
+def test_get_fornecedor_found(mock_fornecedor: MagicMock, mock_pais: MagicMock) -> None:
     row = MagicMock(
         for_codigo=1,
         emp_codigo=None,
@@ -34,9 +32,7 @@ def test_get_fornecedor_found(
         for_dt_atual=None,
         for_ativo=1,
     )
-    mock_fornecedor.objects.using.return_value.filter.return_value.first.return_value = (
-        row
-    )
+    mock_fornecedor.objects.using.return_value.filter.return_value.first.return_value = row
     mock_pais.objects.using.return_value.filter.return_value.first.return_value = (
         MagicMock(pai_nome="Brasil")
     )

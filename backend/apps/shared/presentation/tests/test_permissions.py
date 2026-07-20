@@ -81,9 +81,7 @@ def test_has_django_permission_checks_required_perm(
     view.required_permissions = ["compras_infrastructure.view_fornecedor"]
 
     assert HasDjangoPermission().has_permission(request, view) is True
-    django_user.has_perm.assert_called_with(
-        "compras_infrastructure.view_fornecedor"
-    )
+    django_user.has_perm.assert_called_with("compras_infrastructure.view_fornecedor")
 
 
 def test_has_django_permission_denies_missing_perm(

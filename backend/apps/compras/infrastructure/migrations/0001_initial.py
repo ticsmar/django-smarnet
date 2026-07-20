@@ -4,76 +4,225 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='FornecContato',
+            name="FornecContato",
             fields=[
-                ('fco_codigo', models.IntegerField(db_column='FCO_CODIGO', primary_key=True, serialize=False)),
-                ('for_codigo', models.IntegerField(blank=True, db_column='FOR_CODIGO', null=True)),
-                ('fco_nome', models.CharField(blank=True, db_column='FCO_NOME', max_length=100, null=True)),
-                ('fco_cargo', models.CharField(blank=True, db_column='FCO_CARGO', max_length=80, null=True)),
-                ('fco_email', models.CharField(blank=True, db_column='FCO_EMAIL', max_length=80, null=True)),
-                ('fco_telefone', models.CharField(blank=True, db_column='FCO_TELEFONE', max_length=30, null=True)),
+                (
+                    "fco_codigo",
+                    models.IntegerField(
+                        db_column="FCO_CODIGO", primary_key=True, serialize=False
+                    ),
+                ),
+                (
+                    "for_codigo",
+                    models.IntegerField(blank=True, db_column="FOR_CODIGO", null=True),
+                ),
+                (
+                    "fco_nome",
+                    models.CharField(
+                        blank=True, db_column="FCO_NOME", max_length=100, null=True
+                    ),
+                ),
+                (
+                    "fco_cargo",
+                    models.CharField(
+                        blank=True, db_column="FCO_CARGO", max_length=80, null=True
+                    ),
+                ),
+                (
+                    "fco_email",
+                    models.CharField(
+                        blank=True, db_column="FCO_EMAIL", max_length=80, null=True
+                    ),
+                ),
+                (
+                    "fco_telefone",
+                    models.CharField(
+                        blank=True, db_column="FCO_TELEFONE", max_length=30, null=True
+                    ),
+                ),
             ],
             options={
-                'db_table': '"NOVASMAR"."FORNEC_CONTATO"',
-                'managed': False,
+                "db_table": '"NOVASMAR"."FORNEC_CONTATO"',
+                "managed": False,
             },
         ),
         migrations.CreateModel(
-            name='Fornecedor',
+            name="Fornecedor",
             fields=[
-                ('for_codigo', models.IntegerField(db_column='FOR_CODIGO', primary_key=True, serialize=False)),
-                ('emp_codigo', models.DecimalField(blank=True, db_column='EMP_CODIGO', decimal_places=0, max_digits=11, null=True)),
-                ('for_razao_soc', models.CharField(blank=True, db_column='FOR_RAZAO_SOC', max_length=300, null=True)),
-                ('for_nome_reduz', models.CharField(blank=True, db_column='FOR_NOME_REDUZ', max_length=50, null=True)),
-                ('for_endereco', models.CharField(blank=True, db_column='FOR_ENDERECO', max_length=300, null=True)),
-                ('for_bairro', models.CharField(blank=True, db_column='FOR_BAIRRO', max_length=100, null=True)),
-                ('for_munic', models.CharField(blank=True, db_column='FOR_MUNIC', max_length=100, null=True)),
-                ('for_cep', models.CharField(blank=True, db_column='FOR_CEP', max_length=20, null=True)),
-                ('for_estado', models.CharField(blank=True, db_column='FOR_ESTADO', max_length=100, null=True)),
-                ('pai_codigo', models.DecimalField(blank=True, db_column='PAI_CODIGO', decimal_places=0, max_digits=11, null=True)),
-                ('for_dt_cad', models.DateTimeField(blank=True, db_column='FOR_DT_CAD', null=True)),
-                ('for_dt_atual', models.DateTimeField(blank=True, db_column='FOR_DT_ATUAL', null=True)),
-                ('for_ativo', models.IntegerField(blank=True, db_column='FOR_ATIVO', null=True)),
+                (
+                    "for_codigo",
+                    models.IntegerField(
+                        db_column="FOR_CODIGO", primary_key=True, serialize=False
+                    ),
+                ),
+                (
+                    "emp_codigo",
+                    models.DecimalField(
+                        blank=True,
+                        db_column="EMP_CODIGO",
+                        decimal_places=0,
+                        max_digits=11,
+                        null=True,
+                    ),
+                ),
+                (
+                    "for_razao_soc",
+                    models.CharField(
+                        blank=True, db_column="FOR_RAZAO_SOC", max_length=300, null=True
+                    ),
+                ),
+                (
+                    "for_nome_reduz",
+                    models.CharField(
+                        blank=True, db_column="FOR_NOME_REDUZ", max_length=50, null=True
+                    ),
+                ),
+                (
+                    "for_endereco",
+                    models.CharField(
+                        blank=True, db_column="FOR_ENDERECO", max_length=300, null=True
+                    ),
+                ),
+                (
+                    "for_bairro",
+                    models.CharField(
+                        blank=True, db_column="FOR_BAIRRO", max_length=100, null=True
+                    ),
+                ),
+                (
+                    "for_munic",
+                    models.CharField(
+                        blank=True, db_column="FOR_MUNIC", max_length=100, null=True
+                    ),
+                ),
+                (
+                    "for_cep",
+                    models.CharField(
+                        blank=True, db_column="FOR_CEP", max_length=20, null=True
+                    ),
+                ),
+                (
+                    "for_estado",
+                    models.CharField(
+                        blank=True, db_column="FOR_ESTADO", max_length=100, null=True
+                    ),
+                ),
+                (
+                    "pai_codigo",
+                    models.DecimalField(
+                        blank=True,
+                        db_column="PAI_CODIGO",
+                        decimal_places=0,
+                        max_digits=11,
+                        null=True,
+                    ),
+                ),
+                (
+                    "for_dt_cad",
+                    models.DateTimeField(blank=True, db_column="FOR_DT_CAD", null=True),
+                ),
+                (
+                    "for_dt_atual",
+                    models.DateTimeField(
+                        blank=True, db_column="FOR_DT_ATUAL", null=True
+                    ),
+                ),
+                (
+                    "for_ativo",
+                    models.IntegerField(blank=True, db_column="FOR_ATIVO", null=True),
+                ),
             ],
             options={
-                'db_table': '"NOVASMAR"."FORNECEDOR"',
-                'managed': False,
+                "db_table": '"NOVASMAR"."FORNECEDOR"',
+                "managed": False,
             },
         ),
         migrations.CreateModel(
-            name='MsgErro',
+            name="MsgErro",
             fields=[
-                ('msg_erro_bd', models.CharField(db_column='MSG_ERRO_BD', max_length=4000, primary_key=True, serialize=False)),
-                ('msg_usu_port', models.CharField(blank=True, db_column='MSG_USU_PORT', max_length=4000, null=True)),
-                ('msg_acao_port', models.CharField(blank=True, db_column='MSG_ACAO_PORT', max_length=4000, null=True)),
-                ('msg_usu_ing', models.CharField(blank=True, db_column='MSG_USU_ING', max_length=4000, null=True)),
-                ('msg_acao_ing', models.CharField(blank=True, db_column='MSG_ACAO_ING', max_length=4000, null=True)),
+                (
+                    "msg_erro_bd",
+                    models.CharField(
+                        db_column="MSG_ERRO_BD",
+                        max_length=4000,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "msg_usu_port",
+                    models.CharField(
+                        blank=True, db_column="MSG_USU_PORT", max_length=4000, null=True
+                    ),
+                ),
+                (
+                    "msg_acao_port",
+                    models.CharField(
+                        blank=True,
+                        db_column="MSG_ACAO_PORT",
+                        max_length=4000,
+                        null=True,
+                    ),
+                ),
+                (
+                    "msg_usu_ing",
+                    models.CharField(
+                        blank=True, db_column="MSG_USU_ING", max_length=4000, null=True
+                    ),
+                ),
+                (
+                    "msg_acao_ing",
+                    models.CharField(
+                        blank=True, db_column="MSG_ACAO_ING", max_length=4000, null=True
+                    ),
+                ),
             ],
             options={
-                'db_table': '"NOVASMAR"."MSG_ERRO"',
-                'managed': False,
+                "db_table": '"NOVASMAR"."MSG_ERRO"',
+                "managed": False,
             },
         ),
         migrations.CreateModel(
-            name='Pais',
+            name="Pais",
             fields=[
-                ('pai_codigo', models.IntegerField(db_column='PAI_CODIGO', primary_key=True, serialize=False)),
-                ('pai_nome', models.CharField(blank=True, db_column='PAI_NOME', max_length=50, null=True)),
-                ('eti_codigo', models.IntegerField(blank=True, db_column='ETI_CODIGO', null=True)),
-                ('ya_codgi', models.CharField(blank=True, db_column='YA_CODGI', max_length=3, null=True)),
-                ('cch_codigo', models.CharField(blank=True, db_column='CCH_CODIGO', max_length=6, null=True)),
+                (
+                    "pai_codigo",
+                    models.IntegerField(
+                        db_column="PAI_CODIGO", primary_key=True, serialize=False
+                    ),
+                ),
+                (
+                    "pai_nome",
+                    models.CharField(
+                        blank=True, db_column="PAI_NOME", max_length=50, null=True
+                    ),
+                ),
+                (
+                    "eti_codigo",
+                    models.IntegerField(blank=True, db_column="ETI_CODIGO", null=True),
+                ),
+                (
+                    "ya_codgi",
+                    models.CharField(
+                        blank=True, db_column="YA_CODGI", max_length=3, null=True
+                    ),
+                ),
+                (
+                    "cch_codigo",
+                    models.CharField(
+                        blank=True, db_column="CCH_CODIGO", max_length=6, null=True
+                    ),
+                ),
             ],
             options={
-                'db_table': '"GERAL"."PAIS"',
-                'managed': False,
+                "db_table": '"GERAL"."PAIS"',
+                "managed": False,
             },
         ),
     ]

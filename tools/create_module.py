@@ -23,8 +23,7 @@ DEFAULT_SRC_DIR = BACKEND_DIR / "apps"
 
 DOMAIN_INDEPENDENCE_MARKER = "[importlinter:contract:domain-independence]"
 USERS_EXCEPTION_IMPORT = (
-    "from apps.users.presentation.exception_mappings import "
-    "AUTH_EXCEPTION_STATUS_MAP\n"
+    "from apps.users.presentation.exception_mappings import AUTH_EXCEPTION_STATUS_MAP\n"
 )
 SINGLE_EXCEPTION_HANDLER = (
     "exception_handler = build_exception_handler(AUTH_EXCEPTION_STATUS_MAP)\n"
@@ -405,8 +404,12 @@ def integrate_project(module: str, *, dry_run: bool) -> list[str]:
 def print_manual_steps(module: str) -> None:
     upper = to_upper_snake_case(module)
     print("\nNext steps (if not using --integrate):")
-    print(f"  1. Add Import-Linter contracts for apps.{module!r} in backend/.importlinter")
-    print(f"  2. Add apps.{module!r} to [tool.coverage.run].source in backend/pyproject.toml")
+    print(
+        f"  1. Add Import-Linter contracts for apps.{module!r} in backend/.importlinter"
+    )
+    print(
+        f"  2. Add apps.{module!r} to [tool.coverage.run].source in backend/pyproject.toml"
+    )
     print(
         f'  3. Add "apps.{module}.presentation" to INSTALLED_APPS in '
         "backend/config/settings/base.py"

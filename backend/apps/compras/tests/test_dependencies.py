@@ -53,7 +53,9 @@ def test_build_use_cases() -> None:
     assert isinstance(build_ativa_fornecedor_use_case(), AtivaFornecedorUseCase)
     assert isinstance(build_inativa_fornecedor_use_case(), InativaFornecedorUseCase)
     assert isinstance(build_grava_fornec_contato_use_case(), GravaFornecContatoUseCase)
-    assert isinstance(build_exclui_fornec_contato_use_case(), ExcluiFornecContatoUseCase)
+    assert isinstance(
+        build_exclui_fornec_contato_use_case(), ExcluiFornecContatoUseCase
+    )
     assert isinstance(build_list_fornecedores_use_case(), ListFornecedoresUseCase)
     assert isinstance(build_get_fornecedor_use_case(), GetFornecedorUseCase)
     assert isinstance(build_list_fornec_contatos_use_case(), ListFornecContatosUseCase)
