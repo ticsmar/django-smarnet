@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormCombobox } from "@/components/ui/forms";
+import { useT } from "@/hooks/useT";
 import type { Fornecedor, GravaFornecedorInput } from "../types/fornecedor";
 import { usePaises } from "../hooks/usePaises";
 import { flagClass } from "../utils/paisFlags";
@@ -60,6 +61,7 @@ export function FornecedorFormDialog({
   error = "",
   onSubmit,
 }: FornecedorFormDialogProps) {
+  const t = useT();
   const [form, setForm] = useState<FornecedorFormValues>(EMPTY_FORM);
   const isEdit = initial !== null;
   const { data: paises = [], isLoading: paisesLoading } = usePaises();
@@ -104,17 +106,19 @@ export function FornecedorFormDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Editar fornecedor" : "Novo fornecedor"}
+            {isEdit
+              ? t("compras.fornecedores.edit")
+              : t("compras.fornecedores.new")}
           </DialogTitle>
           <DialogDescription>
-            Os dados são gravados via procedimento Oracle do módulo Compras.
+            {t("compras.fornecedores.form_description")}
           </DialogDescription>
         </DialogHeader>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="razao_soc">Razão social</Label>
+              <Label htmlFor="razao_soc">{t("compras.col.razao_social")}</Label>
               <Input
                 id="razao_soc"
                 required
@@ -123,7 +127,7 @@ export function FornecedorFormDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="nome_reduz">Nome reduzido</Label>
+              <Label htmlFor="nome_reduz">{t("compras.col.nome_reduzido")}</Label>
               <Input
                 id="nome_reduz"
                 required
@@ -134,7 +138,7 @@ export function FornecedorFormDialog({
             <div className="space-y-2">
               <FormCombobox
                 id="cod_pais"
-                label="País"
+                label={t("compras.col.pais")}
                 required
                 options={paisOptions}
                 value={selectedPais}
@@ -145,7 +149,9 @@ export function FornecedorFormDialog({
                   }
                 }}
                 placeholder={
-                  paisesLoading ? "Carregando países..." : "Buscar país..."
+                  paisesLoading
+                    ? t("compras.fornecedores.pais_loading")
+                    : t("compras.fornecedores.pais_search")
                 }
                 isClearable={false}
                 isLoading={paisesLoading}
@@ -164,7 +170,7 @@ export function FornecedorFormDialog({
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="endereco">Endereço</Label>
+              <Label htmlFor="endereco">{t("compras.col.endereco")}</Label>
               <Input
                 id="endereco"
                 required
@@ -173,7 +179,7 @@ export function FornecedorFormDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bairro">Bairro</Label>
+              <Label htmlFor="bairro">{t("compras.col.bairro")}</Label>
               <Input
                 id="bairro"
                 required
@@ -182,7 +188,7 @@ export function FornecedorFormDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="munic">Município</Label>
+              <Label htmlFor="munic">{t("compras.col.municipio")}</Label>
               <Input
                 id="munic"
                 required
@@ -191,7 +197,7 @@ export function FornecedorFormDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cep">CEP</Label>
+              <Label htmlFor="cep">{t("compras.col.cep")}</Label>
               <Input
                 id="cep"
                 required
@@ -200,7 +206,7 @@ export function FornecedorFormDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="estado">Estado</Label>
+              <Label htmlFor="estado">{t("compras.col.estado")}</Label>
               <Input
                 id="estado"
                 required
@@ -221,10 +227,12 @@ export function FornecedorFormDialog({
               onClick={() => onOpenChange(false)}
               disabled={submitting}
             >
-              Cancelar
+              {t("module.cancel")}
             </Button>
             <Button type="submit" disabled={submitting}>
-              {submitting ? "Salvando..." : "Salvar"}
+              {submitting
+                ? t("compras.fornecedores.saving")
+                : t("module.save")}
             </Button>
           </DialogFooter>
         </form>

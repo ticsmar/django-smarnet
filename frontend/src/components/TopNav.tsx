@@ -106,7 +106,9 @@ export function TopNav() {
               <div className="hidden lg:block text-left">
                 <p className="text-sm font-medium text-foreground leading-tight">{user?.username}</p>
                 <p className="text-xs text-muted-foreground capitalize">
-                  {user?.is_branch_manager ? 'Gerente de filial' : 'Usuário'}
+                  {user?.is_branch_manager
+                    ? t('profile.role.branch_manager', locale)
+                    : t('profile.role.user', locale)}
                 </p>
               </div>
               <ChevronDown size={14} className="text-muted-foreground" />
@@ -117,7 +119,8 @@ export function TopNav() {
                   className="w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-surface-container-low transition-colors text-foreground">
                   <User size={16} className="text-muted-foreground" /> {t('nav.profile', locale)}
                 </button>
-                <button className="w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-surface-container-low transition-colors text-foreground">
+                <button onClick={() => { navigate('/change-password'); close(); }}
+                  className="w-full text-left px-4 py-2.5 text-sm flex items-center gap-3 hover:bg-surface-container-low transition-colors text-foreground">
                   <Lock size={16} className="text-muted-foreground" /> {t('nav.password', locale)}
                 </button>
                 {user?.can_manage_access && (

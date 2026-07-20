@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { X, User, Lock, ArrowRight, UserPlus } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
-import { t } from '@/lib/i18n';
+import { useT } from '@/hooks/useT';
 import { login } from '@/api/auth';
 import { ApiError } from '@/api/client';
 
@@ -16,7 +16,8 @@ interface LoginModalProps {
 
 export function LoginModal({ isOpen, onClose, onForgot, onRequestAccess }: LoginModalProps) {
   const navigate = useNavigate();
-  const { locale, setUser } = useApp();
+  const { setUser } = useApp();
+  const t = useT();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -73,13 +74,13 @@ export function LoginModal({ isOpen, onClose, onForgot, onRequestAccess }: Login
             </button>
 
             <div className="mb-8">
-              <h2 className="text-2xl font-display font-bold text-foreground">{t('login.title', locale)}</h2>
-              <p className="text-muted-foreground mt-1 text-sm">{t('login.subtitle', locale)}</p>
+              <h2 className="text-2xl font-display font-bold text-foreground">{t('login.title')}</h2>
+              <p className="text-muted-foreground mt-1 text-sm">{t('login.subtitle')}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">{t('login.username', locale)}</label>
+                <label className="text-sm font-medium text-foreground">{t('login.username')}</label>
                 <div className="relative">
                   <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <input
@@ -94,7 +95,7 @@ export function LoginModal({ isOpen, onClose, onForgot, onRequestAccess }: Login
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">{t('login.password', locale)}</label>
+                <label className="text-sm font-medium text-foreground">{t('login.password')}</label>
                 <div className="relative">
                   <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <input
@@ -117,18 +118,18 @@ export function LoginModal({ isOpen, onClose, onForgot, onRequestAccess }: Login
                 disabled={submitting}
                 className="w-full py-3 gradient-primary text-primary-foreground font-semibold rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-60"
               >
-                {submitting ? 'Entrando...' : t('login.submit', locale)}
+                {submitting ? 'Entrando...' : t('login.submit')}
                 <ArrowRight size={18} />
               </button>
             </form>
 
             <div className="mt-6 flex items-center justify-between text-sm">
               <button onClick={onForgot} className="text-secondary hover:underline">
-                {t('login.forgot', locale)}
+                {t('login.forgot')}
               </button>
               <button onClick={onRequestAccess} className="text-secondary hover:underline flex items-center gap-1">
                 <UserPlus size={14} />
-                {t('login.request', locale)}
+                {t('login.request')}
               </button>
             </div>
           </motion.div>

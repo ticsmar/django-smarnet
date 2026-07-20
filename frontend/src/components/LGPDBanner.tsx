@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Cookie } from 'lucide-react';
-import { useApp } from '@/contexts/AppContext';
-import { t } from '@/lib/i18n';
+import { useT } from '@/hooks/useT';
 
 export function LGPDBanner() {
-  const { locale } = useApp();
+  const t = useT();
   const [visible, setVisible] = useState(true);
 
   if (!visible) return null;
@@ -28,19 +27,19 @@ export function LGPDBanner() {
               <Shield size={14} /> Privacy & Compliance
             </h4>
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-              {t('lgpd.message', locale)}
+              {t('lgpd.message')}
             </p>
           </div>
         </div>
         <div className="flex gap-2 justify-end">
           <button className="px-4 py-2 text-xs font-medium rounded-xl bg-surface-container-low text-foreground hover:bg-surface-container transition-colors">
-            {t('lgpd.preferences', locale)}
+            {t('lgpd.preferences')}
           </button>
           <button
             onClick={() => setVisible(false)}
             className="px-4 py-2 text-xs font-semibold rounded-xl gradient-primary text-primary-foreground hover:opacity-90 transition-opacity"
           >
-            {t('lgpd.accept', locale)}
+            {t('lgpd.accept')}
           </button>
         </div>
       </div>

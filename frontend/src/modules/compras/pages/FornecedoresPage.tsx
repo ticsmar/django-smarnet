@@ -26,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useT } from "@/hooks/useT";
 import { ApiError } from "../api/comprasApi";
 import {
   FornecedorFormDialog,
@@ -38,11 +39,8 @@ import {
 import { useComprasAccess } from "../hooks/useComprasAccess";
 import { flagClass } from "../utils/paisFlags";
 
-function statusLabel(ativo: number | null): string {
-  return ativo === 1 ? "Ativo" : "Inativo";
-}
-
 export function FornecedoresPage() {
+  const t = useT();
   const navigate = useNavigate();
   const { canAddFornecedor } = useComprasAccess();
   const [search, setSearch] = useState("");
@@ -71,6 +69,12 @@ export function FornecedoresPage() {
     return Math.max(1, Math.ceil(data.total / data.page_size));
   }, [data]);
 
+  function statusLabel(ativoValue: number | null): string {
+    return ativoValue === 1
+      ? t("compras.status.active")
+      : t("compras.status.inactive");
+  }
+
   async function handleCreate(values: FornecedorFormValues) {
     setFormError("");
     try {
@@ -83,7 +87,9 @@ export function FornecedoresPage() {
       navigate(`/app/compras/fornecedores/${result.cod_fornec}`);
     } catch (err) {
       setFormError(
-        err instanceof ApiError ? err.message : "Falha ao gravar fornecedor.",
+        err instanceof ApiError
+          ? err.message
+          : t("compras.fornecedores.save_error"),
       );
     }
   }
@@ -98,9 +104,11 @@ export function FornecedoresPage() {
           <Home size={14} />
         </Link>
         <ChevronRight size={14} className="text-muted-foreground/50" />
-        <span className="text-muted-foreground">Compras</span>
+        <span className="text-muted-foreground">{t("nav.compras")}</span>
         <ChevronRight size={14} className="text-muted-foreground/50" />
-        <span className="font-medium text-foreground">Fornecedores</span>
+        <span className="font-medium text-foreground">
+          {t("compras.fornecedores.title")}
+        </span>
       </nav>
 
       <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm">
@@ -111,10 +119,10 @@ export function FornecedoresPage() {
             </div>
             <div>
               <h1 className="text-xl font-semibold text-foreground">
-                Fornecedores
+                {t("compras.fornecedores.title")}
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                Cadastro e consulta de fornecedores do módulo Compras.
+                {t("compras.fornecedores.subtitle")}
               </p>
             </div>
           </div>
@@ -126,7 +134,7 @@ export function FornecedoresPage() {
               }}
             >
               <Plus size={16} className="mr-1.5" />
-              Novo fornecedor
+              {t("compras.fornecedores.new")}
             </Button>
           ) : null}
         </div>
@@ -139,7 +147,7 @@ export function FornecedoresPage() {
             />
             <Input
               className="pl-9"
-              placeholder="Buscar por razão social ou nome..."
+              placeholder={t("compras.fornecedores.search_placeholder")}
               value={search}
               onChange={(event) => {
                 setSearch(event.target.value);
@@ -155,12 +163,18 @@ export function FornecedoresPage() {
             }}
           >
             <SelectTrigger className="w-full sm:w-40">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder={t("compras.col.status")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="1">Ativos</SelectItem>
-              <SelectItem value="0">Inativos</SelectItem>
+              <SelectItem value="all">
+                {t("compras.fornecedores.filter_all")}
+              </SelectItem>
+              <SelectItem value="1">
+                {t("compras.fornecedores.filter_ativos")}
+              </SelectItem>
+              <SelectItem value="0">
+                {t("compras.fornecedores.filter_inativos")}
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -170,7 +184,7 @@ export function FornecedoresPage() {
             <AlertDescription>
               {error instanceof ApiError
                 ? error.message
-                : "Falha ao carregar fornecedores."}
+                : t("compras.fornecedores.load_error")}
             </AlertDescription>
           </Alert>
         ) : null}
@@ -178,12 +192,12 @@ export function FornecedoresPage() {
         {isLoading ? (
           <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
             <Loader2 size={16} className="animate-spin" />
-            Carregando fornecedores...
+            {t("compras.fornecedores.loading")}
           </div>
         ) : !data || data.items.length === 0 ? (
           <div className="mt-8 rounded-xl border border-dashed border-border px-6 py-12 text-center">
             <p className="text-sm text-muted-foreground">
-              Nenhum fornecedor encontrado.
+              {t("compras.fornecedores.empty")}
             </p>
           </div>
         ) : (
@@ -192,12 +206,12 @@ export function FornecedoresPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Código</TableHead>
-                    <TableHead>Razão social</TableHead>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Município</TableHead>
-                    <TableHead>País</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>{t("compras.col.codigo")}</TableHead>
+                    <TableHead>{t("compras.col.razao_social")}</TableHead>
+                    <TableHead>{t("compras.col.nome")}</TableHead>
+                    <TableHead>{t("compras.col.municipio")}</TableHead>
+                    <TableHead>{t("compras.col.pais")}</TableHead>
+                    <TableHead>{t("compras.col.status")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -230,7 +244,8 @@ export function FornecedoresPage() {
                             </span>
                           );
                         })()}
-                      </TableCell>                      <TableCell>
+                      </TableCell>
+                      <TableCell>
                         <span
                           className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                             item.for_ativo === 1
@@ -249,7 +264,11 @@ export function FornecedoresPage() {
 
             <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
               <span>
-                {data.total} registro{data.total === 1 ? "" : "s"}
+                {data.total === 1
+                  ? t("compras.fornecedores.records", { count: data.total })
+                  : t("compras.fornecedores.records_plural", {
+                      count: data.total,
+                    })}
               </span>
               <div className="flex items-center gap-2">
                 <Button
@@ -258,7 +277,7 @@ export function FornecedoresPage() {
                   disabled={page <= 1}
                   onClick={() => setPage((current) => current - 1)}
                 >
-                  Anterior
+                  {t("compras.fornecedores.prev")}
                 </Button>
                 <span>
                   {page} / {totalPages}
@@ -269,7 +288,7 @@ export function FornecedoresPage() {
                   disabled={page >= totalPages}
                   onClick={() => setPage((current) => current + 1)}
                 >
-                  Próxima
+                  {t("compras.fornecedores.next")}
                 </Button>
               </div>
             </div>

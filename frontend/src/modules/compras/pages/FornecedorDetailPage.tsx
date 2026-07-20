@@ -29,6 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useT } from "@/hooks/useT";
 import { ApiError } from "../api/comprasApi";
 import {
   FornecedorFormDialog,
@@ -64,6 +65,7 @@ const EMPTY_CONTATO: ContatoForm = {
 };
 
 export function FornecedorDetailPage() {
+  const t = useT();
   const { codFornec: codParam } = useParams();
   const codFornec = Number(codParam);
   const {
@@ -115,7 +117,9 @@ export function FornecedorDetailPage() {
       setEditOpen(false);
     } catch (err) {
       setFormError(
-        err instanceof ApiError ? err.message : "Falha ao atualizar fornecedor.",
+        err instanceof ApiError
+          ? err.message
+          : t("compras.fornecedores.update_error"),
       );
     }
   }
@@ -132,7 +136,7 @@ export function FornecedorDetailPage() {
       setActionError(
         err instanceof ApiError
           ? err.message
-          : "Falha ao alterar status do fornecedor.",
+          : t("compras.fornecedores.status_error"),
       );
     }
   }
@@ -171,14 +175,18 @@ export function FornecedorDetailPage() {
       setContatoOpen(false);
     } catch (err) {
       setContatoError(
-        err instanceof ApiError ? err.message : "Falha ao gravar contato.",
+        err instanceof ApiError
+          ? err.message
+          : t("compras.contatos.save_error"),
       );
     }
   }
 
   async function handleDeleteContato(contato: FornecContato) {
     const confirmed = window.confirm(
-      `Excluir o contato "${contato.fco_nome || contato.fco_codigo}"?`,
+      t("compras.contatos.delete_confirm", {
+        name: contato.fco_nome || contato.fco_codigo,
+      }),
     );
     if (!confirmed) {
       return;
@@ -188,7 +196,9 @@ export function FornecedorDetailPage() {
       await excluiContato.mutateAsync(contato.fco_codigo);
     } catch (err) {
       setActionError(
-        err instanceof ApiError ? err.message : "Falha ao excluir contato.",
+        err instanceof ApiError
+          ? err.message
+          : t("compras.contatos.delete_error"),
       );
     }
   }
@@ -196,7 +206,9 @@ export function FornecedorDetailPage() {
   if (!Number.isFinite(codFornec)) {
     return (
       <Alert color="destructive" tone="soft">
-        <AlertDescription>Código de fornecedor inválido.</AlertDescription>
+        <AlertDescription>
+          {t("compras.fornecedores.invalid_code")}
+        </AlertDescription>
       </Alert>
     );
   }
@@ -215,14 +227,14 @@ export function FornecedorDetailPage() {
           to="/app/compras/fornecedores"
           className="text-muted-foreground transition-colors hover:text-foreground"
         >
-          Compras
+          {t("nav.compras")}
         </Link>
         <ChevronRight size={14} className="text-muted-foreground/50" />
         <Link
           to="/app/compras/fornecedores"
           className="text-muted-foreground transition-colors hover:text-foreground"
         >
-          Fornecedores
+          {t("compras.fornecedores.title")}
         </Link>
         <ChevronRight size={14} className="text-muted-foreground/50" />
         <span className="font-medium text-foreground">{codFornec}</span>
@@ -237,10 +249,11 @@ export function FornecedorDetailPage() {
               </div>
               <div>
                 <h1 className="text-xl font-semibold text-foreground">
-                  {fornecedor?.for_razao_soc || "Fornecedor"}
+                  {fornecedor?.for_razao_soc ||
+                    t("compras.fornecedores.singular")}
                 </h1>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Código {codFornec}
+                  {t("compras.fornecedores.code_label", { code: codFornec })}
                   {fornecedor?.for_nome_reduz
                     ? ` · ${fornecedor.for_nome_reduz}`
                     : ""}
@@ -251,10 +264,16 @@ export function FornecedorDetailPage() {
               {canChangeFornecedor ? (
                 <Button
                   variant="outline"
-                  disabled={!fornecedor || ativaFornecedor.isPending || inativaFornecedor.isPending}
+                  disabled={
+                    !fornecedor ||
+                    ativaFornecedor.isPending ||
+                    inativaFornecedor.isPending
+                  }
                   onClick={() => void handleToggleAtivo()}
                 >
-                  {isAtivo ? "Inativar" : "Ativar"}
+                  {isAtivo
+                    ? t("compras.fornecedores.deactivate")
+                    : t("compras.fornecedores.activate")}
                 </Button>
               ) : null}
               {canChangeFornecedor ? (
@@ -266,7 +285,7 @@ export function FornecedorDetailPage() {
                   }}
                 >
                   <Pencil size={16} className="mr-1.5" />
-                  Editar
+                  {t("module.edit")}
                 </Button>
               ) : null}
             </div>
@@ -281,21 +300,21 @@ export function FornecedorDetailPage() {
           {isLoading ? (
             <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 size={16} className="animate-spin" />
-              Carregando fornecedor...
+              {t("compras.fornecedores.loading_one")}
             </div>
           ) : error ? (
             <Alert color="destructive" tone="soft" className="mt-4">
               <AlertDescription>
                 {error instanceof ApiError
                   ? error.message
-                  : "Falha ao carregar fornecedor."}
+                  : t("compras.fornecedores.load_one_error")}
               </AlertDescription>
             </Alert>
           ) : fornecedor ? (
             <dl className="mt-6 grid gap-4 sm:grid-cols-2">
               <div>
                 <dt className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Status
+                  {t("compras.col.status")}
                 </dt>
                 <dd className="mt-1">
                   <span
@@ -305,13 +324,15 @@ export function FornecedorDetailPage() {
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
-                    {isAtivo ? "Ativo" : "Inativo"}
+                    {isAtivo
+                      ? t("compras.status.active")
+                      : t("compras.status.inactive")}
                   </span>
                 </dd>
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-wide text-muted-foreground">
-                  País
+                  {t("compras.col.pais")}
                 </dt>
                 <dd className="mt-1 inline-flex items-center gap-2 text-sm">
                   {(() => {
@@ -327,7 +348,7 @@ export function FornecedorDetailPage() {
               </div>
               <div className="sm:col-span-2">
                 <dt className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Endereço
+                  {t("compras.col.endereco")}
                 </dt>
                 <dd className="mt-1 text-sm">
                   {[
@@ -348,43 +369,49 @@ export function FornecedorDetailPage() {
         <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Contatos</h2>
+              <h2 className="text-lg font-semibold text-foreground">
+                {t("compras.contatos.title")}
+              </h2>
               <p className="text-sm text-muted-foreground">
                 {canViewFornecContato
-                  ? `${contactCount} contato${contactCount === 1 ? "" : "s"}`
-                  : "Sem permissão para visualizar contatos."}
+                  ? contactCount === 1
+                    ? t("compras.contatos.count", { count: contactCount })
+                    : t("compras.contatos.count_plural", {
+                        count: contactCount,
+                      })
+                  : t("compras.contatos.no_view_permission")}
               </p>
             </div>
             {canAddFornecContato ? (
               <Button onClick={openCreateContato}>
                 <Plus size={16} className="mr-1.5" />
-                Novo contato
+                {t("compras.contatos.new")}
               </Button>
             ) : null}
           </div>
 
           {!canViewFornecContato ? (
             <div className="mt-6 rounded-xl border border-dashed border-border px-6 py-10 text-center text-sm text-muted-foreground">
-              Você não tem permissão para listar contatos deste fornecedor.
+              {t("compras.contatos.no_list_permission")}
             </div>
           ) : contatosLoading ? (
             <div className="mt-6 flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 size={16} className="animate-spin" />
-              Carregando contatos...
+              {t("compras.contatos.loading")}
             </div>
           ) : !contatosData || contatosData.items.length === 0 ? (
             <div className="mt-6 rounded-xl border border-dashed border-border px-6 py-10 text-center text-sm text-muted-foreground">
-              Nenhum contato cadastrado.
+              {t("compras.contatos.empty")}
             </div>
           ) : (
             <div className="mt-6 overflow-x-auto rounded-xl border border-border/50">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Cargo</TableHead>
-                    <TableHead>E-mail</TableHead>
-                    <TableHead>Telefone</TableHead>
+                    <TableHead>{t("compras.col.nome")}</TableHead>
+                    <TableHead>{t("compras.col.cargo")}</TableHead>
+                    <TableHead>{t("compras.col.email")}</TableHead>
+                    <TableHead>{t("compras.col.telefone")}</TableHead>
                     {(canChangeFornecContato || canDeleteFornecContato) && (
                       <TableHead className="text-right" />
                     )}
@@ -447,93 +474,99 @@ export function FornecedorDetailPage() {
         />
       ) : null}
 
-      {(canAddFornecContato || canChangeFornecContato) ? (
-      <Dialog open={contatoOpen} onOpenChange={setContatoOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {contatoForm.cod_contato ? "Editar contato" : "Novo contato"}
-            </DialogTitle>
-            <DialogDescription>
-              Contatos do fornecedor gravados via procedimento Oracle.
-            </DialogDescription>
-          </DialogHeader>
-          <form className="space-y-4" onSubmit={handleSaveContato}>
-            <div className="space-y-2">
-              <Label htmlFor="contato_nome">Nome</Label>
-              <Input
-                id="contato_nome"
-                required
-                value={contatoForm.nome}
-                onChange={(event) =>
-                  setContatoForm((current) => ({
-                    ...current,
-                    nome: event.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="contato_cargo">Cargo</Label>
-              <Input
-                id="contato_cargo"
-                required
-                value={contatoForm.cargo}
-                onChange={(event) =>
-                  setContatoForm((current) => ({
-                    ...current,
-                    cargo: event.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="contato_email">E-mail</Label>
-              <Input
-                id="contato_email"
-                type="email"
-                required
-                value={contatoForm.email}
-                onChange={(event) =>
-                  setContatoForm((current) => ({
-                    ...current,
-                    email: event.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="contato_telefone">Telefone</Label>
-              <Input
-                id="contato_telefone"
-                required
-                value={contatoForm.telefone}
-                onChange={(event) =>
-                  setContatoForm((current) => ({
-                    ...current,
-                    telefone: event.target.value,
-                  }))
-                }
-              />
-            </div>
-            {contatoError ? (
-              <p className="text-sm text-destructive">{contatoError}</p>
-            ) : null}
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setContatoOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button type="submit" disabled={gravaContato.isPending}>
-                {gravaContato.isPending ? "Salvando..." : "Salvar"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {canAddFornecContato || canChangeFornecContato ? (
+        <Dialog open={contatoOpen} onOpenChange={setContatoOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {contatoForm.cod_contato
+                  ? t("compras.contatos.edit")
+                  : t("compras.contatos.new")}
+              </DialogTitle>
+              <DialogDescription>
+                {t("compras.contatos.form_description")}
+              </DialogDescription>
+            </DialogHeader>
+            <form className="space-y-4" onSubmit={handleSaveContato}>
+              <div className="space-y-2">
+                <Label htmlFor="contato_nome">{t("compras.col.nome")}</Label>
+                <Input
+                  id="contato_nome"
+                  required
+                  value={contatoForm.nome}
+                  onChange={(event) =>
+                    setContatoForm((current) => ({
+                      ...current,
+                      nome: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="contato_cargo">{t("compras.col.cargo")}</Label>
+                <Input
+                  id="contato_cargo"
+                  required
+                  value={contatoForm.cargo}
+                  onChange={(event) =>
+                    setContatoForm((current) => ({
+                      ...current,
+                      cargo: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="contato_email">{t("compras.col.email")}</Label>
+                <Input
+                  id="contato_email"
+                  type="email"
+                  required
+                  value={contatoForm.email}
+                  onChange={(event) =>
+                    setContatoForm((current) => ({
+                      ...current,
+                      email: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="contato_telefone">
+                  {t("compras.col.telefone")}
+                </Label>
+                <Input
+                  id="contato_telefone"
+                  required
+                  value={contatoForm.telefone}
+                  onChange={(event) =>
+                    setContatoForm((current) => ({
+                      ...current,
+                      telefone: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+              {contatoError ? (
+                <p className="text-sm text-destructive">{contatoError}</p>
+              ) : null}
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setContatoOpen(false)}
+                >
+                  {t("module.cancel")}
+                </Button>
+                <Button type="submit" disabled={gravaContato.isPending}>
+                  {gravaContato.isPending
+                    ? t("compras.fornecedores.saving")
+                    : t("module.save")}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       ) : null}
     </>
   );

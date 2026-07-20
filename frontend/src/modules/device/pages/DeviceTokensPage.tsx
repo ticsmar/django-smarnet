@@ -21,21 +21,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useApp } from "@/contexts/AppContext";
+import { useT } from "@/hooks/useT";
 import { DeviceApiError, createToken, listTokens, revokeToken } from "../api/deviceApi";
 import type { AccessToken, CreatedAccessToken } from "../types/accessToken";
 
-function formatDate(value: string | null): string {
-  if (!value) {
-    return "—";
-  }
-  return new Date(value).toLocaleString("pt-BR");
-}
-
-function statusLabel(status: AccessToken["status"]): string {
-  return status === "active" ? "Ativo" : "Revogado";
-}
-
 export function DeviceTokensPage() {
+  const t = useT();
+  const { locale } = useApp();
   const [tokens, setTokens] = useState<AccessToken[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -46,17 +39,34 @@ export function DeviceTokensPage() {
   const [copyMessage, setCopyMessage] = useState("");
   const [revokingId, setRevokingId] = useState<number | null>(null);
 
+  function formatDate(value: string | null): string {
+    if (!value) {
+      return "—";
+    }
+    return new Date(value).toLocaleString(locale);
+  }
+
+  function statusLabel(status: string): string {
+    return status === "active"
+      ? t("devices.status.active")
+      : t("devices.status.revoked");
+  }
+
   const loadTokens = useCallback(async () => {
     setError("");
     try {
       const data = await listTokens();
       setTokens(data);
     } catch (err) {
-      setError(err instanceof DeviceApiError ? err.message : "Falha ao carregar tokens.");
+      setError(
+        err instanceof DeviceApiError
+          ? err.message
+          : t("devices.load_error"),
+      );
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void loadTokens();
@@ -88,7 +98,11 @@ export function DeviceTokensPage() {
       const result = await createToken(label.trim() ? { label: label.trim() } : {});
       setCreatedToken(result);
     } catch (err) {
-      setError(err instanceof DeviceApiError ? err.message : "Falha ao criar token.");
+      setError(
+        err instanceof DeviceApiError
+          ? err.message
+          : t("devices.create_error"),
+      );
       setShowCreateModal(false);
     } finally {
       setCreating(false);
@@ -102,15 +116,17 @@ export function DeviceTokensPage() {
 
     try {
       await navigator.clipboard.writeText(createdToken.token);
-      setCopyMessage("Token copiado!");
+      setCopyMessage(t("devices.copy_success"));
     } catch {
-      setCopyMessage("Não foi possível copiar. Selecione e copie manualmente.");
+      setCopyMessage(t("devices.copy_error"));
     }
   }
 
   async function handleRevoke(token: AccessToken) {
     const confirmed = window.confirm(
-      `Revogar o token "${token.label || token.token_prefix}"? O cliente desktop vinculado deixará de funcionar.`,
+      t("devices.revoke_confirm", {
+        name: token.label || token.token_prefix,
+      }),
     );
     if (!confirmed) {
       return;
@@ -126,7 +142,7 @@ export function DeviceTokensPage() {
       if (err instanceof DeviceApiError) {
         setError(err.message);
       } else {
-        setError("Falha ao revogar token.");
+        setError(t("devices.revoke_error"));
       }
       await loadTokens();
     } finally {
@@ -137,13 +153,16 @@ export function DeviceTokensPage() {
   return (
     <>
       <nav className="mb-6 flex items-center gap-1.5 text-sm">
-        <Link to="/app" className="text-muted-foreground transition-colors hover:text-foreground">
+        <Link
+          to="/app"
+          className="text-muted-foreground transition-colors hover:text-foreground"
+        >
           <Home size={14} />
         </Link>
         <ChevronRight size={14} className="text-muted-foreground/50" />
-        <span className="text-muted-foreground">Produção</span>
+        <span className="text-muted-foreground">{t("nav.producao")}</span>
         <ChevronRight size={14} className="text-muted-foreground/50" />
-        <span className="font-medium text-foreground">Devices</span>
+        <span className="font-medium text-foreground">{t("devices.title")}</span>
       </nav>
 
       <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm">
@@ -153,13 +172,15 @@ export function DeviceTokensPage() {
               <Monitor size={20} />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-foreground">Devices</h1>
+              <h1 className="text-xl font-semibold text-foreground">
+                {t("devices.title")}
+              </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                Gerencie tokens de acesso para clientes desktop das filiais.
+                {t("devices.subtitle")}
               </p>
             </div>
           </div>
-          <Button onClick={openCreateModal}>Criar token</Button>
+          <Button onClick={openCreateModal}>{t("devices.create_token")}</Button>
         </div>
 
         {error && (
@@ -169,12 +190,14 @@ export function DeviceTokensPage() {
         )}
 
         {loading ? (
-          <p className="mt-8 text-sm text-muted-foreground">Carregando tokens...</p>
+          <p className="mt-8 text-sm text-muted-foreground">
+            {t("devices.loading")}
+          </p>
         ) : tokens.length === 0 ? (
           <div className="mt-8 rounded-xl border border-dashed border-border px-6 py-12 text-center">
-            <p className="text-sm text-muted-foreground">Nenhum token criado ainda.</p>
+            <p className="text-sm text-muted-foreground">{t("devices.empty")}</p>
             <Button className="mt-4" onClick={openCreateModal}>
-              Criar primeiro token
+              {t("devices.create_first")}
             </Button>
           </div>
         ) : (
@@ -182,18 +205,20 @@ export function DeviceTokensPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Label</TableHead>
-                  <TableHead>Prefixo</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Criado em</TableHead>
-                  <TableHead>Máquina</TableHead>
+                  <TableHead>{t("devices.col.label")}</TableHead>
+                  <TableHead>{t("devices.col.prefix")}</TableHead>
+                  <TableHead>{t("devices.col.status")}</TableHead>
+                  <TableHead>{t("devices.col.created_at")}</TableHead>
+                  <TableHead>{t("devices.col.machine")}</TableHead>
                   <TableHead className="text-right" />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {tokens.map((token) => (
                   <TableRow key={token.id}>
-                    <TableCell className="font-medium">{token.label || "—"}</TableCell>
+                    <TableCell className="font-medium">
+                      {token.label || "—"}
+                    </TableCell>
                     <TableCell className="font-mono text-muted-foreground">
                       {token.token_prefix}…
                     </TableCell>
@@ -214,10 +239,11 @@ export function DeviceTokensPage() {
                     <TableCell className="text-muted-foreground">
                       {token.machine ? (
                         <span title={token.machine.device_uuid}>
-                          {token.machine.device_uuid.slice(0, 8)}… ({token.machine.status})
+                          {token.machine.device_uuid.slice(0, 8)}… (
+                          {statusLabel(token.machine.status)})
                         </span>
                       ) : (
-                        "Não vinculada"
+                        t("devices.machine.unlinked")
                       )}
                     </TableCell>
                     <TableCell className="text-right">
@@ -229,7 +255,9 @@ export function DeviceTokensPage() {
                           className="border-destructive/40 text-destructive hover:bg-destructive/10"
                           onClick={() => void handleRevoke(token)}
                         >
-                          {revokingId === token.id ? "Revogando..." : "Revogar"}
+                          {revokingId === token.id
+                            ? t("devices.revoking")
+                            : t("devices.revoke")}
                         </Button>
                       )}
                     </TableCell>
@@ -241,33 +269,42 @@ export function DeviceTokensPage() {
         )}
       </div>
 
-      <Dialog open={showCreateModal} onOpenChange={(open) => !open && closeCreateModal()}>
+      <Dialog
+        open={showCreateModal}
+        onOpenChange={(open) => !open && closeCreateModal()}
+      >
         <DialogContent className="sm:max-w-md">
           {createdToken === null ? (
             <>
               <DialogHeader>
-                <DialogTitle>Novo token</DialogTitle>
+                <DialogTitle>{t("devices.dialog.new_title")}</DialogTitle>
                 <DialogDescription>
-                  O token completo só será exibido uma vez após a criação.
+                  {t("devices.dialog.new_description")}
                 </DialogDescription>
               </DialogHeader>
               <form className="space-y-4" onSubmit={handleCreate}>
                 <div className="space-y-2">
-                  <Label htmlFor="token-label">Label (opcional)</Label>
+                  <Label htmlFor="token-label">{t("devices.dialog.label")}</Label>
                   <Input
                     id="token-label"
                     maxLength={100}
                     value={label}
                     onChange={(event) => setLabel(event.target.value)}
-                    placeholder="Ex: Caixa 01"
+                    placeholder={t("devices.dialog.label_placeholder")}
                   />
                 </div>
                 <DialogFooter>
-                  <Button type="button" variant="outline" onClick={closeCreateModal}>
-                    Cancelar
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={closeCreateModal}
+                  >
+                    {t("module.cancel")}
                   </Button>
                   <Button type="submit" disabled={creating}>
-                    {creating ? "Criando..." : "Criar"}
+                    {creating
+                      ? t("devices.dialog.creating")
+                      : t("common.create")}
                   </Button>
                 </DialogFooter>
               </form>
@@ -275,9 +312,9 @@ export function DeviceTokensPage() {
           ) : (
             <>
               <DialogHeader>
-                <DialogTitle>Token criado</DialogTitle>
+                <DialogTitle>{t("devices.dialog.created_title")}</DialogTitle>
                 <DialogDescription>
-                  Copie agora — este token não será exibido novamente.
+                  {t("devices.dialog.created_description")}
                 </DialogDescription>
               </DialogHeader>
               <div className="rounded-lg bg-muted p-3 font-mono text-sm break-all">
@@ -287,11 +324,15 @@ export function DeviceTokensPage() {
                 <p className="text-sm text-emerald-600">{copyMessage}</p>
               )}
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => void handleCopy()}>
-                  Copiar
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => void handleCopy()}
+                >
+                  {t("common.copy")}
                 </Button>
                 <Button type="button" onClick={closeCreateModal}>
-                  Fechar
+                  {t("common.close")}
                 </Button>
               </DialogFooter>
             </>

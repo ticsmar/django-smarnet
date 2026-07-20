@@ -29,7 +29,7 @@ export default function DesignSystemLayout() {
       <header className="sticky top-0 z-40 backdrop-blur bg-background/80 border-b border-border/40">
         <div className="max-w-[1400px] mx-auto flex items-center justify-between px-6 h-14">
           <div className="flex items-center gap-3">
-            <Link to="/" className="flex items-center gap-2 text-sm font-semibold hover:text-primary transition-colors">
+            <Link to="/app" className="flex items-center gap-2 text-sm font-semibold hover:text-primary transition-colors">
               <ArrowLeft size={16} />
               Voltar
             </Link>
