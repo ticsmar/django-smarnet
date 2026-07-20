@@ -15,6 +15,10 @@ from apps.shared.presentation.auth.permissions import (
 from apps.shared.presentation.auth.session_user import OracleSessionUser
 
 
+class _ViewWithPermissions(APIView):
+    required_permissions: list[str] = []
+
+
 @pytest.fixture
 def permission() -> IsOracleAuthenticated:
     return IsOracleAuthenticated()
@@ -60,7 +64,7 @@ def test_has_django_permission_allows_superuser(
     )
     factory = APIRequestFactory()
     request = Request(factory.get("/"))
-    view = APIView()
+    view = _ViewWithPermissions()
     view.required_permissions = ["compras_infrastructure.view_fornecedor"]
 
     assert HasDjangoPermission().has_permission(request, view) is True
@@ -77,7 +81,7 @@ def test_has_django_permission_checks_required_perm(
     )
     factory = APIRequestFactory()
     request = Request(factory.get("/"))
-    view = APIView()
+    view = _ViewWithPermissions()
     view.required_permissions = ["compras_infrastructure.view_fornecedor"]
 
     assert HasDjangoPermission().has_permission(request, view) is True
@@ -95,7 +99,7 @@ def test_has_django_permission_denies_missing_perm(
     )
     factory = APIRequestFactory()
     request = Request(factory.get("/"))
-    view = APIView()
+    view = _ViewWithPermissions()
     view.required_permissions = ["compras_infrastructure.view_fornecedor"]
 
     assert HasDjangoPermission().has_permission(request, view) is False

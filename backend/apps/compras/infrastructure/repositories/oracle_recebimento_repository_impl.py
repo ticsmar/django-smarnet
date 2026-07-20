@@ -39,7 +39,7 @@ def _as_str(value: object | None) -> str | None:
 def _as_optional_int(value: object | None) -> int | None:
     if value is None:
         return None
-    return int(value)
+    return int(str(value))
 
 
 def _raw_oracle_cursor(django_cursor: _DjangoCursorWrapper) -> oracledb.Cursor:

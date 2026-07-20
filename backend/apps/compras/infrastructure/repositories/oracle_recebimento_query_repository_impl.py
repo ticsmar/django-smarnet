@@ -21,7 +21,7 @@ _DB_ALIAS = "smar"
 def _dec_to_int(value: object | None) -> int | None:
     if value is None:
         return None
-    return int(value)
+    return int(str(value))
 
 
 def _to_fornecedor(row: Fornecedor, pai_nome: str | None = None) -> FornecedorRecord:
