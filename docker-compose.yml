@@ -18,3 +18,13 @@ services:
         volumes:
             - .:/app
         restart: unless-stopped
+
+    frontend:
+        build:
+            context: ./frontend
+            args:
+                VITE_DJANGO_API_URL: http://localhost:8000/api
+        container_name: smar-license-frontend
+        ports:
+            - "8080:8080"
+        restart: unless-stopped
