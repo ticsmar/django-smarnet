@@ -1,0 +1,5 @@
+# Config for paths outside backend/ (e.g. tools/).
+# Backend code continues to use backend/pyproject.toml.
+[lint.per-file-ignores]
+# Django bootstrap scripts: imports must follow django.setup().
+"tools/oracle/*.py" = ["E402"]

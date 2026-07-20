@@ -1,6 +1,8 @@
 """Delete fornecedor contato via Oracle procedure."""
 
-from apps.compras.domain.repositories.recebimento_repository import RecebimentoRepository
+from apps.compras.domain.repositories.recebimento_repository import (
+    RecebimentoRepository,
+)
 
 
 class ExcluiFornecContatoUseCase:

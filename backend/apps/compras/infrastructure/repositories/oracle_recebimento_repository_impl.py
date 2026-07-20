@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Protocol
 
 import oracledb
 from django.db import DatabaseError, connections
@@ -21,6 +21,14 @@ _PACKAGE = "NOVASMAR.PCK_PLASMA_RECEBIMENTO"
 _DB_ALIAS = "smar"
 
 
+class _InnerCursorWrapper(Protocol):
+    cursor: oracledb.Cursor
+
+
+class _DjangoCursorWrapper(Protocol):
+    cursor: _InnerCursorWrapper
+
+
 def _as_str(value: object | None) -> str | None:
     if value is None:
         return None
@@ -34,7 +42,7 @@ def _as_optional_int(value: object | None) -> int | None:
     return int(value)
 
 
-def _raw_oracle_cursor(django_cursor: Any) -> Any:
+def _raw_oracle_cursor(django_cursor: _DjangoCursorWrapper) -> oracledb.Cursor:
     """Underlying oracledb cursor (Django.var wraps vars in VariableWrapper)."""
     # CursorWrapper -> FormatStylePlaceholderCursor -> oracledb.Cursor
     return django_cursor.cursor.cursor
@@ -123,7 +131,7 @@ class OracleRecebimentoRepositoryImpl:
     def exclui_fornec_contato(self, cod_contato: int) -> None:
         self._call_simple(f"{_PACKAGE}.SP_EXCLUI_FORNEC_CONTATO", [cod_contato])
 
-    def _call_simple(self, procedure: str, args: list[Any]) -> None:
+    def _call_simple(self, procedure: str, args: list[object]) -> None:
         try:
             with connections[_DB_ALIAS].cursor() as cursor:
                 _raw_oracle_cursor(cursor).callproc(procedure, args)

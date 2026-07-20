@@ -12,6 +12,7 @@ from apps.compras.application.use_cases.get_fornec_contato_use_case import (
 from apps.compras.application.use_cases.get_fornecedor_use_case import (
     GetFornecedorUseCase,
 )
+from apps.compras.application.use_cases.get_pais_use_case import GetPaisUseCase
 from apps.compras.application.use_cases.grava_fornec_contato_use_case import (
     GravaFornecContatoUseCase,
 )
@@ -27,7 +28,6 @@ from apps.compras.application.use_cases.list_fornec_contatos_use_case import (
 from apps.compras.application.use_cases.list_fornecedores_use_case import (
     ListFornecedoresUseCase,
 )
-from apps.compras.application.use_cases.get_pais_use_case import GetPaisUseCase
 from apps.compras.application.use_cases.list_msg_erros_use_case import (
     ListMsgErrosUseCase,
 )

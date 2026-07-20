@@ -2,7 +2,9 @@
 
 from apps.compras.application.dtos.recebimento_dtos import FornecedorOutputDTO
 from apps.compras.application.mappers.recebimento_query_mapper import to_fornecedor_dto
-from apps.compras.domain.exceptions.recebimento_exceptions import FornecedorNotFoundError
+from apps.compras.domain.exceptions.recebimento_exceptions import (
+    FornecedorNotFoundError,
+)
 from apps.compras.domain.repositories.recebimento_query_repository import (
     RecebimentoQueryRepository,
 )

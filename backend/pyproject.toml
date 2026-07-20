@@ -30,6 +30,9 @@ select = [
 "*/infrastructure/*" = ["TID251"]
 "*/presentation/*" = ["TID251"]
 "config/*" = ["TID251", "E402"]
+# Match whether cwd is repo root or backend/ (path relative to project root differs).
+"tools/oracle/*" = ["TID251", "E402"]
+"../tools/oracle/*" = ["TID251", "E402"]
 "apps/shared/presentation/*" = ["TID251"]
 "*/presentation/views/*" = ["RUF012"]
 "*/migrations/*" = ["ANN", "RUF012", "E501"]

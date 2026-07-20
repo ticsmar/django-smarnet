@@ -12,7 +12,9 @@ from apps.compras.domain.exceptions.recebimento_exceptions import (
     RecebimentoDatabaseError,
     RecebimentoProcedureError,
 )
-from apps.compras.domain.repositories.recebimento_repository import GravaFornecedorResult
+from apps.compras.domain.repositories.recebimento_repository import (
+    GravaFornecedorResult,
+)
 
 _INPUT = GravaFornecedorInputDTO(
     razao_soc="ACME LTDA",
