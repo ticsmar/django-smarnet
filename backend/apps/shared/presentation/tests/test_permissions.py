@@ -14,9 +14,15 @@ from apps.shared.presentation.auth.permissions import (
 )
 from apps.shared.presentation.auth.session_user import OracleSessionUser
 
+_VIEW_FORNECEDOR_PERM = "compras_infrastructure.view_fornecedor"
+
 
 class _ViewWithPermissions(APIView):
-    required_permissions: list[str] = []
+    required_permissions: list[str]
+
+    def __init__(self, required_permissions: list[str], **kwargs: object) -> None:
+        super().__init__(**kwargs)
+        self.required_permissions = required_permissions
 
 
 @pytest.fixture
@@ -64,8 +70,7 @@ def test_has_django_permission_allows_superuser(
     )
     factory = APIRequestFactory()
     request = Request(factory.get("/"))
-    view = _ViewWithPermissions()
-    view.required_permissions = ["compras_infrastructure.view_fornecedor"]
+    view = _ViewWithPermissions([_VIEW_FORNECEDOR_PERM])
 
     assert HasDjangoPermission().has_permission(request, view) is True
 
@@ -81,11 +86,10 @@ def test_has_django_permission_checks_required_perm(
     )
     factory = APIRequestFactory()
     request = Request(factory.get("/"))
-    view = _ViewWithPermissions()
-    view.required_permissions = ["compras_infrastructure.view_fornecedor"]
+    view = _ViewWithPermissions([_VIEW_FORNECEDOR_PERM])
 
     assert HasDjangoPermission().has_permission(request, view) is True
-    django_user.has_perm.assert_called_with("compras_infrastructure.view_fornecedor")
+    django_user.has_perm.assert_called_with(_VIEW_FORNECEDOR_PERM)
 
 
 def test_has_django_permission_denies_missing_perm(
@@ -99,7 +103,6 @@ def test_has_django_permission_denies_missing_perm(
     )
     factory = APIRequestFactory()
     request = Request(factory.get("/"))
-    view = _ViewWithPermissions()
-    view.required_permissions = ["compras_infrastructure.view_fornecedor"]
+    view = _ViewWithPermissions([_VIEW_FORNECEDOR_PERM])
 
     assert HasDjangoPermission().has_permission(request, view) is False
