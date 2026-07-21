@@ -26,5 +26,5 @@ services:
                 VITE_DJANGO_API_URL: http://localhost:8000/api
         container_name: smar-license-frontend
         ports:
-            - "8080:8080"
+            - "3000:8080"
         restart: unless-stopped
