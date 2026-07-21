@@ -10,9 +10,9 @@ services:
         env_file:
             - backend/.env
         environment:
-            - ORACLE_HOME=/opt/oracle/instantclient_21_13
-            - LD_LIBRARY_PATH=/opt/oracle/instantclient_21_13
-            - ORACLE_CLIENT_PATH=/opt/oracle/instantclient_21_13
+            - ORACLE_HOME=/opt/oracle/instantclient_19_25
+            - LD_LIBRARY_PATH=/opt/oracle/instantclient_19_25
+            - ORACLE_CLIENT_PATH=/opt/oracle/instantclient_19_25
         extra_hosts:
             - "dbdesenv:192.168.1.168"
         volumes:
