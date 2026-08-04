@@ -70,6 +70,42 @@ def test_grava_fornecedor_api(mock_build: MagicMock, auth_client: APIClient) -> 
 
     assert response.status_code == 200
     assert response.data["cod_fornec"] == 10
+    use_case.execute.assert_called_once()
+    assert use_case.execute.call_args.args[0].cod_fornec is None
+
+
+@patch(
+    "apps.compras.presentation.views.recebimento_views.build_grava_fornecedor_use_case"
+)
+def test_atualiza_fornecedor_api(mock_build: MagicMock, auth_client: APIClient) -> None:
+    use_case = MagicMock()
+    use_case.execute.return_value = GravaFornecedorOutputDTO(
+        cod_fornec=7,
+        tipo_msg="A",
+        msg="ok",
+        acao=None,
+    )
+    mock_build.return_value = use_case
+
+    response = auth_client.put(
+        "/api/compras/fornecedores/7/",
+        {
+            "razao_soc": "ACME LTDA",
+            "nome_reduz": "ACME",
+            "endereco": "Rua A",
+            "bairro": "Centro",
+            "munic": "Sao Paulo",
+            "cep": "01000-000",
+            "estado": "SP",
+            "cod_pais": 55,
+        },
+        format="json",
+    )
+
+    assert response.status_code == 200
+    assert response.data["cod_fornec"] == 7
+    use_case.execute.assert_called_once()
+    assert use_case.execute.call_args.args[0].cod_fornec == 7
 
 
 @patch(

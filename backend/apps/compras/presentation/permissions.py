@@ -27,9 +27,13 @@ def _has_pk(request: Request, field: str) -> bool:
 def fornecedor_list_or_grava_perms(request: Request) -> list[str]:
     if request.method == "GET":
         return [VIEW_FORNECEDOR]
-    if _has_pk(request, "cod_fornec"):
-        return [CHANGE_FORNECEDOR]
     return [ADD_FORNECEDOR]
+
+
+def fornecedor_get_or_update_perms(request: Request) -> list[str]:
+    if request.method == "PUT":
+        return [CHANGE_FORNECEDOR]
+    return [VIEW_FORNECEDOR]
 
 
 def fornec_contato_list_or_grava_perms(request: Request) -> list[str]:

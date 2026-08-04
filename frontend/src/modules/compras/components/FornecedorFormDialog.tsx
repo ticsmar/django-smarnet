@@ -19,7 +19,6 @@ import { flagClass } from "../utils/paisFlags";
 export type FornecedorFormValues = Omit<GravaFornecedorInput, "idioma_msg">;
 
 const EMPTY_FORM: FornecedorFormValues = {
-  cod_fornec: null,
   razao_soc: "",
   nome_reduz: "",
   endereco: "",
@@ -41,7 +40,6 @@ type FornecedorFormDialogProps = {
 
 function fromFornecedor(fornecedor: Fornecedor): FornecedorFormValues {
   return {
-    cod_fornec: fornecedor.for_codigo,
     razao_soc: fornecedor.for_razao_soc ?? "",
     nome_reduz: fornecedor.for_nome_reduz ?? "",
     endereco: fornecedor.for_endereco ?? "",

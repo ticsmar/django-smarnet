@@ -6,7 +6,6 @@ _IDIOMA_CHOICES = (("P", "Português"), ("I", "Inglês"))
 
 
 class GravaFornecedorRequestSerializer(serializers.Serializer):
-    cod_fornec = serializers.IntegerField(required=False, allow_null=True)
     razao_soc = serializers.CharField(max_length=300)
     nome_reduz = serializers.CharField(max_length=50)
     endereco = serializers.CharField(max_length=300)

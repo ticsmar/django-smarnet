@@ -12,6 +12,7 @@ from apps.compras.presentation.permissions import (
     VIEW_FORNECEDOR,
     fornec_contato_get_or_delete_perms,
     fornec_contato_list_or_grava_perms,
+    fornecedor_get_or_update_perms,
     fornecedor_list_or_grava_perms,
 )
 
@@ -33,10 +34,14 @@ def test_fornecedor_create_requires_add() -> None:
     ]
 
 
+def test_fornecedor_get_requires_view() -> None:
+    assert fornecedor_get_or_update_perms(_request("get")) == [VIEW_FORNECEDOR]
+
+
 def test_fornecedor_update_requires_change() -> None:
-    assert fornecedor_list_or_grava_perms(
-        _request("post", {"cod_fornec": 1, "razao_soc": "A"})
-    ) == [CHANGE_FORNECEDOR]
+    assert fornecedor_get_or_update_perms(_request("put", {"razao_soc": "A"})) == [
+        CHANGE_FORNECEDOR
+    ]
 
 
 def test_contato_list_requires_view() -> None:

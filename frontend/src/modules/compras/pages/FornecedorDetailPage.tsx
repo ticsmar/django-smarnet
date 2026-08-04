@@ -36,12 +36,12 @@ import {
   type FornecedorFormValues,
 } from "../components/FornecedorFormDialog";
 import {
+  useAtualizaFornecedor,
   useAtivaFornecedor,
   useExcluiFornecContato,
   useFornecContatos,
   useFornecedor,
   useGravaFornecContato,
-  useGravaFornecedor,
   useInativaFornecedor,
 } from "../hooks/useFornecedores";
 import { useComprasAccess } from "../hooks/useComprasAccess";
@@ -93,7 +93,7 @@ export function FornecedorDetailPage() {
     page_size: 100,
   });
 
-  const gravaFornecedor = useGravaFornecedor();
+  const atualizaFornecedor = useAtualizaFornecedor();
   const ativaFornecedor = useAtivaFornecedor();
   const inativaFornecedor = useInativaFornecedor();
   const gravaContato = useGravaFornecContato();
@@ -109,10 +109,12 @@ export function FornecedorDetailPage() {
   async function handleSave(values: FornecedorFormValues) {
     setFormError("");
     try {
-      await gravaFornecedor.mutateAsync({
-        ...values,
-        cod_fornec: codFornec,
-        idioma_msg: "P",
+      await atualizaFornecedor.mutateAsync({
+        codFornec,
+        input: {
+          ...values,
+          idioma_msg: "P",
+        },
       });
       setEditOpen(false);
     } catch (err) {
@@ -468,7 +470,7 @@ export function FornecedorDetailPage() {
           open={editOpen}
           onOpenChange={setEditOpen}
           initial={fornecedor}
-          submitting={gravaFornecedor.isPending}
+          submitting={atualizaFornecedor.isPending}
           error={formError}
           onSubmit={handleSave}
         />

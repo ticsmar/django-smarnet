@@ -6,6 +6,7 @@ export { ComprasFornecedorRoute } from "./components/ComprasFornecedorRoute";
 export { useComprasAccess } from "./hooks/useComprasAccess";
 export { COMPRAS_PERMS, hasPermission } from "./permissions";
 export {
+  useAtualizaFornecedor,
   useAtivaFornecedor,
   useExcluiFornecContato,
   useFornecContatos,

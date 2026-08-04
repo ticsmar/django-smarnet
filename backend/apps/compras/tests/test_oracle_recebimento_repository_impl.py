@@ -70,6 +70,43 @@ def test_grava_fornecedor_callproc(mock_connections: MagicMock) -> None:
 @patch(
     "apps.compras.infrastructure.repositories.oracle_recebimento_repository_impl.connections"
 )
+def test_grava_fornecedor_oracle_float_out_code(mock_connections: MagicMock) -> None:
+    """Oracle NUMBER OUT often returns float-like values (e.g. 1043.0)."""
+    raw = _mock_raw_cursor(mock_connections)
+    raw.var.side_effect = _vars_returning(1043.0, "A", "ok", None)
+
+    result = OracleRecebimentoRepositoryImpl().grava_fornecedor(_FORNEC_PARAMS)
+
+    assert result.cod_fornec == 1043
+
+
+@patch(
+    "apps.compras.infrastructure.repositories.oracle_recebimento_repository_impl.connections"
+)
+def test_grava_fornec_contato_oracle_float_out_code(
+    mock_connections: MagicMock,
+) -> None:
+    raw = _mock_raw_cursor(mock_connections)
+    raw.var.side_effect = _vars_returning("12.0", "A", "ok", None)
+
+    result = OracleRecebimentoRepositoryImpl().grava_fornec_contato(
+        GravaFornecContatoParams(
+            cod_contato=None,
+            cod_fornec=1,
+            nome="Joao",
+            cargo="Gerente",
+            email="a@b.com",
+            telefone="11999999999",
+            idioma_msg="P",
+        )
+    )
+
+    assert result.cod_contato == 12
+
+
+@patch(
+    "apps.compras.infrastructure.repositories.oracle_recebimento_repository_impl.connections"
+)
 def test_grava_fornecedor_sets_existing_code(mock_connections: MagicMock) -> None:
     raw = _mock_raw_cursor(mock_connections)
     vars_list = _vars_returning(99, None, None, None)

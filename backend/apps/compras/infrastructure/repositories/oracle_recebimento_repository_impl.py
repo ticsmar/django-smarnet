@@ -39,7 +39,8 @@ def _as_str(value: object | None) -> str | None:
 def _as_optional_int(value: object | None) -> int | None:
     if value is None:
         return None
-    return int(str(value))
+    # Oracle NUMBER OUT params often stringify as floats (e.g. "1043.0").
+    return int(float(str(value)))
 
 
 def _raw_oracle_cursor(django_cursor: _DjangoCursorWrapper) -> oracledb.Cursor:
@@ -83,7 +84,7 @@ class OracleRecebimentoRepositoryImpl:
                     msg=_as_str(vc2_msg.getvalue(0)),
                     acao=_as_str(vc2_acao.getvalue(0)),
                 )
-        except DatabaseError as exc:
+        except (DatabaseError, oracledb.Error) as exc:
             raise RecebimentoDatabaseError(str(exc)) from exc
 
     def ativa_fornecedor(self, cod_fornec: int) -> None:
@@ -125,7 +126,7 @@ class OracleRecebimentoRepositoryImpl:
                     msg=_as_str(vc2_msg.getvalue(0)),
                     acao=_as_str(vc2_acao.getvalue(0)),
                 )
-        except DatabaseError as exc:
+        except (DatabaseError, oracledb.Error) as exc:
             raise RecebimentoDatabaseError(str(exc)) from exc
 
     def exclui_fornec_contato(self, cod_contato: int) -> None:
@@ -135,7 +136,7 @@ class OracleRecebimentoRepositoryImpl:
         try:
             with connections[_DB_ALIAS].cursor() as cursor:
                 _raw_oracle_cursor(cursor).callproc(procedure, args)
-        except DatabaseError as exc:
+        except (DatabaseError, oracledb.Error) as exc:
             raise RecebimentoDatabaseError(str(exc)) from exc
 
 

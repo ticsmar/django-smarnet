@@ -36,6 +36,7 @@ from apps.compras.presentation.permissions import (
     VIEW_MSG_ERRO,
     fornec_contato_get_or_delete_perms,
     fornec_contato_list_or_grava_perms,
+    fornecedor_get_or_update_perms,
     fornecedor_list_or_grava_perms,
 )
 from apps.compras.presentation.serializers.recebimento_serializers import (
@@ -100,7 +101,7 @@ class GravaFornecedorView(APIView):
         data = serializer.validated_data
         result = build_grava_fornecedor_use_case().execute(
             GravaFornecedorInputDTO(
-                cod_fornec=data.get("cod_fornec"),
+                cod_fornec=None,
                 razao_soc=data["razao_soc"],
                 nome_reduz=data["nome_reduz"],
                 endereco=data["endereco"],
@@ -125,7 +126,7 @@ class GravaFornecedorView(APIView):
 
 class GetFornecedorView(APIView):
     permission_classes = [IsOracleAuthenticated, HasDjangoPermission]
-    required_permissions = [VIEW_FORNECEDOR]
+    get_required_permissions = staticmethod(fornecedor_get_or_update_perms)
 
     @extend_schema(
         responses={
@@ -136,6 +137,41 @@ class GetFornecedorView(APIView):
     def get(self, request: Request, cod_fornec: int) -> Response:
         result = build_get_fornecedor_use_case().execute(cod_fornec)
         output = FornecedorSerializer(asdict(result))
+        return Response(output.data, status=status.HTTP_200_OK)
+
+    @extend_schema(
+        request=GravaFornecedorRequestSerializer,
+        responses={
+            200: GravaFornecedorResponseSerializer,
+            400: OpenApiResponse(description="Procedure error or invalid request."),
+        },
+    )
+    def put(self, request: Request, cod_fornec: int) -> Response:
+        serializer = GravaFornecedorRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        result = build_grava_fornecedor_use_case().execute(
+            GravaFornecedorInputDTO(
+                cod_fornec=cod_fornec,
+                razao_soc=data["razao_soc"],
+                nome_reduz=data["nome_reduz"],
+                endereco=data["endereco"],
+                bairro=data["bairro"],
+                munic=data["munic"],
+                cep=data["cep"],
+                estado=data["estado"],
+                cod_pais=data["cod_pais"],
+                idioma_msg=data.get("idioma_msg", "P"),
+            )
+        )
+        output = GravaFornecedorResponseSerializer(
+            {
+                "cod_fornec": result.cod_fornec,
+                "tipo_msg": result.tipo_msg,
+                "msg": result.msg,
+                "acao": result.acao,
+            }
+        )
         return Response(output.data, status=status.HTTP_200_OK)
 
 

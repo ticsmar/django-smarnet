@@ -52,7 +52,6 @@ export type ListFornecContatosParams = {
 };
 
 export type GravaFornecedorInput = {
-  cod_fornec?: number | null;
   razao_soc: string;
   nome_reduz: string;
   endereco: string;

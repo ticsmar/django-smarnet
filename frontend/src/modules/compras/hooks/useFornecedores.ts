@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  atualizaFornecedor,
   ativaFornecedor,
   excluiFornecContato,
   getFornecedor,
@@ -38,6 +39,22 @@ export function useGravaFornecedor() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: GravaFornecedorInput) => gravaFornecedor(input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: FORNECEDORES_KEY });
+    },
+  });
+}
+
+export function useAtualizaFornecedor() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      codFornec,
+      input,
+    }: {
+      codFornec: number;
+      input: GravaFornecedorInput;
+    }) => atualizaFornecedor(codFornec, input),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: FORNECEDORES_KEY });
     },

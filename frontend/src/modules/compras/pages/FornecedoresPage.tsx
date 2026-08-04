@@ -80,7 +80,6 @@ export function FornecedoresPage() {
     try {
       const result = await gravaFornecedor.mutateAsync({
         ...values,
-        cod_fornec: null,
         idioma_msg: "P",
       });
       setCreateOpen(false);

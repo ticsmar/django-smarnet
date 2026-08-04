@@ -61,6 +61,16 @@ export async function gravaFornecedor(
   });
 }
 
+export async function atualizaFornecedor(
+  codFornec: number,
+  input: GravaFornecedorInput,
+): Promise<GravaFornecedorResult> {
+  return apiRequest<GravaFornecedorResult>(`/compras/fornecedores/${codFornec}/`, {
+    method: "PUT",
+    body: JSON.stringify(input),
+  });
+}
+
 export async function ativaFornecedor(codFornec: number): Promise<OkResult> {
   return apiRequest<OkResult>(`/compras/fornecedores/${codFornec}/ativar/`, {
     method: "POST",
