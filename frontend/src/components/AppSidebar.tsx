@@ -1,13 +1,9 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  Truck, ChevronDown, Factory, Monitor, Droplets, Palette, LayoutDashboard,
-} from 'lucide-react';
+import { BookOpen, ChevronDown, Palette, LayoutDashboard } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { useT } from '@/hooks/useT';
-import { useBranchManagerAccess } from '@/modules/device';
-import { COMPRAS_PERMS, hasPermission } from '@/modules/compras';
+import { useVisibleErpGroups } from '@/config/erpNavigation';
 import { SmarnetLogo, SmarnetMark } from '@/components/SmarnetLogo';
-import * as React from 'react';
 import {
   Sidebar,
   SidebarContent,
@@ -26,51 +22,6 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 
-/* ── ERP Module Groups ── */
-type ErpMenuItem = {
-  key: string;
-  icon: React.ComponentType<{ size?: number | string }>;
-  path: string;
-  managerOnly?: boolean;
-  permission?: string;
-};
-
-const erpGroups: {
-  key: string;
-  icon: React.ComponentType<{ size?: number | string }>;
-  sections: { label: string | null; items: ErpMenuItem[] }[];
-}[] = [
-  {
-    key: 'producao',
-    icon: Factory,
-    sections: [
-      {
-        label: null,
-        items: [
-          { key: 'devices', icon: Monitor, path: '/app/devices', managerOnly: true },
-        ],
-      },
-    ],
-  },
-  {
-    key: 'compras',
-    icon: Droplets,
-    sections: [
-      {
-        label: null,
-        items: [
-          {
-            key: 'compras_fornecedores',
-            icon: Truck,
-            path: '/app/compras/fornecedores',
-            permission: COMPRAS_PERMS.viewFornecedor,
-          },
-        ],
-      },
-    ],
-  },
-];
-
 /* ── Main Sidebar ── */
 export function AppSidebar() {
   // Defensive: bail out if rendered outside SidebarProvider (e.g. during HMR)
@@ -87,27 +38,7 @@ export function AppSidebar() {
   const t = useT();
   const currentPath = location.pathname;
   const isActive = (path: string) => currentPath === path;
-  const { isManager: canAccessDevices } = useBranchManagerAccess();
-
-  const visibleErpGroups = erpGroups
-    .map((group) => ({
-      ...group,
-      sections: group.sections
-        .map((section) => ({
-          ...section,
-          items: section.items.filter((item) => {
-            if (item.managerOnly && !canAccessDevices) {
-              return false;
-            }
-            if (item.permission && !hasPermission(user, item.permission)) {
-              return false;
-            }
-            return true;
-          }),
-        }))
-        .filter((section) => section.items.length > 0),
-    }))
-    .filter((group) => group.sections.length > 0);
+  const visibleErpGroups = useVisibleErpGroups();
 
   return (
     <Sidebar collapsible="icon" className="border-r-0">
@@ -130,19 +61,29 @@ export function AppSidebar() {
                   {!collapsed && <span>{t('nav.dashboard')}</span>}
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => navigate('/docs')}
+                  isActive={currentPath.startsWith('/docs')}
+                  className="rounded-xl"
+                >
+                  <BookOpen size={16} />
+                  {!collapsed && <span>{t('nav.docs')}</span>}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         {visibleErpGroups.map((group) => {
-          const groupActive = group.sections.some((s) =>
-            s.items.some((item) => isActive(item.path))
-          );
+          const groupActive =
+            currentPath.startsWith(group.path) ||
+            group.sections.some((s) => s.items.some((item) => isActive(item.path)));
           return (
             <Collapsible key={group.key} defaultOpen={groupActive} className="mt-1">
               <SidebarGroup>
                 <CollapsibleTrigger className="w-full">
-                  <SidebarGroupLabel className="flex items-center justify-between cursor-pointer hover:bg-surface-container-low rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-wider text-sidebar-foreground/90">
+                  <SidebarGroupLabel className="sidebar-group-label">
                     <span className="flex items-center gap-2">
                       <group.icon size={16} />
                       {!collapsed && t(`nav.${group.key}`)}

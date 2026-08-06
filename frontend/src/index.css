@@ -16,7 +16,8 @@
     --foreground: 200 5% 11%;
 
     --surface: 30 20% 98%;
-    --surface-container-low: 20 12% 95%;
+    /* Claro: ~5% mais escuro que o off-white original (95% → 90%) */
+    --surface-container-low: 20 12% 90%;
     --surface-container: 20 10% 93%;
     --surface-container-high: 15 8% 91%;
     --surface-container-highest: 15 6% 89%;
@@ -82,6 +83,8 @@
     --sidebar-primary-foreground: 210 100% 13%;
     --sidebar-accent: 210 100% 20%;
     --sidebar-accent-foreground: 0 0% 100%;
+    /* Parent group hover: ~20% lighter than --sidebar-accent */
+    --sidebar-group-hover: 210 100% 40%;
     --sidebar-border: 210 80% 18%;
     --sidebar-ring: 185 78% 25%;
   }
@@ -92,7 +95,7 @@
     --foreground: 210 20% 92%;
     
     --surface: 220 20% 7%;
-    --surface-container-low: 220 18% 10%;
+    --surface-container-low: 220 18% 12%;
     --surface-container: 220 16% 13%;
     --surface-container-high: 220 14% 16%;
     --surface-container-highest: 220 12% 20%;
@@ -141,6 +144,7 @@
     --sidebar-primary-foreground: 220 20% 7%;
     --sidebar-accent: 220 20% 12%;
     --sidebar-accent-foreground: 210 20% 92%;
+    --sidebar-group-hover: 220 20% 18%;
     --sidebar-border: 220 15% 15%;
     --sidebar-ring: 185 60% 40%;
   }
@@ -191,6 +195,15 @@
     @apply w-1 rounded-full absolute left-0 top-2 bottom-2;
   }
 
+  /* Parent group labels in the app sidebar */
+  .sidebar-group-label {
+    @apply flex items-center justify-between cursor-pointer rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-wider text-sidebar-foreground/90;
+  }
+  .sidebar-group-label:hover {
+    background-color: hsl(var(--sidebar-group-hover));
+    color: hsl(var(--sidebar-accent-foreground));
+  }
+
   /* Sidebar scrollbar — matches dark menu palette */
   .sidebar-scroll {
     scrollbar-width: thin;
@@ -212,4 +225,25 @@
 
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { scrollbar-width: none; }
+
+  /* View toggle — Tabela / Lista / Cards */
+  .config-usuarios-view-toggle {
+    @apply inline-flex shrink-0 items-center gap-0.5 rounded-xl bg-background p-1 shadow-ambient;
+  }
+  .config-view-btn,
+  .config-sistemas-view-btn {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors;
+  }
+  .config-view-btn:hover,
+  .config-sistemas-view-btn:hover {
+    @apply bg-surface-container-low text-foreground;
+  }
+  .config-view-btn.active,
+  .config-sistemas-view-btn.active {
+    @apply bg-primary text-primary-foreground shadow-sm;
+  }
+  .config-view-btn.active:hover,
+  .config-sistemas-view-btn.active:hover {
+    @apply bg-primary text-primary-foreground;
+  }
 }

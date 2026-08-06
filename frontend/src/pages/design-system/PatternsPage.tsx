@@ -1,9 +1,215 @@
-import { Search, Bell, Filter, Plus, Inbox, MoreVertical } from 'lucide-react';
+import { useState } from 'react';
+import {
+  Search,
+  Bell,
+  Filter,
+  Plus,
+  Inbox,
+  MoreVertical,
+  Home,
+  Eye,
+  Pencil,
+  Trash2,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { PathBreadcrumb } from '@/components/ui/breadcrumbs';
+import { ViewToggle } from '@/components/ui/ViewToggle';
+import {
+  ActionsDropdown,
+  type DropdownAction,
+} from '@/components/ui/dropdowns/ActionsDropdown';
+import { useViewMode } from '@/hooks/useViewMode';
 import { DSSection, DSCard } from './_components';
+
+const DEMO_ROWS = [
+  { id: '#4821', client: 'Petrobras Refino', value: 'R$ 124.800', status: 'Faturado', color: 'success' },
+  { id: '#4820', client: 'Vale Mineração', value: 'R$ 89.300', status: 'Em produção', color: 'warning' },
+  { id: '#4819', client: 'Klabin Papéis', value: 'R$ 32.100', status: 'Pendente', color: 'alert' },
+  { id: '#4818', client: 'CSN Aços', value: 'R$ 210.500', status: 'Cancelado', color: 'destructive' },
+] as const;
+
+const ROW_ACTIONS: DropdownAction[] = [
+  { key: 'view', label: 'Visualizar', icon: Eye, onClick: () => undefined },
+  { key: 'edit', label: 'Editar', icon: Pencil, onClick: () => undefined },
+  {
+    key: 'delete',
+    label: 'Excluir',
+    icon: Trash2,
+    destructive: true,
+    divider: true,
+    onClick: () => undefined,
+  },
+];
+
+function StatusBadge({ status, color }: { status: string; color: string }) {
+  return (
+    <Badge
+      style={{
+        backgroundColor: `hsl(var(--${color}) / 0.15)`,
+        color: `hsl(var(--${color}))`,
+      }}
+    >
+      {status}
+    </Badge>
+  );
+}
+
+/** Ações da linha: menu ⋮ (tabela/lista) ou botões no rodapé (cards). */
+function PatternRowActions({ variant = 'menu' }: { variant?: 'menu' | 'buttons' }) {
+  if (variant === 'buttons') {
+    return (
+      <div className="flex flex-wrap items-center gap-2">
+        {ROW_ACTIONS.map(({ key, label, icon: Icon, destructive }) => (
+          <Button
+            key={key}
+            type="button"
+            size="sm"
+            variant={destructive ? 'destructive' : 'outline'}
+            className="h-8 gap-1.5"
+          >
+            {Icon ? <Icon size={14} /> : null}
+            {label}
+          </Button>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <ActionsDropdown
+      iconOnly
+      icon={MoreVertical}
+      size="sm"
+      variant="ghost"
+      align="start"
+      ariaLabel="Ações"
+      actions={ROW_ACTIONS}
+      triggerClassName="h-8 w-8 text-muted-foreground hover:text-foreground"
+    />
+  );
+}
+
+/** Padrão Data Table com ViewToggle (Tabela / Lista / Cards). */
+function DataTablePatternPreview() {
+  const [search, setSearch] = useState('');
+  const [viewMode, setViewMode] = useViewMode('smarnet:view:ds-patterns-datatable', 'tabela');
+
+  const rows = DEMO_ROWS.filter(
+    (r) =>
+      !search ||
+      r.id.toLowerCase().includes(search.toLowerCase()) ||
+      r.client.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  return (
+    <DSCard className="overflow-hidden">
+      <div className="mt-0 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative max-w-md flex-1">
+          <Search
+            size={14}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
+          <Input
+            className="pl-9"
+            placeholder="Buscar pedido ou cliente..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <Button variant="outline" size="sm" className="w-full sm:w-auto">
+          <Filter size={14} /> Filtros
+        </Button>
+        <ViewToggle className="sm:ml-auto" value={viewMode} onChange={setViewMode} />
+      </div>
+
+      {rows.length === 0 ? (
+        <div className="mt-6 rounded-xl border border-dashed border-border px-6 py-10 text-center text-sm text-muted-foreground">
+          Nenhum pedido encontrado
+        </div>
+      ) : (
+        <>
+          {viewMode === 'tabela' ? (
+            <div className="mt-6 overflow-x-auto rounded-xl border border-border/50">
+              <table className="w-full text-sm">
+                <thead className="bg-surface-container-high">
+                  <tr className="text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    <th className="w-10 px-4 py-3" aria-label="Ações" />
+                    <th className="px-4 py-3">Pedido</th>
+                    <th className="px-4 py-3">Cliente</th>
+                    <th className="px-4 py-3">Valor</th>
+                    <th className="px-4 py-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((r) => (
+                    <tr key={r.id} className="border-t border-border/30 hover:bg-surface-container-low">
+                      <td className="px-4 py-3">
+                        <PatternRowActions />
+                      </td>
+                      <td className="px-4 py-3 font-mono font-semibold">{r.id}</td>
+                      <td className="px-4 py-3">{r.client}</td>
+                      <td className="px-4 py-3 font-semibold">{r.value}</td>
+                      <td className="px-4 py-3">
+                        <StatusBadge status={r.status} color={r.color} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : null}
+
+          {viewMode === 'lista' ? (
+            <div className="mt-6 space-y-2">
+              {rows.map((r) => (
+                <div
+                  key={r.id}
+                  className="flex items-center gap-4 rounded-xl border border-border/50 bg-background px-4 py-3 transition-colors hover:border-primary/30 hover:bg-surface-container-low"
+                >
+                  <div className="shrink-0">
+                    <PatternRowActions />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-foreground">{r.client}</p>
+                    <p className="mt-0.5 font-mono text-xs text-muted-foreground">{r.id}</p>
+                  </div>
+                  <p className="shrink-0 text-sm font-semibold">{r.value}</p>
+                  <StatusBadge status={r.status} color={r.color} />
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {viewMode === 'cards' ? (
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {rows.map((r) => (
+                <div
+                  key={r.id}
+                  className="flex flex-col rounded-2xl border border-border/50 bg-background p-5 shadow-sm transition-colors hover:border-primary/30 hover:bg-surface-container-low"
+                >
+                  <div className="mb-3 flex items-start gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-foreground">{r.client}</p>
+                      <p className="mt-0.5 font-mono text-xs text-muted-foreground">{r.id}</p>
+                    </div>
+                    <StatusBadge status={r.status} color={r.color} />
+                  </div>
+                  <p className="text-base font-bold text-foreground">{r.value}</p>
+                  <div className="mt-4 border-t border-border/40 pt-3">
+                    <PatternRowActions variant="buttons" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
+        </>
+      )}
+    </DSCard>
+  );
+}
 
 export default function PatternsPage() {
   return (
@@ -11,14 +217,20 @@ export default function PatternsPage() {
       {/* PAGE HEADER */}
       <DSSection
         title="Page Header"
-        description="Cabeçalho de tela com título, breadcrumb opcional, ações primárias à direita."
+        description="No app autenticado o breadcrumb fica numa faixa fixa do layout (abaixo do TopNav). O cabeçalho da página começa no título + ações — não embutir a trilha no conteúdo."
       >
-        <DSCard className="space-y-4">
-          <div className="flex items-start justify-between gap-4 flex-wrap">
+        <DSCard className="space-y-4 p-0 overflow-hidden">
+          <div className="px-6 pt-5">
+            <PathBreadcrumb
+              items={[
+                { label: 'Início', href: '/app', icon: Home, iconOnly: true },
+                { label: 'Comercial', href: '/app/compras' },
+                { label: 'Pedidos' },
+              ]}
+            />
+          </div>
+          <div className="px-6 pb-6 flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-1">
-                Comercial / Pedidos
-              </p>
               <h3 className="font-display text-2xl font-bold">Pedidos em aberto</h3>
               <p className="text-sm text-muted-foreground mt-1">
                 32 pedidos aguardando faturamento
@@ -90,50 +302,11 @@ export default function PatternsPage() {
       </DSSection>
 
       {/* TABLE */}
-      <DSSection title="Data Table" description="Tabela com cabeçalho fixo, status e ações por linha.">
-        <DSCard className="p-0 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-surface-container-high">
-              <tr className="text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                <th className="px-4 py-3">Pedido</th>
-                <th className="px-4 py-3">Cliente</th>
-                <th className="px-4 py-3">Valor</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 w-10"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                { id: '#4821', client: 'Petrobras Refino', value: 'R$ 124.800', status: 'Faturado', color: 'success' },
-                { id: '#4820', client: 'Vale Mineração', value: 'R$ 89.300', status: 'Em produção', color: 'warning' },
-                { id: '#4819', client: 'Klabin Papéis', value: 'R$ 32.100', status: 'Pendente', color: 'alert' },
-                { id: '#4818', client: 'CSN Aços', value: 'R$ 210.500', status: 'Cancelado', color: 'destructive' },
-              ].map((r) => (
-                <tr key={r.id} className="border-t border-border/30 hover:bg-surface-container-low">
-                  <td className="px-4 py-3 font-mono font-semibold">{r.id}</td>
-                  <td className="px-4 py-3">{r.client}</td>
-                  <td className="px-4 py-3 font-semibold">{r.value}</td>
-                  <td className="px-4 py-3">
-                    <Badge
-                      className={`bg-${r.color}/15 text-${r.color} hover:bg-${r.color}/15`}
-                      style={{
-                        backgroundColor: `hsl(var(--${r.color}) / 0.15)`,
-                        color: `hsl(var(--${r.color}))`,
-                      }}
-                    >
-                      {r.status}
-                    </Badge>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Button variant="ghost" size="icon">
-                      <MoreVertical size={14} />
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </DSCard>
+      <DSSection
+        title="Data Table"
+        description="Listagem com toolbar (busca + filtros) e ViewToggle à direita: Tabela, Lista ou Cards. Em Tabela/Lista use menu ⋮ à esquerda; em Cards, as mesmas ações como botões no rodapé — sem avatar/código no cabeçalho. Preferência persistida em localStorage."
+      >
+        <DataTablePatternPreview />
       </DSSection>
 
       {/* EMPTY STATE */}

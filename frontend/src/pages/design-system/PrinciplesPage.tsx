@@ -70,6 +70,14 @@ export default function PrinciplesPage() {
           <DoDont type="dont">
             Verde/amarelo/vermelho hardcoded — quebra o tema dark e a consistência semântica.
           </DoDont>
+          <DoDont type="do">
+            Breadcrumb na faixa do layout (<code className="font-mono text-xs">usePageBreadcrumb</code>
+            ), largura total do main.
+          </DoDont>
+          <DoDont type="dont">
+            <code className="font-mono text-xs">&lt;nav&gt;</code> de trilha dentro de wrappers{' '}
+            <code className="font-mono text-xs">max-w-*</code> da página — a posição muda por tela.
+          </DoDont>
         </div>
       </DSSection>
 

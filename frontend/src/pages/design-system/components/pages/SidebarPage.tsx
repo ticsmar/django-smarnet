@@ -1,5 +1,5 @@
 import { ComponentDoc, DocSection, VariantSection, PropsTable, UsageNote, type PropDef } from '../_docs';
-import { BarChart3, Box, FileText, Home, Settings, Shield, Users } from 'lucide-react';
+import { BarChart3, Box, ChevronDown, FileText, Home, Settings, Shield, Users } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
@@ -246,6 +246,48 @@ export default function SidebarPage() {
 </SidebarProvider>`}
         />
 
+        <VariantSection
+          title="Grupo colapsável (AppSidebar)"
+          description="Itens pai usam a classe .sidebar-group-label: hover com --sidebar-group-hover (azul legível sobre o navy), tipografia uppercase e chevron."
+          preview={
+            <div className="rounded-xl border border-border/30 overflow-hidden w-64" style={{ background: 'hsl(var(--sidebar-background))' }}>
+              <div className="p-2 space-y-1">
+                <div className="sidebar-group-label text-sidebar-foreground/90">
+                  <span className="flex items-center gap-2">
+                    <Box className="h-4 w-4" />
+                    Produção
+                  </span>
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </div>
+                <div className="px-3 py-1.5 text-xs text-sidebar-foreground/70 flex items-center gap-2">
+                  <Home className="h-3.5 w-3.5" />
+                  Devices
+                </div>
+                <div className="sidebar-group-label text-sidebar-foreground/90">
+                  <span className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Compras
+                  </span>
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </div>
+              </div>
+            </div>
+          }
+          code={`<SidebarGroupLabel className="sidebar-group-label">
+  <span className="flex items-center gap-2">
+    <Factory size={16} />
+    {t('nav.producao')}
+  </span>
+  <ChevronDown size={14} />
+</SidebarGroupLabel>
+
+/* index.css */
+.sidebar-group-label:hover {
+  background-color: hsl(var(--sidebar-group-hover));
+  color: hsl(var(--sidebar-accent-foreground));
+}`}
+        />
+
         <PropsTable rows={sidebarProviderProps} title="SidebarProvider" />
         <PropsTable rows={sidebarProps} title="Sidebar" />
         <PropsTable rows={sidebarMenuButtonProps} title="SidebarMenuButton" />
@@ -256,6 +298,17 @@ export default function SidebarPage() {
 
         <UsageNote type="warning">
           Posicione o <code className="font-mono text-[11px]">SidebarTrigger</code> no header externo (fora da Sidebar) para que continue acessível mesmo com <code className="font-mono text-[11px]">collapsible="offcanvas"</code>.
+        </UsageNote>
+
+        <UsageNote type="warning">
+          Não use <code className="font-mono text-[11px]">hover:bg-surface-container-low</code> em labels do menu — o token de superfície é claro e some sobre o navy. Prefira{' '}
+          <code className="font-mono text-[11px]">.sidebar-group-label</code> /{' '}
+          <code className="font-mono text-[11px]">--sidebar-group-hover</code>.
+        </UsageNote>
+
+        <UsageNote type="info">
+          Grupos e itens do ERP vêm de <code className="font-mono text-[11px]">@/config/erpNavigation</code> (
+          <code className="font-mono text-[11px]">useVisibleErpGroups</code>), compartilhado entre sidebar, breadcrumbs e páginas índice.
         </UsageNote>
 
         <UsageNote type="info">

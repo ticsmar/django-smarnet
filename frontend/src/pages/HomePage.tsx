@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import {
+  BookOpen,
   ChevronRight,
   LayoutDashboard,
   Monitor,
@@ -47,6 +48,12 @@ export default function HomePage() {
     key: "profile",
     path: "/app/profile",
     icon: User,
+  });
+
+  cards.push({
+    key: "docs",
+    path: "/docs",
+    icon: BookOpen,
   });
 
   if (user?.can_manage_access || user?.is_superuser) {

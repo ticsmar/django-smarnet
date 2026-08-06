@@ -32,9 +32,62 @@ import {
   Download, Filter, Eye, Edit, Trash2, Plus, CheckCircle2, AlertTriangle, XCircle, Clock,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ViewToggle } from '@/components/ui/ViewToggle';
+import { useViewMode } from '@/hooks/useViewMode';
+import {
+  ActionsDropdown,
+  type DropdownAction,
+} from '@/components/ui/dropdowns/ActionsDropdown';
 import {
   ComponentDoc, DocSection, VariantSection, PropsTable, UsageNote, type PropDef,
 } from '../_docs';
+
+const DEMO_ROW_ACTIONS: DropdownAction[] = [
+  { key: 'view', label: 'Visualizar', icon: Eye, onClick: () => undefined },
+  { key: 'edit', label: 'Editar', icon: Edit, onClick: () => undefined },
+  {
+    key: 'delete',
+    label: 'Excluir',
+    icon: Trash2,
+    destructive: true,
+    divider: true,
+    onClick: () => undefined,
+  },
+];
+
+function DemoRowActions({ variant = 'menu' }: { variant?: 'menu' | 'buttons' }) {
+  if (variant === 'buttons') {
+    return (
+      <div className="flex flex-wrap items-center gap-2">
+        {DEMO_ROW_ACTIONS.map(({ key, label, icon: Icon, destructive }) => (
+          <Button
+            key={key}
+            type="button"
+            size="sm"
+            variant={destructive ? 'destructive' : 'outline'}
+            className="h-8 gap-1.5"
+          >
+            {Icon ? <Icon size={14} /> : null}
+            {label}
+          </Button>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <ActionsDropdown
+      iconOnly
+      icon={MoreHorizontal}
+      size="sm"
+      variant="ghost"
+      align="start"
+      ariaLabel="Ações"
+      actions={DEMO_ROW_ACTIONS}
+      triggerClassName="h-8 w-8 text-muted-foreground hover:text-foreground"
+    />
+  );
+}
 
 /* ========== Tokens compartilhados (tabelas HTML nativas) ========== */
 const TH = 'px-5 py-3 text-left text-[11px] font-bold text-muted-foreground uppercase tracking-wider bg-surface-container-low';
@@ -200,6 +253,7 @@ function DataTablePreview() {
   const [page, setPage] = useState(0);
   const [perPage, setPerPage] = useState(5);
   const [selected, setSelected] = useState<number[]>([]);
+  const [viewMode, setViewMode] = useViewMode('smarnet:view:ds-table-datatable', 'tabela');
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -249,26 +303,32 @@ function DataTablePreview() {
 
   return (
     <div className="space-y-3">
-      {/* Toolbar */}
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              value={search}
-              onChange={e => { setSearch(e.target.value); setPage(0); }}
-              placeholder="Buscar SKU, material ou grupo..."
-              className="h-9 w-64 pl-9 pr-3 rounded-lg border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-          </div>
-          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs"><Filter size={13} /> Filtros</Button>
+      {/* Toolbar: busca + filtros | ações + ViewToggle à direita */}
+      <div className="mt-0 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative max-w-md flex-1">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <input
+            value={search}
+            onChange={e => { setSearch(e.target.value); setPage(0); }}
+            placeholder="Buscar SKU, material ou grupo..."
+            className="h-9 w-full pl-9 pr-3 rounded-lg border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          />
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs"><Download size={13} /> Exportar</Button>
-          <Button size="sm" className="h-9 gap-1.5 text-xs"><Plus size={13} /> Novo</Button>
+        <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs w-full sm:w-auto">
+          <Filter size={13} /> Filtros
+        </Button>
+        <div className="flex items-center gap-2 sm:ml-auto">
+          <Button variant="outline" size="sm" className="h-9 gap-1.5 text-xs">
+            <Download size={13} /> Exportar
+          </Button>
+          <Button size="sm" className="h-9 gap-1.5 text-xs">
+            <Plus size={13} /> Novo
+          </Button>
+          <ViewToggle value={viewMode} onChange={setViewMode} />
         </div>
       </div>
 
+      {viewMode === 'tabela' ? (
       <div className={WRAPPER}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -277,6 +337,7 @@ function DataTablePreview() {
                 <th className="px-5 py-3 w-10 bg-surface-container-low">
                   <input type="checkbox" checked={selected.length === paged.length && paged.length > 0} onChange={toggleAll} className="rounded border-border accent-secondary" />
                 </th>
+                <th className={cn(TH, 'w-10')} aria-label="Ações" />
                 {[
                   { key: 'sku', label: 'SKU' },
                   { key: 'desc', label: 'Material' },
@@ -292,7 +353,6 @@ function DataTablePreview() {
                   </th>
                 ))}
                 <th className={cn(TH, 'text-center w-20')}>Status</th>
-                <th className={cn(TH, 'text-center w-24')}>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -303,6 +363,9 @@ function DataTablePreview() {
                 return (
                   <tr key={row.id} className={cn('transition-colors', selected.includes(row.id) ? 'bg-secondary/5' : i % 2 === 0 ? 'bg-background' : 'bg-surface-container-low/50')}>
                     <td className={TD}><input type="checkbox" checked={selected.includes(row.id)} onChange={() => toggleSelect(row.id)} className="rounded border-border accent-secondary" /></td>
+                    <td className={TD}>
+                      <DemoRowActions />
+                    </td>
                     <td className={cn(TD, 'font-mono text-xs font-semibold text-secondary')}>{row.sku}</td>
                     <td className={cn(TD, 'font-medium')}>{row.desc}</td>
                     <td className={cn(TD, 'text-muted-foreground')}>{row.grupo}</td>
@@ -311,13 +374,6 @@ function DataTablePreview() {
                     <td className={cn(TD, 'text-right font-mono')}>{formatCurrency(row.preco)}</td>
                     <td className={cn(TD, 'text-center')}>
                       <span className={cn('inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider', status.cls)}>{status.label}</span>
-                    </td>
-                    <td className={cn(TD, 'text-center')}>
-                      <div className="inline-flex gap-0.5">
-                        <button className="p-1.5 rounded-md hover:bg-secondary/10 text-muted-foreground hover:text-secondary transition-colors"><Eye size={13} /></button>
-                        <button className="p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"><Edit size={13} /></button>
-                        <button className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={13} /></button>
-                      </div>
                     </td>
                   </tr>
                 );
@@ -348,6 +404,113 @@ function DataTablePreview() {
           </div>
         </div>
       </div>
+      ) : null}
+
+      {viewMode === 'lista' ? (
+        <div className="space-y-2">
+          {paged.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-border px-6 py-8 text-center text-sm text-muted-foreground">
+              Nenhum material encontrado
+            </div>
+          ) : paged.map((row) => {
+            const status = getStockStatus(row.estoque, row.minimo);
+            return (
+              <div
+                key={row.id}
+                className={cn(
+                  'flex items-center gap-4 rounded-xl border border-border/50 bg-background px-4 py-3 transition-colors hover:border-primary/30 hover:bg-surface-container-low',
+                  selected.includes(row.id) && 'border-secondary/40 bg-secondary/5',
+                )}
+              >
+                <input
+                  type="checkbox"
+                  checked={selected.includes(row.id)}
+                  onChange={() => toggleSelect(row.id)}
+                  className="rounded border-border accent-secondary shrink-0"
+                />
+                <div className="shrink-0">
+                  <DemoRowActions />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-foreground">{row.desc}</p>
+                  <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                    {row.sku} · {row.grupo}
+                  </p>
+                </div>
+                <p className="hidden shrink-0 font-mono text-sm font-semibold sm:block">
+                  {row.estoque.toLocaleString('pt-BR')} {row.un}
+                </p>
+                <p className="hidden shrink-0 font-mono text-sm text-muted-foreground md:block">
+                  {formatCurrency(row.preco)}
+                </p>
+                <span className={cn('inline-flex shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider', status.cls)}>
+                  {status.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {viewMode === 'cards' ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {paged.length === 0 ? (
+            <div className="col-span-full rounded-xl border border-dashed border-border px-6 py-8 text-center text-sm text-muted-foreground">
+              Nenhum material encontrado
+            </div>
+          ) : paged.map((row) => {
+            const status = getStockStatus(row.estoque, row.minimo);
+            return (
+              <div
+                key={row.id}
+                className="flex flex-col rounded-2xl border border-border/50 bg-background p-5 shadow-sm transition-colors hover:border-primary/30 hover:bg-surface-container-low"
+              >
+                <div className="mb-3 flex items-start gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-foreground">{row.desc}</p>
+                    <p className="mt-0.5 font-mono text-xs text-secondary font-semibold">{row.sku}</p>
+                  </div>
+                  <span className={cn('inline-flex shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider', status.cls)}>
+                    {status.label}
+                  </span>
+                </div>
+                <dl className="space-y-2 text-xs">
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-muted-foreground">Grupo</dt>
+                    <dd className="font-medium text-foreground">{row.grupo}</dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-muted-foreground">Estoque</dt>
+                    <dd className="font-mono font-semibold text-foreground">
+                      {row.estoque.toLocaleString('pt-BR')} {row.un}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-3">
+                    <dt className="text-muted-foreground">Preço</dt>
+                    <dd className="font-mono text-foreground">{formatCurrency(row.preco)}</dd>
+                  </div>
+                </dl>
+                <div className="mt-4 border-t border-border/40 pt-3">
+                  <DemoRowActions variant="buttons" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {viewMode !== 'tabela' && paged.length > 0 ? (
+        <div className="flex items-center justify-between text-xs text-muted-foreground flex-wrap gap-2 pt-1">
+          <span>Exibindo {from}-{to} de {sorted.length}</span>
+          <div className="flex items-center gap-1">
+            <Button variant="outline" size="icon" className="h-7 w-7" disabled={page === 0} onClick={() => setPage(p => p - 1)}><ChevronLeft size={14} /></Button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <Button key={i} variant={i === page ? 'default' : 'outline'} size="icon" className="h-7 w-7 text-xs" onClick={() => setPage(i)}>{i + 1}</Button>
+            ))}
+            <Button variant="outline" size="icon" className="h-7 w-7" disabled={page === totalPages - 1} onClick={() => setPage(p => p + 1)}><ChevronRight size={14} /></Button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -413,6 +576,12 @@ const dataTableProps: PropDef[] = [
   { name: 'sortable', type: 'boolean', default: 'true', description: 'Permite ordenação clicando no cabeçalho.' },
   { name: 'pageSize', type: 'number', default: '10', description: 'Quantidade de registros por página.' },
   { name: 'selectable', type: 'boolean', default: 'false', description: 'Adiciona coluna de checkbox para seleção em lote.' },
+  {
+    name: 'viewMode',
+    type: '"tabela" | "lista" | "cards"',
+    default: '"tabela"',
+    description: 'Layout ativo via ViewToggle; persistir com useViewMode(storageKey).',
+  },
 ];
 
 /* ========================================================== */
@@ -868,28 +1037,29 @@ const sorted = useMemo(() => {
       {/* ============ DataTables completo ============ */}
       <DocSection
         title="Data Table — toolbar completa"
-        description="Padrão completo: toolbar com busca, filtros e exportação; seleção múltipla; ordenação por coluna; paginação dinâmica; status pill e ações por linha. Equivalente a /app/templates/tables/datatables."
+        description="Padrão completo: toolbar com busca, filtros, exportação e ViewToggle (Tabela / Lista / Cards); seleção múltipla; ordenação; paginação. Tabela/Lista: menu ⋮ à esquerda; Cards: mesmas ações como botões no rodapé (sem avatar de código). Preferência de layout em localStorage."
       >
         <VariantSection
           title="Gestão de Materiais"
-          description="Selecione linhas, ordene colunas, troque o tamanho da página e navegue."
+          description="Alterne entre Tabela, Lista e Cards; selecione linhas, ordene colunas e navegue."
           preview={<DataTablePreview />}
-          code={`// Composição: toolbar + table + footer (paginação)
-<div className="space-y-3">
-  <Toolbar>
-    <SearchInput />
-    <Button variant="outline"><Filter /> Filtros</Button>
-    <Button variant="outline"><Download /> Exportar</Button>
-    <Button><Plus /> Novo</Button>
-  </Toolbar>
+          code={`import { ViewToggle } from '@/components/ui/ViewToggle';
+import { useViewMode } from '@/hooks/useViewMode';
 
-  <div className="rounded-xl border border-border/60 overflow-hidden">
-    <table>{/* head + body com checkbox, sort e badges */}</table>
-    <Footer>
-      <SelectedCount /> <PageSize /> <Pager />
-    </Footer>
+const [viewMode, setViewMode] = useViewMode('smarnet:view:materiais', 'tabela');
+
+<div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+  <SearchInput className="flex-1" />
+  <Button variant="outline">Filtros</Button>
+  <div className="flex items-center gap-2 sm:ml-auto">
+    <Button>Novo</Button>
+    <ViewToggle value={viewMode} onChange={setViewMode} />
   </div>
-</div>`}
+</div>
+
+{viewMode === 'tabela' && <TableView />}
+{viewMode === 'lista' && <ListView />}
+{viewMode === 'cards' && <CardsView />}`}
         />
 
         <PropsTable rows={dataTableProps} title="Props sugeridas para um wrapper <DataTable />" />
@@ -897,6 +1067,15 @@ const sorted = useMemo(() => {
 
       <UsageNote type="tip">
         Para valores numéricos, use <code className="font-mono text-[11px]">font-mono</code> + <code className="font-mono text-[11px]">text-right</code> — facilita o alinhamento decimal e a leitura comparativa.
+      </UsageNote>
+
+      <UsageNote type="info">
+        O <code className="font-mono text-[11px]">ViewToggle</code> usa as classes{' '}
+        <code className="font-mono text-[11px]">.config-usuarios-view-toggle</code> /{' '}
+        <code className="font-mono text-[11px]">.config-view-btn</code> com{' '}
+        <code className="font-mono text-[11px]">data-view</code> e <code className="font-mono text-[11px]">.active</code>.
+        Persista com <code className="font-mono text-[11px]">useViewMode(key)</code>.
+        Em Cards, ações vão no rodapé como botões (<code className="font-mono text-[11px]">variant=&quot;buttons&quot;</code>); em Tabela/Lista, use o menu ⋮.
       </UsageNote>
 
       <UsageNote type="info">

@@ -11,6 +11,7 @@ export function useComprasAccess() {
       canViewFornecedor: hasPermission(user, COMPRAS_PERMS.viewFornecedor),
       canAddFornecedor: hasPermission(user, COMPRAS_PERMS.addFornecedor),
       canChangeFornecedor: hasPermission(user, COMPRAS_PERMS.changeFornecedor),
+      canDeleteFornecedor: hasPermission(user, COMPRAS_PERMS.deleteFornecedor),
       canViewFornecContato: hasPermission(user, COMPRAS_PERMS.viewFornecContato),
       canAddFornecContato: hasPermission(user, COMPRAS_PERMS.addFornecContato),
       canChangeFornecContato: hasPermission(user, COMPRAS_PERMS.changeFornecContato),

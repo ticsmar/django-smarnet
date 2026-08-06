@@ -11,6 +11,7 @@ import RequestAccess from "./pages/RequestAccess";
 import NotFound from "./pages/NotFound";
 import { AppLayout } from "./components/AppLayout";
 import { AdminLayout } from "./components/AdminLayout";
+import { ModuleIndexPage } from "./components/ModuleIndexPage";
 import { DeviceTokensPage, DeviceManagerRoute } from "./modules/device";
 import { AccessAdminRoute } from "./modules/admin";
 import { FornecedoresPage as ComprasFornecedoresPage, FornecedorDetailPage, ComprasFornecedorRoute } from "./modules/compras";
@@ -84,6 +85,10 @@ const DSPatterns = lazy(() => import("./pages/design-system/PatternsPage"));
 const DSDashboards = lazy(() => import("./pages/design-system/DashboardsPage"));
 const DSTemplates = lazy(() => import("./pages/design-system/TemplateElementsPage"));
 const DSIntegrations = lazy(() => import("./pages/design-system/IntegrationsPage"));
+const DocsLayout = lazy(() => import("./pages/docs/DocsLayout"));
+const DocPage = lazy(() =>
+  import("./pages/docs/DocsLayout").then((m) => ({ default: m.DocPage })),
+);
 
 // Portal da Transparência
 const PortalLayout = lazy(() => import("./pages/portal/PortalLayout"));
@@ -145,6 +150,18 @@ function SuperuserDesignSystemLayout() {
   return (
     <LazyRoute>
       <DesignSystemLayout />
+    </LazyRoute>
+  );
+}
+
+function AuthenticatedDocsLayout() {
+  const { isAuthenticated, authLoading, user } = useApp();
+  if (authLoading) return <AuthLoadingScreen />;
+  if (!isAuthenticated) return <Navigate to="/" replace />;
+  if (user?.must_change_password) return <Navigate to="/change-password" replace />;
+  return (
+    <LazyRoute>
+      <DocsLayout />
     </LazyRoute>
   );
 }
@@ -224,13 +241,21 @@ function AppRoutes() {
         <Route path="integrations" element={<LazyRoute><DSIntegrations /></LazyRoute>} />
       </Route>
 
+      {/* Documentação do Sistema — usuários autenticados */}
+      <Route path="/docs" element={<AuthenticatedDocsLayout />}>
+        <Route index element={<LazyRoute><DocPage /></LazyRoute>} />
+        <Route path="*" element={<LazyRoute><DocPage /></LazyRoute>} />
+      </Route>
+
       {/* Authenticated app — home hub + Compras + Devices (+ profile via TopNav) */}
       <Route path="/app" element={<ProtectedLayout />}>
         <Route index element={<LazyRoute><HomePage /></LazyRoute>} />
         <Route path="profile" element={<LazyRoute><ProfilePage /></LazyRoute>} />
+        <Route path="producao" element={<ModuleIndexPage groupKey="producao" />} />
         <Route path="devices" element={<DeviceManagerRoute />}>
           <Route index element={<DeviceTokensPage />} />
         </Route>
+        <Route path="compras" element={<ModuleIndexPage groupKey="compras" />} />
         <Route path="compras/fornecedores" element={<ComprasFornecedorRoute />}>
           <Route index element={<ComprasFornecedoresPage />} />
           <Route path=":codFornec" element={<FornecedorDetailPage />} />

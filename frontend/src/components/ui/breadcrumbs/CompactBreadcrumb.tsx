@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PathBreadcrumb, type BreadcrumbItemData, type BreadcrumbSeparatorKind } from './PathBreadcrumb';
@@ -44,14 +45,14 @@ export function CompactBreadcrumb({
       {/* Mobile: botão voltar + atual */}
       <div className="flex items-center gap-2 md:hidden text-sm">
         {parent && (
-          <a
-            href={parent.href ?? '#'}
+          <Link
+            to={parent.href ?? '#'}
             onClick={handleBack}
             className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
           >
             <ChevronLeft className="h-4 w-4" />
             <span>{resolvedBackLabel}</span>
-          </a>
+          </Link>
         )}
         {parent && <span className="text-muted-foreground/40">/</span>}
         <span className="font-medium text-foreground truncate">{current.label}</span>

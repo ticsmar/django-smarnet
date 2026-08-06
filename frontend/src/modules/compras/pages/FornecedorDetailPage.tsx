@@ -1,14 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react";
-import { Link, useParams } from "react-router-dom";
-import {
-  ChevronRight,
-  Droplets,
-  Home,
-  Loader2,
-  Pencil,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { useParams } from "react-router-dom";
+import { Droplets, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useT } from "@/hooks/useT";
+import { usePageBreadcrumb } from "@/contexts/PageBreadcrumbContext";
 import { ApiError } from "../api/comprasApi";
 import {
   FornecedorFormDialog,
@@ -75,6 +68,12 @@ export function FornecedorDetailPage() {
     canChangeFornecContato,
     canDeleteFornecContato,
   } = useComprasAccess();
+
+  usePageBreadcrumb([
+    { label: t("nav.compras"), href: "/app/compras" },
+    { label: t("compras.fornecedores.title"), href: "/app/compras/fornecedores" },
+    { label: String(codParam ?? "") },
+  ]);
 
   const [editOpen, setEditOpen] = useState(false);
   const [formError, setFormError] = useState("");
@@ -217,31 +216,6 @@ export function FornecedorDetailPage() {
 
   return (
     <>
-      <nav className="mb-6 flex items-center gap-1.5 text-sm">
-        <Link
-          to="/app"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <Home size={14} />
-        </Link>
-        <ChevronRight size={14} className="text-muted-foreground/50" />
-        <Link
-          to="/app/compras/fornecedores"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          {t("nav.compras")}
-        </Link>
-        <ChevronRight size={14} className="text-muted-foreground/50" />
-        <Link
-          to="/app/compras/fornecedores"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          {t("compras.fornecedores.title")}
-        </Link>
-        <ChevronRight size={14} className="text-muted-foreground/50" />
-        <span className="font-medium text-foreground">{codFornec}</span>
-      </nav>
-
       <div className="space-y-6">
         <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

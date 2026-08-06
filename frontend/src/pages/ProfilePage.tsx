@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
-import { ChevronRight, Home, Lock, Shield, User, Users } from "lucide-react";
+import { Lock, Shield, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/contexts/AppContext";
+import { usePageBreadcrumb } from "@/contexts/PageBreadcrumbContext";
 import { useT } from "@/hooks/useT";
 import type { User as AuthUser } from "@/types/auth";
 
@@ -13,6 +14,8 @@ function roleLabel(user: AuthUser, t: (key: string) => string): string {
 export default function ProfilePage() {
   const t = useT();
   const { user } = useApp();
+
+  usePageBreadcrumb([{ label: t("profile.title") }]);
 
   if (!user) {
     return (
@@ -33,14 +36,6 @@ export default function ProfilePage() {
 
   return (
     <div className="p-4 lg:p-8 max-w-3xl mx-auto space-y-6">
-      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <Link to="/app" className="hover:text-foreground transition-colors">
-          <Home size={14} />
-        </Link>
-        <ChevronRight size={12} />
-        <span className="text-foreground font-medium">{t("profile.title")}</span>
-      </nav>
-
       <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center text-primary-foreground text-2xl font-bold shrink-0">
