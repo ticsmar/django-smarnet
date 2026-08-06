@@ -4,6 +4,10 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+admin.site.site_header = "SmarNet - Admin"
+admin.site.site_title = "SmarNet - Admin"
+admin.site.index_title = "SmarNet - Admin"
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

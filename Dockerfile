@@ -33,4 +33,5 @@ RUN pip install --no-cache-dir -r requirements/production.txt
 
 COPY backend/ .
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
+# Inline startup avoids Windows CRLF issues on the bind-mounted entrypoint.sh
+CMD ["sh", "-c", "python manage.py collectstatic --noinput && exec gunicorn --bind 0.0.0.0:8000 config.wsgi:application"]

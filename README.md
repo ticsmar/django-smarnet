@@ -18,6 +18,10 @@ smar-nova-vision/   # Full ERP UI shell integrated with Django API
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for layer rules and [AI_DEVELOPMENT_RULES.md](AI_DEVELOPMENT_RULES.md) for coding standards.
 
+**Documentação do sistema** (produto, domínio, operação — PT): [docs/README.md](docs/README.md).  
+Stack e infraestrutura (versões): [docs/developers/stack-e-infraestrutura.md](docs/developers/stack-e-infraestrutura.md).  
+Agentes de IA: [AGENTS.md](AGENTS.md) · glossário: [CONTEXT.md](CONTEXT.md).
+
 ## Setup
 
 ```bash

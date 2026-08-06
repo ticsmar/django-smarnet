@@ -32,7 +32,7 @@ from apps.users.presentation.serializers.auth_serializers import (
 
 
 def _session_store(request: Request) -> DjangoAuthSessionStore:
-    return DjangoAuthSessionStore(request.session)
+    return DjangoAuthSessionStore(request.session, request=request._request)
 
 
 class LoginView(APIView):

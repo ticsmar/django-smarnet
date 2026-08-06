@@ -1,0 +1,159 @@
+/*
+  SmarNet — minimal Django Admin skin (design-system dark tokens).
+  Overrides Django CSS variables only; keeps stock admin markup.
+*/
+
+:root {
+  --font-family-primary: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-family-monospace: ui-monospace, "Cascadia Mono", "Segoe UI Mono", monospace;
+
+  /* Light: navy header + amber title (brand cue) */
+  --primary: #004080;
+  --secondary: #001a42;
+  --accent: #b8860b;
+  --primary-fg: #ffffff;
+  --header-bg: #001a42;
+  --header-color: #e6a319;
+  --header-branding-color: #e6a319;
+  --header-link-color: #ffffff;
+  --breadcrumbs-bg: #003366;
+  --button-bg: #004080;
+  --button-hover-bg: #003366;
+  --default-button-bg: #0f766e;
+  --default-button-hover-bg: #0d9488;
+  --link-fg: #0f766e;
+  --link-hover-color: #0d9488;
+}
+
+/* Design system dark mode (frontend .dark tokens → hex) */
+html[data-theme="dark"] {
+  --primary: #1a4d8c;
+  --primary-fg: #e6ebf0;
+  --secondary: #0a0c10;
+  --accent: #e6a319;
+
+  --body-fg: #e6ebf0;
+  --body-bg: #0e1115;
+  --body-quiet-color: #818a94;
+  --body-medium-color: #c5ccd4;
+  --body-loud-color: #ffffff;
+
+  --header-bg: #0a0c10;
+  --header-color: #e6a319;
+  --header-branding-color: #e6a319;
+  --header-link-color: #e6ebf0;
+
+  --breadcrumbs-fg: #c5ccd4;
+  --breadcrumbs-link-fg: #e6ebf0;
+  --breadcrumbs-bg: #191d24;
+
+  --link-fg: #4db8b8;
+  --link-hover-color: #6ecfcf;
+  --link-selected-fg: #5c9ad6;
+
+  --hairline-color: #2c3139;
+  --border-color: #2c3139;
+
+  --error-fg: #e35f5f;
+  --message-success-bg: #14532d;
+  --message-warning-bg: #7c2d12;
+  --message-error-bg: #7f1d1d;
+
+  --darkened-bg: #191d24;
+  --selected-bg: #232830;
+  --selected-row: #1a4d8c;
+
+  --button-fg: #ffffff;
+  --button-bg: #1a4d8c;
+  --button-hover-bg: #2563a8;
+  --default-button-bg: #299999;
+  --default-button-hover-bg: #4db8b8;
+  --close-button-bg: #232830;
+  --close-button-hover-bg: #2c3139;
+  --delete-button-bg: #dc2626;
+  --delete-button-hover-bg: #b91c1c;
+
+  --object-tools-bg: #232830;
+  --object-tools-hover-bg: #2c3139;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --primary: #1a4d8c;
+    --primary-fg: #e6ebf0;
+    --secondary: #0a0c10;
+    --accent: #e6a319;
+
+    --body-fg: #e6ebf0;
+    --body-bg: #0e1115;
+    --body-quiet-color: #818a94;
+    --body-medium-color: #c5ccd4;
+    --body-loud-color: #ffffff;
+
+    --header-bg: #0a0c10;
+    --header-color: #e6a319;
+    --header-branding-color: #e6a319;
+    --header-link-color: #e6ebf0;
+
+    --breadcrumbs-fg: #c5ccd4;
+    --breadcrumbs-link-fg: #e6ebf0;
+    --breadcrumbs-bg: #191d24;
+
+    --link-fg: #4db8b8;
+    --link-hover-color: #6ecfcf;
+    --link-selected-fg: #5c9ad6;
+
+    --hairline-color: #2c3139;
+    --border-color: #2c3139;
+
+    --error-fg: #e35f5f;
+    --message-success-bg: #14532d;
+    --message-warning-bg: #7c2d12;
+    --message-error-bg: #7f1d1d;
+
+    --darkened-bg: #191d24;
+    --selected-bg: #232830;
+    --selected-row: #1a4d8c;
+
+    --button-fg: #ffffff;
+    --button-bg: #1a4d8c;
+    --button-hover-bg: #2563a8;
+    --default-button-bg: #299999;
+    --default-button-hover-bg: #4db8b8;
+    --close-button-bg: #232830;
+    --close-button-hover-bg: #2c3139;
+    --delete-button-bg: #dc2626;
+    --delete-button-hover-bg: #b91c1c;
+
+    --object-tools-bg: #232830;
+    --object-tools-hover-bg: #2c3139;
+
+    color-scheme: dark;
+  }
+}
+
+#site-name a {
+  font-family: "Manrope", "Inter", system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+#header {
+  box-shadow: 0 1px 0 hsl(220 12% 20% / 0.6);
+}
+
+.login #container {
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+  border-radius: 0.75rem;
+}
