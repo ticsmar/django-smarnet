@@ -37,7 +37,9 @@ blob-report/
 
 # AI / editor tooling (local)
 .agents/
-.cursor/
+.cursor/*
+!.cursor/skills/
+!.cursor/skills/**
 
 # Scratch files
 Untitled
