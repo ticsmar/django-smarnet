@@ -20,6 +20,8 @@ VIEW_PAIS = f"{APP}.view_pais"
 
 
 def _has_pk(request: Request, field: str) -> bool:
+    if not isinstance(request.data, dict):
+        return False
     value = request.data.get(field)
     return value is not None and value != ""
 
