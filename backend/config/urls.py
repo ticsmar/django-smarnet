@@ -4,7 +4,10 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+from apps.shared.presentation.views.metrics_view import MetricsView
+
 urlpatterns = [
+    path("metrics/", MetricsView.as_view(), name="prometheus-metrics"),
     path("admin/", admin.site.urls),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
