@@ -27,6 +27,6 @@ def get_metrics_registry() -> CollectorRegistry:
     """Return a registry suitable for the current process model."""
     if PROMETHEUS_MULTIPROC_DIR and os.path.isdir(PROMETHEUS_MULTIPROC_DIR):
         registry = CollectorRegistry()
-        MultiProcessCollector(registry)
+        MultiProcessCollector(registry)  # type: ignore[no-untyped-call]
         return registry
     return prometheus_client.REGISTRY
