@@ -5,7 +5,7 @@ from django.contrib.auth.models import Group, User
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from apps.branch_auth.infrastructure.models import AccessToken
+from apps.branch_auth.infrastructure.models import AccessToken, TokenAccessAttempt
 
 
 @pytest.fixture
@@ -55,6 +55,107 @@ def test_verify_token_success_and_bind(
     assert data["valid"] is True
     assert data["machine"]["device_uuid"] == "device-abc"
     assert data["employer"]["id"] == str(branch_manager.id)
+
+
+@pytest.mark.django_db
+def test_verify_token_audits_denied_attempt(
+    api_client: APIClient, branch_manager: User
+) -> None:
+    """A denial rolls its transaction back, so the audit row must survive it."""
+    token, raw_token = AccessToken.generate(owner=branch_manager, label="caixa")
+    token.revoke(by_user=branch_manager)
+
+    response = api_client.post(
+        "/api/branch-auth/verify-token/",
+        {"token": raw_token, "device_uuid": "device-abc"},
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.json()["message"] == "Token revogado."
+    attempt = TokenAccessAttempt.objects.get()
+    assert attempt.result == TokenAccessAttempt.Result.REVOKED_TOKEN
+    assert attempt.token_id == token.pk
+
+
+@pytest.mark.django_db
+def test_verify_token_rejects_second_device(
+    api_client: APIClient, branch_manager: User
+) -> None:
+    _, raw_token = AccessToken.generate(owner=branch_manager, label="caixa")
+    api_client.post(
+        "/api/branch-auth/verify-token/",
+        {"token": raw_token, "device_uuid": "device-abc"},
+        format="json",
+    )
+
+    response = api_client.post(
+        "/api/branch-auth/verify-token/",
+        {"token": raw_token, "device_uuid": "device-xyz"},
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_401_UNAUTHORIZED
+    assert response.json()["message"] == "Token já vinculado a outra máquina."
+    assert (
+        TokenAccessAttempt.objects.filter(
+            result=TokenAccessAttempt.Result.DEVICE_MISMATCH
+        ).count()
+        == 1
+    )
+
+
+@pytest.mark.django_db
+def test_manager_lists_own_token_with_bound_machine(
+    api_client: APIClient, branch_manager: User
+) -> None:
+    _, raw_token = AccessToken.generate(owner=branch_manager, label="caixa")
+    api_client.post(
+        "/api/branch-auth/verify-token/",
+        {"token": raw_token, "device_uuid": "device-abc"},
+        format="json",
+    )
+    api_client.force_authenticate(user=branch_manager)
+
+    response = api_client.get("/api/branch-auth/tokens/")
+
+    assert response.status_code == status.HTTP_200_OK
+    items = response.json()
+    assert len(items) == 1
+    assert items[0]["label"] == "caixa"
+    assert items[0]["machine"]["device_uuid"] == "device-abc"
+
+
+@pytest.mark.django_db
+def test_manager_can_revoke_own_token_only_once(
+    api_client: APIClient, branch_manager: User
+) -> None:
+    token, _ = AccessToken.generate(owner=branch_manager, label="caixa")
+    api_client.force_authenticate(user=branch_manager)
+
+    first = api_client.post(f"/api/branch-auth/tokens/{token.pk}/revoke/")
+    assert first.status_code == status.HTTP_200_OK
+    assert first.json()["status"] == AccessToken.Status.REVOKED
+
+    second = api_client.post(f"/api/branch-auth/tokens/{token.pk}/revoke/")
+    assert second.status_code == status.HTTP_400_BAD_REQUEST
+    assert second.json()["detail"] == "Token já está revogado."
+
+
+@pytest.mark.django_db
+def test_manager_cannot_revoke_token_of_another_manager(
+    api_client: APIClient, branch_manager: User
+) -> None:
+    other = User.objects.create_user(username="other-manager", password="pass")
+    other.groups.add(Group.objects.get(name="branch_managers"))
+    token, _ = AccessToken.generate(owner=other, label="caixa alheio")
+    api_client.force_authenticate(user=branch_manager)
+
+    response = api_client.post(f"/api/branch-auth/tokens/{token.pk}/revoke/")
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    token.refresh_from_db()
+    assert token.status == AccessToken.Status.ACTIVE
 
 
 @pytest.mark.django_db
