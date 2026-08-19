@@ -63,7 +63,7 @@ export function FornecedoresPage() {
     canViewFornecedor || canChangeFornecedor || canDeleteFornecedor;
 
   usePageBreadcrumb([
-    { label: t("nav.compras"), href: "/app/compras" },
+    { label: t("nav.compras"), href: "/app/purchasing" },
     { label: t("compras.fornecedores.title") },
   ]);
 
@@ -102,7 +102,7 @@ export function FornecedoresPage() {
   }
 
   function openDetail(item: Fornecedor) {
-    navigate(`/app/compras/fornecedores/${item.for_codigo}`);
+    navigate(`/app/purchasing/suppliers/${item.for_codigo}`);
   }
 
   function openEdit(item: Fornecedor) {
@@ -169,7 +169,7 @@ export function FornecedoresPage() {
         idioma_msg: "P",
       });
       setCreateOpen(false);
-      navigate(`/app/compras/fornecedores/${result.cod_fornec}`);
+      navigate(`/app/purchasing/suppliers/${result.cod_fornec}`);
     } catch (err) {
       setFormError(
         err instanceof ApiError
@@ -328,7 +328,15 @@ export function FornecedoresPage() {
                       <TableRow
                         key={item.for_codigo}
                         className="cursor-pointer"
+                        role="button"
+                        tabIndex={0}
                         onClick={() => openDetail(item)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            openDetail(item);
+                          }
+                        }}
                       >
                         {showActionsColumn ? (
                           <TableCell className="w-10 px-2 py-2">

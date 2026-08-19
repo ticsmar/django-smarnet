@@ -11,16 +11,3 @@ export const COMPRAS_PERMS = {
 } as const;
 
 export type ComprasPermission = (typeof COMPRAS_PERMS)[keyof typeof COMPRAS_PERMS];
-
-export function hasPermission(
-  user: { is_superuser?: boolean; permissions?: string[] } | null | undefined,
-  perm: string,
-): boolean {
-  if (!user) {
-    return false;
-  }
-  if (user.is_superuser) {
-    return true;
-  }
-  return user.permissions?.includes(perm) ?? false;
-}

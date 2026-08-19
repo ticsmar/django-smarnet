@@ -70,8 +70,8 @@ export function FornecedorDetailPage() {
   } = useComprasAccess();
 
   usePageBreadcrumb([
-    { label: t("nav.compras"), href: "/app/compras" },
-    { label: t("compras.fornecedores.title"), href: "/app/compras/fornecedores" },
+    { label: t("nav.compras"), href: "/app/purchasing" },
+    { label: t("compras.fornecedores.title"), href: "/app/purchasing/suppliers" },
     { label: String(codParam ?? "") },
   ]);
 

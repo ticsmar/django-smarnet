@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { COMPRAS_PERMS, hasPermission } from "../permissions";
+import { hasPermission } from "@/lib/userPermissions";
+import { COMPRAS_PERMS } from "../permissions";
 
 export function useComprasAccess() {
   const { user, authLoading } = useApp();
