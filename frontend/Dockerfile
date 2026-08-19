@@ -8,7 +8,9 @@ COPY frontend/ .
 # Markdown da Documentação do Sistema (import.meta.glob em ../docs)
 COPY docs/ /repo/docs/
 ARG VITE_DJANGO_API_URL=http://localhost:8000/api
+ARG VITE_APP_RUNTIME_ENV=production
 ENV VITE_DJANGO_API_URL=$VITE_DJANGO_API_URL
+ENV VITE_APP_RUNTIME_ENV=$VITE_APP_RUNTIME_ENV
 RUN npm run build
 
 FROM node:20-alpine

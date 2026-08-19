@@ -24,16 +24,16 @@ backend/
 ├── apps/
 │   ├── users/
 │   ├── branch_auth/
+│   ├── compras/
+│   ├── administracao/
 │   └── shared/
-├── common/
-├── infrastructure/
 ├── static/
 ├── media/
 ├── templates/
-├── scripts/
-├── docs/
-└── tests/
+└── scripts/
 ```
+
+Each app under `apps/` uses hexagonal layers (`domain/`, `application/`, `infrastructure/`, `presentation/`, `tests/`). Django registers `*.infrastructure` and `*.presentation` in `INSTALLED_APPS`.
 
 ## Setup
 
@@ -43,6 +43,8 @@ python -m venv .venv
 pip install -r requirements/development.txt
 cp .env.example .env
 ```
+
+`development.txt` includes ruff, mypy, pytest, pytest-cov, pytest-django and import-linter.
 
 ## Run
 
@@ -66,4 +68,4 @@ lint-imports
 pytest
 ```
 
-See [../ARCHITECTURE.md](../ARCHITECTURE.md) for layer rules.
+See [../ARCHITECTURE.md](../ARCHITECTURE.md) for layer rules and [../docs/developers/novas-telas.md](../docs/developers/novas-telas.md) for migrated vs native persistence.

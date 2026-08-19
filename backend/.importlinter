@@ -1,6 +1,7 @@
 [importlinter]
 root_packages =
     apps
+include_external_packages = True
 
 [importlinter:contract:shared-domain-isolation]
 name = Shared domain layer isolation
@@ -126,6 +127,41 @@ forbidden_modules =
     apps.compras.application
     apps.compras.presentation
 
+[importlinter:contract:administracao-layers]
+name = administracao layer dependencies
+type = layers
+layers =
+    apps.administracao.presentation
+    apps.administracao.application
+    apps.administracao.domain
+
+[importlinter:contract:administracao-domain-isolation]
+name = administracao domain layer isolation
+type = forbidden
+source_modules =
+    apps.administracao.domain
+forbidden_modules =
+    apps.administracao.application
+    apps.administracao.infrastructure
+    apps.administracao.presentation
+
+[importlinter:contract:administracao-app-no-presentation]
+name = administracao application cannot import presentation
+type = forbidden
+source_modules =
+    apps.administracao.application
+forbidden_modules =
+    apps.administracao.presentation
+
+[importlinter:contract:administracao-infra-boundary]
+name = administracao infrastructure boundary
+type = forbidden
+source_modules =
+    apps.administracao.infrastructure
+forbidden_modules =
+    apps.administracao.application
+    apps.administracao.presentation
+
 [importlinter:contract:domain-independence]
 name = Domains are independent
 type = independence
@@ -133,3 +169,23 @@ modules =
     apps.branch_auth
     apps.users
     apps.compras
+    apps.administracao
+ignore_imports =
+    apps.administracao.infrastructure.actor_context -> apps.users.infrastructure.models
+    apps.administracao.infrastructure.actor_context -> apps.users.infrastructure.oracle_session_context
+    apps.administracao.infrastructure.repositories.oracle_cliente_repository_impl -> apps.users.infrastructure.oracle_session_context
+    apps.administracao.infrastructure.repositories.oracle_cliente_query_repository_impl -> apps.users.infrastructure.oracle_session_context
+
+[importlinter:contract:domain-no-django-oracle]
+name = Domain cannot import Django or Oracle drivers
+type = forbidden
+source_modules =
+    apps.shared.domain
+    apps.users.domain
+    apps.branch_auth.domain
+    apps.compras.domain
+    apps.administracao.domain
+forbidden_modules =
+    django
+    oracledb
+    cx_Oracle

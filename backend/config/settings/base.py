@@ -17,6 +17,10 @@ CORS_ALLOWED_ORIGINS: list[str] = env.list("CORS_ALLOWED_ORIGINS", default=[])
 # admins create users via POST /api/admin/users/.
 ALLOW_PUBLIC_REGISTER = env.bool("ALLOW_PUBLIC_REGISTER", default=False)
 
+RECEITAWS_URL = env("RECEITAWS_URL", default="https://www.receitaws.com.br/v1/cnpj")
+RECEITAWS_TOKEN = env("RECEITAWS_TOKEN", default="")
+VIACEP_URL = env("VIACEP_URL", default="https://viacep.com.br/ws")
+
 ORACLE_HOST = env("ORACLE_HOST", default="localhost")
 ORACLE_PORT = env.int("ORACLE_PORT", default=1521)
 ORACLE_SERVICE_NAME = env("ORACLE_SERVICE_NAME", default="ORCL")
@@ -71,6 +75,8 @@ INSTALLED_APPS = [
     "apps.branch_auth.presentation",
     "apps.compras.infrastructure",
     "apps.compras.presentation",
+    "apps.administracao.infrastructure",
+    "apps.administracao.presentation",
 ]
 
 MIDDLEWARE = [
@@ -151,7 +157,7 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
 }
 
-LOGGING = {
+LOGGING: dict[str, object] = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
