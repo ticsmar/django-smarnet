@@ -1,6 +1,6 @@
 # Compras — Fornecedores
 
-**Caminho:** Compras → Fornecedores (`/app/compras/fornecedores`).  
+**Caminho:** Compras → Fornecedores (`/app/purchasing/suppliers`).  
 **Precisa de:** permissão de visualizar fornecedor. Sem ela o menu/rota não libera.
 
 ## Listar e filtrar
@@ -29,7 +29,7 @@
 
 ## Detalhe
 
-No detalhe (`/app/compras/fornecedores/:codigo`) você pode:
+No detalhe (`/app/purchasing/suppliers/:codigo`) você pode:
 
 - Editar dados cadastrais
 - **Ativar** ou **Inativar**

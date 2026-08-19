@@ -1,6 +1,6 @@
 # Produção — Devices
 
-**Caminho:** Produção → Devices (`/app/devices`).  
+**Caminho:** Acessos → Devices (`/app/devices`).  
 **Precisa de:** ser **gestor de filial** (grupo `branch_managers`) ou superusuário. Sem isso o item não aparece.
 
 ## Ver tokens

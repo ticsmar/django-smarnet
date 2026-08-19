@@ -21,6 +21,6 @@ Inventário de stack/infra (versões): [developers/stack-e-infraestrutura.md](./
 - Roteiro para agentes: [`AGENTS.md`](../AGENTS.md)
 - Decisões de arquitetura (ADRs): [`adr/`](./adr/)
 
-## Fase seguinte
+## Hub in-app
 
-Hub in-app disponível em **`/docs`** (layout no estilo Design System; menu = árvore de `docs/`).
+Disponível em **`/docs`** para superusuário em ambiente de desenvolvimento (layout no estilo Design System; menu = árvore de `docs/`).

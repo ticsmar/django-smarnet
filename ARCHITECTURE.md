@@ -26,15 +26,13 @@ backend/
 ├── apps/                # Django bounded contexts
 │   ├── shared/          # Shared kernel (cross-domain primitives)
 │   ├── users/           # Users bounded context
-│   └── branch_auth/     # Branch auth bounded context
-├── common/              # Shared utilities (scaffolding for future rewrite)
-├── infrastructure/      # Cross-cutting integrations (scaffolding)
+│   ├── branch_auth/     # Branch auth (devices / tokens)
+│   ├── compras/         # Purchasing (fornecedores) — tela migrada
+│   └── administracao/   # Administration (clientes) — tela migrada
 ├── static/
 ├── media/
 ├── templates/
-├── scripts/
-├── docs/
-└── tests/
+└── scripts/             # Auditoria Oracle (não é deploy de package)
 ```
 
 Each app under `backend/apps/` keeps the hexagonal layout:
@@ -56,6 +54,8 @@ Python imports use the `apps.` prefix:
 
 - `apps.users.*`
 - `apps.branch_auth.*`
+- `apps.compras.*`
+- `apps.administracao.*`
 - `apps.shared.*`
 - `config.*` (project configuration, not under `apps/`)
 
@@ -137,4 +137,6 @@ Contains:
 - Domain exception mappings (`exception_mappings.py`)
 - OpenAPI annotations (`@extend_schema`)
 
-Business rules are forbidden in this layer. Domain exceptions are mapped to HTTP status codes in `{domain}/presentation/exception_mappings.py` and handled globally via `config.drf.exception_handler`. Session-protected routes use `IsOracleAuthenticated` from `apps.shared.presentation`.
+Business rules are forbidden in this layer. Application workflows belong in use cases; domain invariants may live in domain services. Domain exceptions are mapped to HTTP status codes in `{domain}/presentation/exception_mappings.py` and handled globally via `config.drf.exception_handler`. Session-protected routes use `IsOracleAuthenticated` from `apps.shared.presentation`.
+
+New screens: decide **tela migrada** vs **aplicação nativa** in `docs/developers/novas-telas.md`.

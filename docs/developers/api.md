@@ -10,6 +10,7 @@
 | `/api/admin/` | Gestão de usuários/grupos (access admin) |
 | `/api/branch-auth/` | Tokens de device |
 | `/api/compras/` | Fornecedores, contatos, países |
+| `/api/administracao/` | Clientes, catálogos (países, estados, origens) |
 | `/admin/` | Django Admin |
 
 ## Spectacular
@@ -27,5 +28,6 @@ Base URL: `VITE_DJANGO_API_URL` ou fallback `http://localhost:8000/api` (`fronte
 ## Por contexto
 
 - Usuários: [auth.md](./auth.md)
+- Administração — Clientes: [administracao-clientes.md](./administracao-clientes.md)
 - Compras: [compras.md](./compras.md)
 - Devices: [producao-devices.md](./producao-devices.md)

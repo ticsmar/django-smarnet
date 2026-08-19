@@ -8,15 +8,15 @@
 
 ## Hub (`/app`)
 
-Mostra atalhos conforme o seu perfil (módulos ERP, configurações se for admin de acesso, Design System se for superusuário).
+Mostra atalhos conforme o seu perfil. Módulos ERP aparecem conforme permissões/papéis, configurações aparecem para admin de acesso e atalhos internos de desenvolvimento (`/docs` e `/design-system`) aparecem apenas para superusuário em ambiente de desenvolvimento.
 
 ## Perfil (`/app/profile`)
 
-Dados da conta e link para alteração de senha. Use essa tela para conferir usuário e opções pessoais.
+Mostra nome, e-mail, chapa, dados de `SIAOS.USUARIO`, nome da empresa e, quando houver, dados de funcionário (`SIAOS.FUNCIONARIO`). Também há link para alteração de senha.
 
 ## Menu lateral
 
-- Grupos **Produção** e **Compras** (e filhos) só aparecem se você tiver permissão/papel.
+- Grupos **Administração**, **Produção** e **Compras** (e filhos) só aparecem se você tiver permissão/papel.
 - Itens sem permissão não são exibidos (não é só “erro depois do clique”).
 
-Próximos fluxos: [Compras — Fornecedores](./compras-fornecedores.md), [Produção — Devices](./producao-devices.md).
+Próximos fluxos: [Administração — Clientes](./administracao-clientes.md), [Compras — Fornecedores](./compras-fornecedores.md), [Produção — Devices](./producao-devices.md).

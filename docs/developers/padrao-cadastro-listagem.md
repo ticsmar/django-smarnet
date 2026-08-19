@@ -4,7 +4,7 @@
 
 Agentes de IA e desenvolvedores devem **seguir este documento** ao criar ou estender cadastros. Em dúvida, copie a estrutura da **implementação de referência** em Compras (`frontend/src/modules/compras/` + `backend/apps/compras/`) e adapte nomes — não invente outro layout de listagem nem outro modelo de permissão.
 
-Pré-requisitos: [`ARCHITECTURE.md`](../../ARCHITECTURE.md), [`AI_DEVELOPMENT_RULES.md`](../../AI_DEVELOPMENT_RULES.md), [`OPENSPEC.md`](../../OPENSPEC.md), Design System → Patterns / Table.
+Pré-requisitos: [`ARCHITECTURE.md`](../../ARCHITECTURE.md), [`novas-telas.md`](./novas-telas.md) (migrada vs nativa), [`AI_DEVELOPMENT_RULES.md`](../../AI_DEVELOPMENT_RULES.md), [`OPENSPEC.md`](../../OPENSPEC.md), Design System → Patterns / Table.
 
 ---
 
@@ -85,7 +85,7 @@ Registrar urls em `backend/config/urls.py` e documentar no OpenAPI (drf-spectacu
 3. Helpers em `presentation/permissions.py` escolhem a lista de perms por método HTTP (GET vs POST vs PUT).
 4. Views exigem autenticação de sessão + as perms do helper.
 5. **Inativar/ativar** costuma exigir `change_*` (não `delete_*`), alinhado ao soft delete.
-6. Espelhar as strings no frontend (`app_label.codename`) e checar com `hasPermission` / hook de acesso do módulo; **superuser** passa em todas.
+6. Espelhar as strings no frontend (`app_label.codename`) e checar com `hasPermission` em `frontend/src/lib/userPermissions.ts` (módulos só exportam constantes de perm); **superuser** passa em todas.
 
 Não inventar um sistema de roles paralelo para cadastros mestres.
 
@@ -106,10 +106,12 @@ frontend/src/modules/<contexto>/
 
 ### 4.1 Rotas (`App.tsx`)
 
+- **Paths em inglês** (kebab-case); labels/menus em português — ver [ADR 0003](../adr/0003-rotas-frontend-em-ingles.md), [app-routes.md](./app-routes.md) e `AGENTS.md`
 - Índice do módulo: `ModuleIndexPage` + entrada em `erpNavigation.ts`
-- Listagem: `/app/<modulo>/<recurso>`
-- Detalhe: `/app/<modulo>/<recurso>/:id`
+- Listagem: `/app/<module>/<resource>`; detalhe: `/app/<module>/<resource>/:id`
 - Guard de rota: se não tiver `view_*`, redirecionar (padrão do route component de Compras)
+- Path legado substituído → `<Navigate replace />` para o path canônico
+- **Obrigatório** EN em rotas novas e existentes; tabela canônica `/app/*` em [app-routes.md](./app-routes.md)
 
 ### 4.2 Navegação
 
@@ -121,7 +123,7 @@ Na página:
 
 ```ts
 usePageBreadcrumb([
-  { label: t('nav.<modulo>'), href: '/app/<modulo>' },
+  { label: t('nav.<modulo>'), href: '/app/<module-en>' },
   { label: t('<contexto>.<recurso>.title') }, // página atual sem href
 ]);
 ```

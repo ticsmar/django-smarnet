@@ -17,14 +17,21 @@ Resumos abaixo; o conteúdo completo fica nos arquivos da raiz para evitar dupli
 
 ## Design System
 
-Catálogo de UI no app (superuser): `/design-system`. Não substitui esta pasta.
+Catálogo de UI no app para superusuário em ambiente de desenvolvimento: `/design-system`. Não substitui esta pasta.
 
 ## Por área
 
 - [Stack e infraestrutura](./stack-e-infraestrutura.md) — plataformas, libs, versões, Docker/Oracle
 - [Padrão de cadastro e listagem](./padrao-cadastro-listagem.md) — **obrigatório** para novos CRUDs (telas, API, acessos)
+- [Novas telas (legado vs nativo)](./novas-telas.md) — tela migrada do 3.0 vs aplicação nativa; persistência, origem e desativação do legado no go-live
 - [Autenticação e usuários](./auth.md)
 - [Compras](./compras.md)
+- [Administração — Clientes](./administracao-clientes.md)
 - [Produção e devices](./producao-devices.md)
-- [Admin e settings](./admin-settings.md)
+- [Admin e settings](./admin-settings.md) — rotas `/settings/*` (paths EN) + API admin
+- [Rotas do app (`/app/*`)](./app-routes.md) — paths EN canônicos + redirects legados
+- [ADR 0003 — rotas frontend em inglês](../adr/0003-rotas-frontend-em-ingles.md)
+- [ADR 0004 — CLIENT_IDENTIFIER Oracle](../adr/0004-oracle-client-identifier.md)
+- [ADR 0005 — escrita Oracle: reuso, DML Python ou package próprio](../adr/0005-escrita-oracle-reuso-ou-python.md)
+- [ADR 0006 — desativação do legado por módulo no go-live](../adr/0006-desativacao-legado-por-modulo.md)
 - [API / OpenAPI](./api.md)

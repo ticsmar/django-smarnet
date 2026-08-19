@@ -8,7 +8,7 @@ Inventário do que o Smarnet precisa para rodar, com plataformas, frameworks e f
 
 | Camada | Tecnologia | Versão / faixa |
 |--------|------------|----------------|
-| Runtime API | Python | **≥ 3.13** (`pyproject.toml`); imagem Docker atual usa **3.12-slim** (alinhar quando possível) |
+| Runtime API | Python | **≥ 3.13** (`pyproject.toml` e imagem Docker `python:3.13-slim`) |
 | Framework API | Django | `>=5.1,<6` |
 | API HTTP | Django REST Framework | `>=3.15,<4` |
 | OpenAPI | drf-spectacular | `>=0.28,<1` |

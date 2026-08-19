@@ -27,7 +27,9 @@ Never:
 - Place business logic in serializers
 - Place business logic in ORM models
 
-Business logic belongs exclusively in Application Use Cases.
+Application workflows belong in Use Cases. Domain invariants (ownership, status rules) may live in Domain Services. Views stay thin.
+
+For each feature, decide **tela migrada** vs **aplicação nativa** (`docs/developers/novas-telas.md`). Migrated screens wrap Oracle packages (`callproc`); do not reimplement package logic in Python. Native apps must not invent a cosmetic `PCK_*`. When a migrated module goes live, the equivalent PHP 3.0 screen is deactivated (ADR 0006) — do not design permanent dual-UI.
 
 When multiple implementations are possible:
 

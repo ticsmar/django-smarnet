@@ -45,7 +45,7 @@ Na UI, “Excluir” aparece se `(delete_fornecedor || change_fornecedor)` e o r
 
 ## Frontend
 
-- Rotas: `/app/compras`, `/app/compras/fornecedores`, `/app/compras/fornecedores/:codFornec` (guard `view_fornecedor`).
+- Rotas: `/app/purchasing`, `/app/purchasing/suppliers`, `/app/purchasing/suppliers/:codFornec` (guard `view_fornecedor`).
 - Listagem: `FornecedoresPage` — modos **tabela / lista / cards** (`useViewMode`, chave `smarnet:view:compras-fornecedores`).
 - Ações de linha: menu ⋮ em tabela/lista; **botões no rodapé** em cards (`FornecedorRowActions`).
 - Detalhe: editar, ativar/inativar, contatos — `FornecedorDetailPage`.

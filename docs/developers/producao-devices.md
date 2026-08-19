@@ -1,6 +1,6 @@
 # Produção e devices
 
-O menu **Produção** (`/app/producao`) é um grupo de navegação ERP. O item funcional atual é **Devices** (`/app/devices`). Não há app Django `producao` — tokens vivem em `backend/apps/branch_auth`.
+O menu **Produção** (`/app/production`) é um grupo de navegação ERP. **Ordem de Produção** (`/app/production/orders`) é tela **simulada** (aplicação nativa ainda sem persistência): visível a usuários autenticados, **sem** permissão Django `producao_infrastructure` (app inexistente). O item funcional de devices fica em **Devices** (`/app/devices`), sob o grupo **Acessos** (`/app/access`). Tokens vivem em `backend/apps/branch_auth`.
 
 ## Modelo
 
