@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { allowsFunctionalStorage } from '@/lib/lgpdConsent';
 
 export type DataViewMode = 'tabela' | 'lista' | 'cards';
 
@@ -31,6 +32,7 @@ export function useViewMode(
   const setMode = useCallback(
     (next: DataViewMode) => {
       setModeState(next);
+      if (!allowsFunctionalStorage()) return;
       try {
         window.localStorage.setItem(storageKey, next);
       } catch {

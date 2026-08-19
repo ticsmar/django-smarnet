@@ -5,7 +5,7 @@ import { useVisibleErpGroups } from '@/config/erpNavigation';
 import { usePageBreadcrumb } from '@/contexts/PageBreadcrumbContext';
 
 /**
- * Página índice de um grupo do menu (ex: /app/compras), listando os itens que
+ * Página índice de um grupo do menu (ex: /app/purchasing), listando os itens que
  * o usuário pode acessar. Serve de destino para o breadcrumb do módulo.
  */
 export function ModuleIndexPage({ groupKey }: { groupKey: string }) {

@@ -6,8 +6,8 @@ import { ComponentDoc, DocSection, VariantSection, PropsTable, UsageNote } from 
 
 const items = [
   { label: 'Início', href: '/app', icon: Home, iconOnly: true },
-  { label: 'Compras', href: '/app/compras' },
-  { label: 'Fornecedores', href: '/app/compras/fornecedores' },
+  { label: 'Compras', href: '/app/purchasing' },
+  { label: 'Fornecedores', href: '/app/purchasing/suppliers' },
   { label: '1011' },
 ];
 
@@ -45,7 +45,7 @@ export default function BreadcrumbPage() {
           code={`<PathBreadcrumb
   items={[
     { label: 'Início', href: '/app', icon: Home, iconOnly: true },
-    { label: 'Compras', href: '/app/compras' },
+    { label: 'Compras', href: '/app/purchasing' },
     { label: 'Fornecedores' },  // último = página atual
   ]}
   separator="chevron"
@@ -174,7 +174,7 @@ export default function BreadcrumbPage() {
 
 // Página
 usePageBreadcrumb([
-  { label: t('nav.compras'), href: '/app/compras' },
+  { label: t('nav.compras'), href: '/app/purchasing' },
   { label: t('compras.fornecedores.title') },
 ]);`}
         />
@@ -186,8 +186,8 @@ usePageBreadcrumb([
         </UsageNote>
         <UsageNote type="warning">
           Crumbs intermediários de módulo (Compras, Produção) devem apontar para as rotas índice{' '}
-          <code className="font-mono text-[11px]">/app/compras</code> e{' '}
-          <code className="font-mono text-[11px]">/app/producao</code> — não para a primeira tela
+          <code className="font-mono text-[11px]">/app/purchasing</code> e{' '}
+          <code className="font-mono text-[11px]">/app/production</code> — não para a primeira tela
           filha.
         </UsageNote>
       </DocSection>

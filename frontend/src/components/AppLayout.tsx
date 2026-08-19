@@ -8,13 +8,13 @@ import { PageBreadcrumbProvider } from '@/contexts/PageBreadcrumbContext';
 
 export function AppLayout({ children }: { children?: ReactNode }) {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen>
       <PageBreadcrumbProvider>
-        <div className="min-h-screen flex w-full bg-surface-container-low">
+        <div className="flex min-h-svh w-full bg-surface-container-low">
           <AppSidebar />
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex min-w-0 flex-1 flex-col">
             <TopNav />
-            <main className="flex-1 pt-4 pb-12 px-4 sm:px-6 lg:px-8 max-w-[1600px] w-full mx-auto">
+            <main className="mx-auto w-full max-w-[1600px] flex-1 px-3 pb-[max(3rem,env(safe-area-inset-bottom))] pt-3 sm:px-6 sm:pt-4 lg:px-8">
               <PageBreadcrumbBar />
               {children ?? <Outlet />}
             </main>

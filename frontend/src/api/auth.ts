@@ -1,5 +1,5 @@
 import { apiRequest } from "./client";
-import type { ChangePasswordInput, Credentials, User } from "@/types/auth";
+import type { ChangePasswordInput, Credentials, User, UserProfile } from "@/types/auth";
 
 export function login(credentials: Credentials): Promise<User> {
   return apiRequest<User>("/users/login/", {
@@ -16,6 +16,10 @@ export function logout(): Promise<void> {
 
 export function getCurrentUser(): Promise<User> {
   return apiRequest<User>("/users/me/");
+}
+
+export function getUserProfile(): Promise<UserProfile> {
+  return apiRequest<UserProfile>("/users/me/profile/");
 }
 
 export function changePassword(input: ChangePasswordInput): Promise<void> {

@@ -224,7 +224,7 @@ export default function PatternsPage() {
             <PathBreadcrumb
               items={[
                 { label: 'Início', href: '/app', icon: Home, iconOnly: true },
-                { label: 'Comercial', href: '/app/compras' },
+                { label: 'Comercial', href: '/app/purchasing' },
                 { label: 'Pedidos' },
               ]}
             />

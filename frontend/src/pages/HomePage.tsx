@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import {
   BookOpen,
+  Building2,
   ChevronRight,
+  ClipboardList,
   LayoutDashboard,
   Monitor,
   Palette,
@@ -12,8 +14,11 @@ import {
 } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 import { useT } from "@/hooks/useT";
+import { canAccessAdminDevArea } from "@/lib/adminDevAccess";
+import { ADMINISTRACAO_PERMS } from "@/modules/administracao";
+import { hasPermission } from "@/lib/userPermissions";
 import { useBranchManagerAccess } from "@/modules/device";
-import { COMPRAS_PERMS, hasPermission } from "@/modules/compras";
+import { COMPRAS_PERMS } from "@/modules/compras";
 
 type HubCard = {
   key: string;
@@ -25,16 +30,23 @@ export default function HomePage() {
   const t = useT();
   const { user } = useApp();
   const { isManager: canAccessDevices } = useBranchManagerAccess();
+  const canAccessAdminDevLinks = canAccessAdminDevArea(user);
 
   const cards: HubCard[] = [];
 
   if (hasPermission(user, COMPRAS_PERMS.viewFornecedor)) {
     cards.push({
       key: "compras",
-      path: "/app/compras/fornecedores",
+      path: "/app/purchasing/suppliers",
       icon: Truck,
     });
   }
+
+  cards.push({
+    key: "ops",
+    path: "/app/production/orders",
+    icon: ClipboardList,
+  });
 
   if (canAccessDevices) {
     cards.push({
@@ -44,17 +56,27 @@ export default function HomePage() {
     });
   }
 
+  if (hasPermission(user, ADMINISTRACAO_PERMS.viewCliente)) {
+    cards.push({
+      key: "clientes",
+      path: "/app/administration/customers",
+      icon: Building2,
+    });
+  }
+
   cards.push({
     key: "profile",
     path: "/app/profile",
     icon: User,
   });
 
-  cards.push({
-    key: "docs",
-    path: "/docs",
-    icon: BookOpen,
-  });
+  if (canAccessAdminDevLinks) {
+    cards.push({
+      key: "docs",
+      path: "/docs",
+      icon: BookOpen,
+    });
+  }
 
   if (user?.can_manage_access || user?.is_superuser) {
     cards.push({
@@ -64,7 +86,7 @@ export default function HomePage() {
     });
   }
 
-  if (user?.is_superuser) {
+  if (canAccessAdminDevLinks) {
     cards.push({
       key: "design_system",
       path: "/design-system",

@@ -40,7 +40,7 @@ export function DeviceTokensPage() {
   const [revokingId, setRevokingId] = useState<number | null>(null);
 
   usePageBreadcrumb([
-    { label: t("nav.producao"), href: "/app/producao" },
+    { label: t("nav.configurar"), href: "/app/access" },
     { label: t("devices.title") },
   ]);
 
