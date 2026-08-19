@@ -27,6 +27,7 @@ def test_create_user_admin_success() -> None:
         is_active=True,
         is_superuser=False,
         groups=[],
+        product_permissions=[],
         last_login=None,
         date_joined=datetime(2025, 1, 1, tzinfo=UTC),
     )
@@ -58,6 +59,7 @@ def test_create_user_admin_skips_password_change_flag_when_disabled() -> None:
         is_active=True,
         is_superuser=False,
         groups=[],
+        product_permissions=[],
         last_login=None,
         date_joined=datetime(2025, 1, 1, tzinfo=UTC),
     )

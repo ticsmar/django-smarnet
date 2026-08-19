@@ -24,6 +24,7 @@ def session_store() -> DjangoAuthSessionStore:
     return DjangoAuthSessionStore(FakeSession())
 
 
+@pytest.mark.django_db
 def test_get_current_user_success(session_store: DjangoAuthSessionStore) -> None:
     session_store.create_session("oracle_user")
     use_case = GetCurrentUserUseCase(session_store)

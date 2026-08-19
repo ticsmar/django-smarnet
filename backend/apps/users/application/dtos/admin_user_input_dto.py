@@ -27,12 +27,20 @@ class UpdateUserInputDTO:
     last_name: str | None = None
     is_active: bool | None = None
     is_superuser: bool | None = None
+    emp_codigo: int | None = None
+    pes_numero: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class SetUserGroupsInputDTO:
     user_id: int
     groups: list[str]
+
+
+@dataclass(frozen=True, slots=True)
+class SetUserProductPermissionsInputDTO:
+    user_id: int
+    permissions: list[str]
 
 
 @dataclass(frozen=True, slots=True)

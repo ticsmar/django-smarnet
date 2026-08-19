@@ -14,3 +14,13 @@ def validate_oracle_username(username: str) -> str:
         )
         raise ValueError(msg)
     return normalized
+
+
+def sanitize_username(seed: str, fallback_code: int) -> str:
+    """Coerce free text into a login accepted by USU_LOGINWEB (20 chars)."""
+    candidate = re.sub(r"[^A-Za-z0-9_.]+", ".", seed).strip(".")
+    if not candidate:
+        candidate = f"u{fallback_code}"
+    if not candidate[0].isalpha():
+        candidate = f"u{candidate}"
+    return candidate[:20]

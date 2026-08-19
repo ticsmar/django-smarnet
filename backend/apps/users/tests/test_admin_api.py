@@ -12,8 +12,25 @@ from rest_framework.test import APIClient
 from apps.shared.presentation.auth.session_user import OracleSessionUser
 from apps.users.application.dtos.admin_user_output_dto import (
     AdminGroupOutputDTO,
+    AdminProductPermissionOutputDTO,
     AdminUserOutputDTO,
     PaginatedUsersOutputDTO,
+)
+from apps.users.application.dtos.pending_request_dto import (
+    DiscardAccessRequestOutputDTO,
+    ImportOracleUserOutputDTO,
+    RegisterAccessRequestFieldsOutputDTO,
+)
+from apps.users.domain.exceptions.access_approval_exceptions import (
+    PendingRequestAlreadyClosedError,
+    PendingRequestNotFoundError,
+)
+from apps.users.domain.exceptions.oracle_import_exceptions import (
+    OracleUserAlreadyImportedError,
+)
+from apps.users.domain.exceptions.pending_request_exceptions import (
+    EmpresaFromPartnerNotAllowedError,
+    NoFieldsToRegisterError,
 )
 
 
@@ -48,6 +65,7 @@ def admin_user_dto() -> AdminUserOutputDTO:
         is_active=True,
         is_superuser=False,
         groups=["access_admins"],
+        product_permissions=[],
         last_login=None,
         date_joined=datetime(2025, 1, 1, tzinfo=UTC),
     )
@@ -126,6 +144,7 @@ def test_access_admin_can_create_user(
         is_active=True,
         is_superuser=False,
         groups=["branch_managers"],
+        product_permissions=[],
         last_login=None,
         date_joined=datetime(2025, 1, 1, tzinfo=UTC),
     )
@@ -164,6 +183,7 @@ def test_access_admin_can_set_groups(
         is_active=admin_user_dto.is_active,
         is_superuser=admin_user_dto.is_superuser,
         groups=["branch_managers"],
+        product_permissions=admin_user_dto.product_permissions,
         last_login=admin_user_dto.last_login,
         date_joined=admin_user_dto.date_joined,
     )
@@ -197,6 +217,270 @@ def test_access_admin_can_list_groups(
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json()[0]["name"] == "access_admins"
+
+
+@patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
+@patch(
+    "apps.users.presentation.views.admin_views.build_list_product_permissions_use_case"
+)
+def test_access_admin_can_list_product_permissions(
+    mock_build: MagicMock,
+    mock_resolve: MagicMock,
+    api_client: APIClient,
+) -> None:
+    mock_resolve.return_value = _admin_user()
+    mock_build.return_value.execute.return_value = [
+        AdminProductPermissionOutputDTO(
+            value="compras_infrastructure.view_fornecedor",
+            app_label="compras_infrastructure",
+            model="fornecedor",
+            codename="view_fornecedor",
+            name="Can view fornecedor",
+        )
+    ]
+    api_client.force_authenticate(user=OracleSessionUser(username="access_admin"))
+
+    response = api_client.get("/api/admin/product-permissions/")
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()[0]["value"] == "compras_infrastructure.view_fornecedor"
+
+
+@patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
+@patch(
+    "apps.users.presentation.views.admin_views.build_set_user_product_permissions_use_case"
+)
+def test_access_admin_can_set_product_permissions(
+    mock_build: MagicMock,
+    mock_resolve: MagicMock,
+    api_client: APIClient,
+    admin_user_dto: AdminUserOutputDTO,
+) -> None:
+    mock_resolve.return_value = _admin_user()
+    updated = AdminUserOutputDTO(
+        id=admin_user_dto.id,
+        username=admin_user_dto.username,
+        email=admin_user_dto.email,
+        first_name=admin_user_dto.first_name,
+        last_name=admin_user_dto.last_name,
+        is_active=admin_user_dto.is_active,
+        is_superuser=admin_user_dto.is_superuser,
+        groups=admin_user_dto.groups,
+        product_permissions=["compras_infrastructure.view_fornecedor"],
+        last_login=admin_user_dto.last_login,
+        date_joined=admin_user_dto.date_joined,
+    )
+    mock_build.return_value.execute.return_value = updated
+    api_client.force_authenticate(user=OracleSessionUser(username="access_admin"))
+
+    response = api_client.put(
+        "/api/admin/users/1/product-permissions/",
+        {"permissions": ["compras_infrastructure.view_fornecedor"]},
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["product_permissions"] == [
+        "compras_infrastructure.view_fornecedor"
+    ]
+
+
+@patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
+@patch(
+    "apps.users.presentation.views.admin_views.build_discard_access_request_use_case"
+)
+def test_discard_pending_request(
+    mock_build: MagicMock,
+    mock_resolve: MagicMock,
+    api_client: APIClient,
+) -> None:
+    mock_resolve.return_value = _admin_user()
+    mock_build.return_value.execute.return_value = DiscardAccessRequestOutputDTO(
+        ppe_codigo=501
+    )
+    api_client.force_authenticate(user=OracleSessionUser(username="access_admin"))
+
+    response = api_client.post("/api/admin/requests/501/discard/")
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["ppe_codigo"] == 501
+
+
+@patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
+@patch(
+    "apps.users.presentation.views.admin_views.build_discard_access_request_use_case"
+)
+def test_discard_closed_pending_request_returns_404(
+    mock_build: MagicMock,
+    mock_resolve: MagicMock,
+    api_client: APIClient,
+) -> None:
+    mock_resolve.return_value = _admin_user()
+    mock_build.return_value.execute.side_effect = PendingRequestNotFoundError(
+        "Pending request not found or already closed."
+    )
+    api_client.force_authenticate(user=OracleSessionUser(username="access_admin"))
+
+    response = api_client.post("/api/admin/requests/501/discard/")
+
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
+@patch(
+    "apps.users.presentation.views.admin_views.build_approve_access_request_use_case"
+)
+def test_approve_closed_pending_request_returns_409(
+    mock_build: MagicMock,
+    mock_resolve: MagicMock,
+    api_client: APIClient,
+) -> None:
+    mock_resolve.return_value = _admin_user()
+    mock_build.return_value.execute.side_effect = PendingRequestAlreadyClosedError(
+        "Solicitacao 501 ja foi baixada."
+    )
+    api_client.force_authenticate(user=OracleSessionUser(username="access_admin"))
+
+    response = api_client.post(
+        "/api/admin/requests/501/approve/",
+        {"username": "ana.silva"},
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_409_CONFLICT
+    assert response.json()["detail"] == "Solicitacao 501 ja foi baixada."
+
+
+@patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
+@patch(
+    "apps.users.presentation.views.admin_views.build_register_access_request_fields_use_case"
+)
+def test_register_fields_requires_at_least_one_field(
+    mock_build: MagicMock,
+    mock_resolve: MagicMock,
+    api_client: APIClient,
+) -> None:
+    mock_resolve.return_value = _admin_user()
+    mock_build.return_value.execute.side_effect = NoFieldsToRegisterError(
+        "Informe ao menos um campo para cadastrar."
+    )
+    api_client.force_authenticate(user=OracleSessionUser(username="access_admin"))
+
+    response = api_client.post(
+        "/api/admin/requests/501/register-fields/", {}, format="json"
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
+@patch(
+    "apps.users.presentation.views.admin_views.build_register_access_request_fields_use_case"
+)
+def test_register_fields_passes_only_informed_fields_to_the_use_case(
+    mock_build: MagicMock,
+    mock_resolve: MagicMock,
+    api_client: APIClient,
+) -> None:
+    mock_resolve.return_value = _admin_user()
+    mock_build.return_value.execute.return_value = RegisterAccessRequestFieldsOutputDTO(
+        ppe_codigo=501,
+        fun_chapa=None,
+        pes_numero=3001,
+        emp_codigo=88,
+        tep_codigo="C",
+        tipo="Cliente",
+        cliente=True,
+        fornecedor=False,
+        smar=False,
+        detail="Campos cadastrados com sucesso.",
+        closed=False,
+        resolved_existing_user=False,
+    )
+    api_client.force_authenticate(user=OracleSessionUser(username="access_admin"))
+
+    response = api_client.post(
+        "/api/admin/requests/501/register-fields/",
+        {"pes_numero": 3001},
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    sent = mock_build.return_value.execute.call_args.args[0]
+    assert sent.write_pes_numero is True
+    assert sent.pes_numero == 3001
+    assert sent.write_emp_codigo is False
+    assert sent.tep_codigo is None
+
+
+@patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
+@patch(
+    "apps.users.presentation.views.admin_views.build_create_empresa_from_partner_use_case"
+)
+def test_create_empresa_rejects_funcionario_request(
+    mock_build: MagicMock,
+    mock_resolve: MagicMock,
+    api_client: APIClient,
+) -> None:
+    mock_resolve.return_value = _admin_user()
+    mock_build.return_value.execute.side_effect = EmpresaFromPartnerNotAllowedError(
+        "Criacao de empresa a partir de parceiro so se aplica a TEP C ou F."
+    )
+    api_client.force_authenticate(user=OracleSessionUser(username="access_admin"))
+
+    response = api_client.post(
+        "/api/admin/requests/501/create-empresa/",
+        {"partner_codigo": "1234"},
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
+@patch("apps.users.presentation.views.admin_views.build_import_oracle_user_use_case")
+def test_import_oracle_user_conflict_when_already_imported(
+    mock_build: MagicMock,
+    mock_resolve: MagicMock,
+    api_client: APIClient,
+) -> None:
+    mock_resolve.return_value = _admin_user()
+    mock_build.return_value.execute.side_effect = OracleUserAlreadyImportedError(
+        "Chapa 4242 ja foi importada no Smarnet."
+    )
+    api_client.force_authenticate(user=OracleSessionUser(username="access_admin"))
+
+    response = api_client.post("/api/admin/oracle-users/4242/import/")
+
+    assert response.status_code == status.HTTP_409_CONFLICT
+
+
+@patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
+@patch("apps.users.presentation.views.admin_views.build_import_oracle_user_use_case")
+def test_import_oracle_user_reports_failed_email_as_partial_success(
+    mock_build: MagicMock,
+    mock_resolve: MagicMock,
+    api_client: APIClient,
+) -> None:
+    mock_resolve.return_value = _admin_user()
+    mock_build.return_value.execute.return_value = ImportOracleUserOutputDTO(
+        usu_chapa=4242,
+        username="ana.silva",
+        email="ana@smar.com.br",
+        django_user_id=91,
+        temporary_password="Provisoria12",
+        email_sent=False,
+        notification_error="fila de e-mail indisponivel",
+    )
+    api_client.force_authenticate(user=OracleSessionUser(username="access_admin"))
+
+    response = api_client.post("/api/admin/oracle-users/4242/import/")
+
+    assert response.status_code == status.HTTP_201_CREATED
+    data = response.json()
+    assert data["email_sent"] is False
+    assert data["temporary_password"] == "Provisoria12"
+    assert "fila de e-mail indisponivel" in data["detail"]
 
 
 @pytest.fixture
@@ -238,6 +522,7 @@ def me_access_mocks() -> Generator[MagicMock]:
         yield auth
 
 
+@pytest.mark.django_db
 def test_me_includes_access_fields(
     me_access_mocks: MagicMock,
     api_client: APIClient,

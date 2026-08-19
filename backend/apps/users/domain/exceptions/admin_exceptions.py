@@ -15,5 +15,9 @@ class GroupNotFoundError(AdminError):
     """Raised when a requested group name does not exist."""
 
 
+class ProductPermissionNotFoundError(AdminError):
+    """Raised when a requested product permission does not exist."""
+
+
 class RegistrationForbiddenError(AdminError):
     """Raised when public registration is disabled."""

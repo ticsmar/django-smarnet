@@ -28,7 +28,9 @@ def session_store() -> DjangoAuthSessionStore:
     return DjangoAuthSessionStore(FakeSession())
 
 
+@pytest.mark.django_db
 def test_login_success(session_store: DjangoAuthSessionStore) -> None:
+    """create_session grava presenca do usuario, entao precisa de banco."""
     auth_repository = Mock()
     auth_repository.authenticate.return_value = True
     user_repository = Mock()

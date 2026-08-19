@@ -29,6 +29,7 @@ def session_store() -> DjangoAuthSessionStore:
     return DjangoAuthSessionStore(FakeSession())
 
 
+@pytest.mark.django_db
 def test_register_success(session_store: DjangoAuthSessionStore) -> None:
     user_repository = Mock()
     user_repository.user_exists.return_value = False

@@ -9,6 +9,7 @@ from apps.shared.presentation.auth.session_keys import (
     SESSION_AUTHENTICATED,
     SESSION_ORACLE_USERNAME,
 )
+from apps.users.infrastructure.user_presence import touch_user_presence
 
 # Keep Django Admin (/admin/) on the same principal as the ERP session.
 _DJANGO_AUTH_BACKEND = "django.contrib.auth.backends.ModelBackend"
@@ -31,6 +32,7 @@ class DjangoAuthSessionStore:
                 login(self._request, user, backend=_DJANGO_AUTH_BACKEND)
         self._session[SESSION_ORACLE_USERNAME] = username
         self._session[SESSION_AUTHENTICATED] = True
+        touch_user_presence(username, force=True)
 
     def clear_session(self) -> None:
         if self._request is not None:

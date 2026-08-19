@@ -22,6 +22,7 @@ def session_store() -> DjangoAuthSessionStore:
     return DjangoAuthSessionStore(FakeSession())
 
 
+@pytest.mark.django_db
 def test_logout_success(session_store: DjangoAuthSessionStore) -> None:
     session_store.create_session("oracle_user")
     use_case = LogoutUseCase(session_store)

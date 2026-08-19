@@ -15,12 +15,34 @@ class AdminUserRecord:
     is_active: bool
     is_superuser: bool
     groups: list[str]
+    product_permissions: list[str]
     last_login: datetime | None
     date_joined: datetime
+    usu_chapa: int | None = None
+    emp_codigo: int | None = None
+    pes_numero: int | None = None
+    pais_nome: str = ""
+    emp_nome: str = ""
+    emp_endereco: str = ""
+    emp_bairro: str = ""
+    emp_cidade: str = ""
+    emp_estado: str = ""
+    emp_cep: str = ""
+    emp_pais_nome: str = ""
+    emp_homepage: str = ""
 
 
 @dataclass(frozen=True, slots=True)
 class AdminGroupRecord:
+    name: str
+
+
+@dataclass(frozen=True, slots=True)
+class AdminProductPermissionRecord:
+    value: str
+    app_label: str
+    model: str
+    codename: str
     name: str
 
 
@@ -39,6 +61,8 @@ class AdminUserUpdate:
     last_name: str | None = None
     is_active: bool | None = None
     is_superuser: bool | None = None
+    emp_codigo: int | None = None
+    pes_numero: int | None = None
 
 
 class UserAdminRepository(Protocol):
@@ -66,8 +90,16 @@ class UserAdminRepository(Protocol):
     def set_user_groups(self, user_id: int, groups: list[str]) -> AdminUserRecord:
         """Replace the user's group membership."""
 
+    def set_user_product_permissions(
+        self, user_id: int, permissions: list[str]
+    ) -> AdminUserRecord:
+        """Replace direct product permissions assigned to the user."""
+
     def set_user_password(self, user_id: int, password: str) -> None:
         """Set a new password for the user."""
 
     def list_groups(self) -> list[AdminGroupRecord]:
         """Return all assignable groups."""
+
+    def list_product_permissions(self) -> list[AdminProductPermissionRecord]:
+        """Return all assignable product permissions."""

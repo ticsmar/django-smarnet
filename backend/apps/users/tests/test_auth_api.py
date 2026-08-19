@@ -1,10 +1,13 @@
 """API tests for authentication endpoints."""
 
 from collections.abc import Generator
+from datetime import date
 from unittest.mock import MagicMock, patch
 
 import pytest
 from rest_framework.test import APIClient
+
+from apps.users.domain.repositories.user_profile import UserProfileSnapshot
 
 
 @pytest.fixture
@@ -54,6 +57,7 @@ def mock_auth_payload() -> Generator[None]:
 
 @pytest.fixture
 def authenticated_client(
+    db,
     api_client: APIClient,
     mock_build: MagicMock,
     mock_user_build: MagicMock,
@@ -72,6 +76,7 @@ def authenticated_client(
     return api_client
 
 
+@pytest.mark.django_db
 def test_login_success(
     mock_build: MagicMock,
     mock_user_build: MagicMock,
@@ -161,6 +166,69 @@ def test_me_unauthenticated(api_client: APIClient) -> None:
     assert response.status_code == 401
 
 
+def test_me_profile_authenticated(authenticated_client: APIClient) -> None:
+    profile = UserProfileSnapshot(
+        username="oracle_user",
+        is_superuser=False,
+        can_manage_access=False,
+        is_branch_manager=False,
+        groups=["access_admins"],
+        usu_chapa=123,
+        display_name="Oracle User",
+        email="oracle@example.com",
+        usu_login="ORACLE",
+        usu_loginweb="oracle_user",
+        usu_sigla="OU",
+        usu_status=0,
+        usu_status_label="Ativo",
+        cc_codigo="CC01",
+        cc_nome="Centro 1",
+        origem="RH",
+        pes_numero=10,
+        emp_codigo=1,
+        emp_nome="Empresa Exemplo",
+        emp_reduzido="EXEMPLO",
+        emp_cidade="São Paulo",
+        emp_estado="SP",
+        is_funcionario=True,
+        fun_chapa=123,
+        fun_apelido="Oracle",
+        fun_cargo="Analista",
+        fun_ativo="S",
+        fun_ativo_label="Ativo",
+        fun_dt_adm=date(2020, 1, 15),
+        fun_ramal=100,
+        fun_unidade="U1",
+        fun_filial="01",
+        fun_endereco="Rua A",
+        fun_cidade="São Paulo",
+        fun_uf="SP",
+        fun_bairro="Centro",
+        fun_cep="01000-000",
+    )
+    with patch(
+        "apps.users.presentation.dependencies.build_user_profile_repository",
+    ) as mock_repo_build:
+        mock_repo_build.return_value.get_by_username.return_value = profile
+        response = authenticated_client.get("/api/users/me/profile/")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["username"] == "oracle_user"
+    assert body["display_name"] == "Oracle User"
+    assert body["emp_nome"] == "Empresa Exemplo"
+    assert body["is_funcionario"] is True
+    assert body["fun_cargo"] == "Analista"
+    assert body["fun_dt_adm"] == "2020-01-15"
+    assert body["cc_nome"] == "Centro 1"
+
+
+def test_me_profile_unauthenticated(api_client: APIClient) -> None:
+    response = api_client.get("/api/users/me/profile/")
+
+    assert response.status_code == 401
+
+
 def test_register_forbidden_by_default(api_client: APIClient) -> None:
     response = api_client.post(
         "/api/users/register/",
@@ -172,6 +240,7 @@ def test_register_forbidden_by_default(api_client: APIClient) -> None:
     assert "Self-registration is not allowed" in response.json()["detail"]
 
 
+@pytest.mark.django_db
 def test_register_success_when_public_enabled(
     mock_user_build: MagicMock,
     mock_auth_payload: None,

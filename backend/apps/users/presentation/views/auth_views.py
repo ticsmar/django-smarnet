@@ -15,9 +15,11 @@ from apps.users.application.dtos.register_input_dto import RegisterInputDTO
 from apps.users.infrastructure.session.django_auth_session_store import (
     DjangoAuthSessionStore,
 )
+from apps.users.infrastructure.user_presence import touch_user_presence
 from apps.users.presentation.dependencies import (
     build_change_password_use_case,
     build_get_current_user_use_case,
+    build_get_user_profile_use_case,
     build_login_use_case,
     build_logout_use_case,
     build_register_use_case,
@@ -27,7 +29,9 @@ from apps.users.presentation.serializers.auth_serializers import (
     ChangePasswordRequestSerializer,
     LoginRequestSerializer,
     RegisterRequestSerializer,
+    UserProfileSerializer,
     build_authenticated_user_payload,
+    build_user_profile_payload,
 )
 
 
@@ -132,9 +136,25 @@ class CurrentUserView(APIView):
     )
     def get(self, request: Request) -> Response:
         result = build_get_current_user_use_case(_session_store(request)).execute()
+        touch_user_presence(result.username)
         output = AuthenticatedUserSerializer(
             build_authenticated_user_payload(result.username)
         )
+        return Response(output.data, status=status.HTTP_200_OK)
+
+
+class CurrentUserProfileView(APIView):
+    permission_classes: list[type] = [IsOracleAuthenticated]
+
+    @extend_schema(
+        responses={
+            200: UserProfileSerializer,
+            401: OpenApiResponse(description="Not authenticated."),
+        },
+    )
+    def get(self, request: Request) -> Response:
+        result = build_get_user_profile_use_case(_session_store(request)).execute()
+        output = UserProfileSerializer(build_user_profile_payload(result))
         return Response(output.data, status=status.HTTP_200_OK)
 
 

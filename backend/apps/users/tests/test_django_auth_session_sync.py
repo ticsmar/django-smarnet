@@ -22,10 +22,12 @@ def test_create_session_logs_into_django_auth_user() -> None:
     store = DjangoAuthSessionStore(request.session, request=request)
     store.create_session("juliano")
 
+    user.refresh_from_db()
     assert store.get_username() == "juliano"
     assert store.is_authenticated()
     assert request.session.get(SESSION_KEY) == str(user.pk)
     assert get_user(request).username == "juliano"
+    assert user.last_login is not None
 
 
 @pytest.mark.django_db

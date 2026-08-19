@@ -2,6 +2,7 @@
 
 from django.contrib.auth import authenticate as django_authenticate
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.utils.crypto import get_random_string
 
 from apps.users.domain.exceptions.admin_exceptions import UserNotFoundError
@@ -29,7 +30,11 @@ class UserSecurityRepositoryImpl:
         user = _get_user_by_username(username)
         if user is None:
             return False
-        profile = getattr(user, "security_profile", None)
+        profile = (
+            UserSecurityProfile.objects.filter(user_id=user.id)
+            .only("must_change_password")
+            .first()
+        )
         if profile is None:
             return False
         return profile.must_change_password
@@ -49,20 +54,22 @@ class UserSecurityRepositoryImpl:
         user = _get_user_by_username(username)
         if user is None:
             raise UserNotFoundError(f"User '{username}' not found.")
-        user.set_password(new_password)
-        user.save(update_fields=["password"])
-        profile = _ensure_profile(user)
-        profile.must_change_password = False
-        profile.save(update_fields=["must_change_password"])
+        with transaction.atomic():
+            user.set_password(new_password)
+            user.save(update_fields=["password"])
+            profile = _ensure_profile(user)
+            profile.must_change_password = False
+            profile.save(update_fields=["must_change_password"])
 
     def reset_password(self, user_id: int, password: str | None = None) -> str:
         user = _get_user(user_id)
         temporary_password = password or get_random_string(12)
-        user.set_password(temporary_password)
-        user.save(update_fields=["password"])
-        profile = _ensure_profile(user)
-        profile.must_change_password = True
-        profile.save(update_fields=["must_change_password"])
+        with transaction.atomic():
+            user.set_password(temporary_password)
+            user.save(update_fields=["password"])
+            profile = _ensure_profile(user)
+            profile.must_change_password = True
+            profile.save(update_fields=["must_change_password"])
         return temporary_password
 
 
