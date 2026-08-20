@@ -11,7 +11,10 @@ env = environ.Env()
 environ.Env.read_env(BASE_DIR / ".env")
 
 SECRET_KEY = env("SECRET_KEY", default="django-insecure-dev-only-change-in-production")
-ALLOWED_HOSTS: list[str] = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
+ALLOWED_HOSTS: list[str] = env.list(
+    "ALLOWED_HOSTS",
+    default=["localhost", "127.0.0.1", "web"],
+)
 CORS_ALLOWED_ORIGINS: list[str] = env.list("CORS_ALLOWED_ORIGINS", default=[])
 # When False (default), POST /api/users/register/ is rejected;
 # admins create users via POST /api/admin/users/.
@@ -80,6 +83,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "apps.shared.presentation.middleware.prometheus_middleware.PrometheusMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",

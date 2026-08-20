@@ -7,8 +7,10 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 admin.site.site_header = "SmarNet - Admin"
 admin.site.site_title = "SmarNet - Admin"
 admin.site.index_title = "SmarNet - Admin"
+from apps.shared.presentation.views.metrics_view import MetricsView
 
 urlpatterns = [
+    path("metrics/", MetricsView.as_view(), name="prometheus-metrics"),
     path("admin/", admin.site.urls),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(

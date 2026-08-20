@@ -122,6 +122,9 @@ disable_error_code = ["arg-type", "no-untyped-def"]
 [[tool.mypy.overrides]]
 module = "environ"
 ignore_missing_imports = true
+[[tool.mypy.overrides]]
+module = ["prometheus_client", "prometheus_client.*"]
+ignore_missing_imports = true
 [tool.django-stubs]
 django_settings_module = "config.settings.development"
 

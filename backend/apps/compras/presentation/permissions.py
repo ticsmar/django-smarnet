@@ -24,6 +24,9 @@ def _has_pk(request: Request, field: str) -> bool:
     if not isinstance(data, dict):
         return False
     value = data.get(field)
+    if not isinstance(request.data, dict):
+        return False
+    value = request.data.get(field)
     return value is not None and value != ""
 
 
