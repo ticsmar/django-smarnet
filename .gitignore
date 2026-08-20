@@ -39,6 +39,7 @@ blob-report/
 .agents/
 .cursor/*
 !.cursor/skills/
+!.cursor/skills/**/
 !.cursor/skills/**
 
 # Scratch files

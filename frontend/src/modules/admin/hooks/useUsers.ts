@@ -4,6 +4,7 @@ import {
   listUsers,
   resetUserPassword,
   setUserGroups,
+  setUserProductPermissions,
   updateUser,
 } from "../api/adminApi";
 import type {
@@ -47,6 +48,17 @@ export function useSetUserGroups() {
   return useMutation({
     mutationFn: ({ id, groups }: { id: number; groups: string[] }) =>
       setUserGroups(id, groups),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: USERS_KEY });
+    },
+  });
+}
+
+export function useSetUserProductPermissions() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, permissions }: { id: number; permissions: string[] }) =>
+      setUserProductPermissions(id, permissions),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: USERS_KEY });
     },

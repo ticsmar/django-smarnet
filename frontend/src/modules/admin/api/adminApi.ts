@@ -1,6 +1,7 @@
 import { apiRequest, ApiError } from "@/api/client";
 import type {
   AdminGroup,
+  AdminProductPermission,
   AdminUser,
   CreateAdminUserInput,
   ListUsersParams,
@@ -58,6 +59,16 @@ export async function setUserGroups(id: number, groups: string[]): Promise<Admin
   });
 }
 
+export async function setUserProductPermissions(
+  id: number,
+  permissions: string[],
+): Promise<AdminUser> {
+  return apiRequest<AdminUser>(`/admin/users/${id}/product-permissions/`, {
+    method: "PUT",
+    body: JSON.stringify({ permissions }),
+  });
+}
+
 export async function resetUserPassword(
   id: number,
   password?: string,
@@ -70,4 +81,8 @@ export async function resetUserPassword(
 
 export async function listGroups(): Promise<AdminGroup[]> {
   return apiRequest<AdminGroup[]>("/admin/groups/");
+}
+
+export async function listProductPermissions(): Promise<AdminProductPermission[]> {
+  return apiRequest<AdminProductPermission[]>("/admin/product-permissions/");
 }

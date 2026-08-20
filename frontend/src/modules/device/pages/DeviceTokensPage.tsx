@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
-import { ChevronRight, Home, Monitor } from "lucide-react";
+import { Monitor } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +22,7 @@ import {
 } from "@/components/ui/table";
 import { useApp } from "@/contexts/AppContext";
 import { useT } from "@/hooks/useT";
+import { usePageBreadcrumb } from "@/contexts/PageBreadcrumbContext";
 import { DeviceApiError, createToken, listTokens, revokeToken } from "../api/deviceApi";
 import type { AccessToken, CreatedAccessToken } from "../types/accessToken";
 
@@ -38,6 +38,11 @@ export function DeviceTokensPage() {
   const [createdToken, setCreatedToken] = useState<CreatedAccessToken | null>(null);
   const [copyMessage, setCopyMessage] = useState("");
   const [revokingId, setRevokingId] = useState<number | null>(null);
+
+  usePageBreadcrumb([
+    { label: t("nav.configurar"), href: "/app/access" },
+    { label: t("devices.title") },
+  ]);
 
   function formatDate(value: string | null): string {
     if (!value) {
@@ -152,19 +157,6 @@ export function DeviceTokensPage() {
 
   return (
     <>
-      <nav className="mb-6 flex items-center gap-1.5 text-sm">
-        <Link
-          to="/app"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <Home size={14} />
-        </Link>
-        <ChevronRight size={14} className="text-muted-foreground/50" />
-        <span className="text-muted-foreground">{t("nav.producao")}</span>
-        <ChevronRight size={14} className="text-muted-foreground/50" />
-        <span className="font-medium text-foreground">{t("devices.title")}</span>
-      </nav>
-
       <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">

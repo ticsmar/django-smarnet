@@ -20,6 +20,10 @@ CORS_ALLOWED_ORIGINS: list[str] = env.list("CORS_ALLOWED_ORIGINS", default=[])
 # admins create users via POST /api/admin/users/.
 ALLOW_PUBLIC_REGISTER = env.bool("ALLOW_PUBLIC_REGISTER", default=False)
 
+RECEITAWS_URL = env("RECEITAWS_URL", default="https://www.receitaws.com.br/v1/cnpj")
+RECEITAWS_TOKEN = env("RECEITAWS_TOKEN", default="")
+VIACEP_URL = env("VIACEP_URL", default="https://viacep.com.br/ws")
+
 ORACLE_HOST = env("ORACLE_HOST", default="localhost")
 ORACLE_PORT = env.int("ORACLE_PORT", default=1521)
 ORACLE_SERVICE_NAME = env("ORACLE_SERVICE_NAME", default="ORCL")
@@ -74,11 +78,14 @@ INSTALLED_APPS = [
     "apps.branch_auth.presentation",
     "apps.compras.infrastructure",
     "apps.compras.presentation",
+    "apps.administracao.infrastructure",
+    "apps.administracao.presentation",
 ]
 
 MIDDLEWARE = [
     "apps.shared.presentation.middleware.prometheus_middleware.PrometheusMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -109,6 +116,15 @@ TEMPLATES = [
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -145,7 +161,7 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
 }
 
-LOGGING = {
+LOGGING: dict[str, object] = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {

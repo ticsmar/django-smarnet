@@ -1,31 +1,45 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useParams } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider, useApp } from "@/contexts/AppContext";
 import LandingPage from "./pages/LandingPage";
+import { LGPDBanner } from "./components/LGPDBanner";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import RequestAccess from "./pages/RequestAccess";
 import NotFound from "./pages/NotFound";
 import { AppLayout } from "./components/AppLayout";
 import { AdminLayout } from "./components/AdminLayout";
+import { ModuleIndexPage } from "./components/ModuleIndexPage";
 import { DeviceTokensPage, DeviceManagerRoute } from "./modules/device";
 import { AccessAdminRoute } from "./modules/admin";
 import { FornecedoresPage as ComprasFornecedoresPage, FornecedorDetailPage, ComprasFornecedorRoute } from "./modules/compras";
+import {
+  ClientesPage as AdministracaoClientesPage,
+  ClienteDetailPage,
+  AdministracaoClienteRoute,
+} from "./modules/administracao";
 import { lazy, Suspense } from "react";
+import { canAccessAdminDevArea } from "@/lib/adminDevAccess";
 
 // Admin (Settings)
 const SettingsOverview = lazy(() => import("./pages/admin/SettingsOverview"));
 const UsersAdmin = lazy(() => import("./pages/admin/UsersAdmin"));
+const ImportUsersAdmin = lazy(() => import("./pages/admin/ImportUsersAdmin"));
+const SolicitacoesAdmin = lazy(() => import("./pages/admin/SolicitacoesAdmin"));
 const CompaniesAdmin = lazy(() => import("./pages/admin/CompaniesAdmin"));
+const PeopleAdmin = lazy(() => import("./pages/admin/PeopleAdmin"));
+const CountriesAdmin = lazy(() => import("./pages/admin/CountriesAdmin"));
+const StatesAdmin = lazy(() => import("./pages/admin/StatesAdmin"));
 const AccessAdmin = lazy(() => import("./pages/admin/AccessAdmin"));
 const SystemAdmin = lazy(() => import("./pages/admin/SystemAdmin"));
 
 // Profile (TopNav) + Home hub
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const HomePage = lazy(() => import("./pages/HomePage"));
+const OrdemProducaoListPage = lazy(() => import("./pages/producao/OrdemProducaoListPage"));
 
 // Design System (standalone)
 const DesignSystemLayout = lazy(() => import("./pages/design-system/DesignSystemLayout"));
@@ -84,6 +98,11 @@ const DSPatterns = lazy(() => import("./pages/design-system/PatternsPage"));
 const DSDashboards = lazy(() => import("./pages/design-system/DashboardsPage"));
 const DSTemplates = lazy(() => import("./pages/design-system/TemplateElementsPage"));
 const DSIntegrations = lazy(() => import("./pages/design-system/IntegrationsPage"));
+const DocsLayout = lazy(() => import("./pages/docs/DocsLayout"));
+const DocPage = lazy(() =>
+  import("./pages/docs/DocsLayout").then((m) => ({ default: m.DocPage })),
+);
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 
 // Portal da Transparência
 const PortalLayout = lazy(() => import("./pages/portal/PortalLayout"));
@@ -141,11 +160,36 @@ function SuperuserDesignSystemLayout() {
   if (authLoading) return <AuthLoadingScreen />;
   if (!isAuthenticated) return <Navigate to="/" replace />;
   if (user?.must_change_password) return <Navigate to="/change-password" replace />;
-  if (!user?.is_superuser) return <Navigate to="/app" replace />;
+  if (!canAccessAdminDevArea(user)) return <Navigate to="/app" replace />;
   return (
     <LazyRoute>
       <DesignSystemLayout />
     </LazyRoute>
+  );
+}
+
+function AuthenticatedDocsLayout() {
+  const { isAuthenticated, authLoading, user } = useApp();
+  if (authLoading) return <AuthLoadingScreen />;
+  if (!isAuthenticated) return <Navigate to="/" replace />;
+  if (user?.must_change_password) return <Navigate to="/change-password" replace />;
+  if (!canAccessAdminDevArea(user)) return <Navigate to="/app" replace />;
+  return (
+    <LazyRoute>
+      <DocsLayout />
+    </LazyRoute>
+  );
+}
+
+function LegacySupplierRedirect() {
+  const { codFornec } = useParams();
+  return <Navigate to={`/app/purchasing/suppliers/${codFornec ?? ""}`} replace />;
+}
+
+function LegacyCustomerRedirect() {
+  const { codCliente } = useParams();
+  return (
+    <Navigate to={`/app/administration/customers/${codCliente ?? ""}`} replace />
   );
 }
 
@@ -159,6 +203,14 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={isAuthenticated ? <Navigate to={user?.must_change_password ? "/change-password" : "/app"} /> : <LandingPage />} />
+      <Route
+        path="/privacy"
+        element={
+          <LazyRoute>
+            <PrivacyPage />
+          </LazyRoute>
+        }
+      />
       <Route path="/register" element={<Navigate to="/request-access" replace />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/request-access" element={<RequestAccess />} />
@@ -224,31 +276,80 @@ function AppRoutes() {
         <Route path="integrations" element={<LazyRoute><DSIntegrations /></LazyRoute>} />
       </Route>
 
-      {/* Authenticated app — home hub + Compras + Devices (+ profile via TopNav) */}
+      {/* Documentação do Sistema — usuários autenticados */}
+      <Route path="/docs" element={<AuthenticatedDocsLayout />}>
+        <Route index element={<LazyRoute><DocPage /></LazyRoute>} />
+        <Route path="*" element={<LazyRoute><DocPage /></LazyRoute>} />
+      </Route>
+
+      {/* Authenticated app — home hub + modules (+ profile via TopNav) */}
       <Route path="/app" element={<ProtectedLayout />}>
         <Route index element={<LazyRoute><HomePage /></LazyRoute>} />
         <Route path="profile" element={<LazyRoute><ProfilePage /></LazyRoute>} />
-        <Route path="devices" element={<DeviceManagerRoute />}>
-          <Route index element={<DeviceTokensPage />} />
+
+        <Route path="administration" element={<ModuleIndexPage groupKey="administracao" />} />
+        <Route path="administration/customers" element={<AdministracaoClienteRoute />}>
+          <Route index element={<AdministracaoClientesPage />} />
+          <Route path=":codCliente" element={<ClienteDetailPage />} />
         </Route>
-        <Route path="compras/fornecedores" element={<ComprasFornecedorRoute />}>
+
+        <Route path="purchasing" element={<ModuleIndexPage groupKey="compras" />} />
+        <Route path="purchasing/suppliers" element={<ComprasFornecedorRoute />}>
           <Route index element={<ComprasFornecedoresPage />} />
           <Route path=":codFornec" element={<FornecedorDetailPage />} />
         </Route>
+
+        <Route path="production" element={<ModuleIndexPage groupKey="producao" />} />
+        <Route path="production/orders" element={<LazyRoute><OrdemProducaoListPage /></LazyRoute>} />
+
+        <Route path="access" element={<ModuleIndexPage groupKey="configurar" />} />
+        <Route path="devices" element={<DeviceManagerRoute />}>
+          <Route index element={<DeviceTokensPage />} />
+        </Route>
+
+        {/* PT legacy redirects */}
+        <Route path="administracao" element={<Navigate to="/app/administration" replace />} />
+        <Route path="administracao/clientes" element={<Navigate to="/app/administration/customers" replace />} />
+        <Route path="administracao/clientes/:codCliente" element={<LegacyCustomerRedirect />} />
+        <Route path="compras" element={<Navigate to="/app/purchasing" replace />} />
+        <Route path="compras/fornecedores" element={<Navigate to="/app/purchasing/suppliers" replace />} />
+        <Route path="compras/fornecedores/:codFornec" element={<LegacySupplierRedirect />} />
+        <Route path="producao" element={<Navigate to="/app/production" replace />} />
+        <Route path="ops" element={<Navigate to="/app/production/orders" replace />} />
+        <Route path="configurar" element={<Navigate to="/app/access" replace />} />
       </Route>
 
       {/* Admin / Settings area */}
       <Route path="/settings" element={<ProtectedAdminLayout />}>
         <Route element={<AdminLayout />}>
         <Route index element={<LazyRoute><SettingsOverview /></LazyRoute>} />
-        <Route path="usuarios" element={<LazyRoute><UsersAdmin /></LazyRoute>} />
-        <Route path="empresas" element={<LazyRoute><CompaniesAdmin /></LazyRoute>} />
-        <Route path="acessos" element={<LazyRoute><AccessAdmin /></LazyRoute>} />
-        <Route path="sistema" element={<LazyRoute><SystemAdmin /></LazyRoute>} />
-        <Route path="atividade" element={<LazyRoute><SettingsOverview /></LazyRoute>} />
-        <Route path="integracoes" element={<LazyRoute><SystemAdmin /></LazyRoute>} />
-        <Route path="notificacoes" element={<LazyRoute><SystemAdmin /></LazyRoute>} />
+        <Route path="access-requests" element={<LazyRoute><SolicitacoesAdmin /></LazyRoute>} />
+        <Route path="users" element={<LazyRoute><UsersAdmin /></LazyRoute>} />
+        <Route path="import-users" element={<LazyRoute><ImportUsersAdmin /></LazyRoute>} />
+        <Route path="masters/companies" element={<LazyRoute><CompaniesAdmin /></LazyRoute>} />
+        <Route path="masters/people" element={<LazyRoute><PeopleAdmin /></LazyRoute>} />
+        <Route path="masters/countries" element={<LazyRoute><CountriesAdmin /></LazyRoute>} />
+        <Route path="masters/states" element={<LazyRoute><StatesAdmin /></LazyRoute>} />
+        <Route path="access-profiles" element={<LazyRoute><AccessAdmin /></LazyRoute>} />
+        <Route path="system" element={<LazyRoute><SystemAdmin /></LazyRoute>} />
+        <Route path="activity" element={<LazyRoute><SettingsOverview /></LazyRoute>} />
+        <Route path="integrations" element={<LazyRoute><SystemAdmin /></LazyRoute>} />
+        <Route path="notifications" element={<LazyRoute><SystemAdmin /></LazyRoute>} />
         <Route path="logs" element={<LazyRoute><SettingsOverview /></LazyRoute>} />
+        {/* PT legacy redirects */}
+        <Route path="solicitacao" element={<Navigate to="/settings/access-requests" replace />} />
+        <Route path="usuarios" element={<Navigate to="/settings/users" replace />} />
+        <Route path="importar-usuario" element={<Navigate to="/settings/import-users" replace />} />
+        <Route path="acessos" element={<Navigate to="/settings/access-profiles" replace />} />
+        <Route path="empresas" element={<Navigate to="/settings/masters/companies" replace />} />
+        <Route path="cadastros/empresas" element={<Navigate to="/settings/masters/companies" replace />} />
+        <Route path="cadastros/pessoa" element={<Navigate to="/settings/masters/people" replace />} />
+        <Route path="cadastros/pais" element={<Navigate to="/settings/masters/countries" replace />} />
+        <Route path="cadastros/estado" element={<Navigate to="/settings/masters/states" replace />} />
+        <Route path="sistema" element={<Navigate to="/settings/system" replace />} />
+        <Route path="atividade" element={<Navigate to="/settings/activity" replace />} />
+        <Route path="integracoes" element={<Navigate to="/settings/integrations" replace />} />
+        <Route path="notificacoes" element={<Navigate to="/settings/notifications" replace />} />
         </Route>
       </Route>
 
@@ -287,6 +388,7 @@ const App = () => (
       <AppProvider>
         <BrowserRouter>
           <AppRoutes />
+          <LGPDBanner />
         </BrowserRouter>
       </AppProvider>
     </TooltipProvider>

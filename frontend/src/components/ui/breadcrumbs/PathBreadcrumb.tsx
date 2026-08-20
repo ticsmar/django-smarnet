@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { ChevronRight, Slash, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
@@ -20,6 +21,8 @@ export interface BreadcrumbItemData {
   href?: string;
   /** Ícone opcional (Lucide). Útil para o item raiz (ex: Home). */
   icon?: LucideIcon;
+  /** Exibe apenas o ícone; o label vira nome acessível. Requer `icon`. */
+  iconOnly?: boolean;
   /** Handler de clique opcional (para integração com router programático). */
   onClick?: (e: React.MouseEvent) => void;
 }
@@ -85,21 +88,26 @@ export function PathBreadcrumb({
           }
 
           const Icon = item.icon;
+          const iconOnly = item.iconOnly && Icon;
           const content = (
             <span className="inline-flex items-center gap-1.5">
               {Icon && <Icon className="h-3.5 w-3.5" />}
-              {item.label}
+              {iconOnly ? <span className="sr-only">{item.label}</span> : item.label}
             </span>
           );
 
           return (
             <React.Fragment key={`${item.label}-${idx}`}>
-              <BreadcrumbItem>
+              <BreadcrumbItem className="min-w-0">
                 {isLast || !item.href ? (
-                  <BreadcrumbPage className="font-medium text-foreground">{content}</BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink href={item.href} onClick={item.onClick} className="hover:text-foreground">
+                  <BreadcrumbPage className="max-w-[16rem] truncate font-medium text-foreground">
                     {content}
+                  </BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink asChild className="hover:text-foreground">
+                    <Link to={item.href} onClick={item.onClick}>
+                      {content}
+                    </Link>
                   </BreadcrumbLink>
                 )}
               </BreadcrumbItem>

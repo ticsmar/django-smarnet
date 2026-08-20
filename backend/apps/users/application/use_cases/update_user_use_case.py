@@ -22,6 +22,8 @@ class UpdateUserUseCase:
                 last_name=input_dto.last_name,
                 is_active=input_dto.is_active,
                 is_superuser=input_dto.is_superuser,
+                emp_codigo=input_dto.emp_codigo,
+                pes_numero=input_dto.pes_numero,
             ),
         )
         return to_admin_user_dto(record)

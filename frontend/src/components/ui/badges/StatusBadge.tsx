@@ -4,6 +4,8 @@ import { type BadgeColor, type BadgeTone, badgeColorClasses } from '@/components
 export interface StatusBadgeProps {
   /** Texto do status. Ex: "Ativo", "Pendente". */
   label: string;
+  /** Tooltip nativo (title). */
+  title?: string;
   /** Cor semântica. Default: 'success'. */
   color?: BadgeColor;
   /** Tom. Default: 'soft' (estilo de chip de status). */
@@ -33,6 +35,7 @@ const DOT_BY_COLOR: Record<BadgeColor, string> = {
  */
 export function StatusBadge({
   label,
+  title,
   color = 'success',
   tone = 'soft',
   showDot = true,
@@ -41,6 +44,7 @@ export function StatusBadge({
 }: StatusBadgeProps) {
   return (
     <span
+      title={title}
       className={cn(
         'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors',
         badgeColorClasses(color, tone),

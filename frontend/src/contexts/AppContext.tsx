@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { Locale, isLocale, localeToHtmlLang } from '@/lib/i18n';
+import { allowsFunctionalStorage, LGPD_CONSENT_CHANGED_EVENT, type LgpdConsent } from '@/lib/lgpdConsent';
 import { getCurrentUser } from '@/api/auth';
 import { ApiError } from '@/api/client';
 import type { User } from '@/types/auth';
@@ -48,6 +49,24 @@ function applyTheme(theme: Theme) {
   root.style.colorScheme = resolved;
 }
 
+function persistLocale(locale: Locale) {
+  if (!allowsFunctionalStorage()) return;
+  try {
+    window.localStorage.setItem(LOCALE_KEY, locale);
+  } catch {
+    // ignore
+  }
+}
+
+function persistTheme(theme: Theme) {
+  if (!allowsFunctionalStorage()) return;
+  try {
+    window.localStorage.setItem(THEME_KEY, theme);
+  } catch {
+    // ignore
+  }
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(() => readStoredLocale());
   const [theme, setThemeState] = useState<Theme>(() => readStoredTheme());
@@ -56,20 +75,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const setLocale = (l: Locale) => {
     setLocaleState(l);
-    try {
-      window.localStorage.setItem(LOCALE_KEY, l);
-    } catch {
-      // ignore
-    }
+    persistLocale(l);
   };
 
   const setTheme = (t: Theme) => {
     setThemeState(t);
-    try {
-      window.localStorage.setItem(THEME_KEY, t);
-    } catch {
-      // ignore
-    }
+    persistTheme(t);
   };
 
   const bootstrapSession = useCallback(async () => {
@@ -119,6 +130,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     window.addEventListener('storage', handler);
     return () => window.removeEventListener('storage', handler);
   }, []);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const consent = (event as CustomEvent<LgpdConsent>).detail;
+      if (!consent?.functional) return;
+      persistLocale(locale);
+      persistTheme(theme);
+    };
+    window.addEventListener(LGPD_CONSENT_CHANGED_EVENT, handler);
+    return () => window.removeEventListener(LGPD_CONSENT_CHANGED_EVENT, handler);
+  }, [locale, theme]);
 
   return (
     <AppContext.Provider value={{

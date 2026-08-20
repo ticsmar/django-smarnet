@@ -40,9 +40,9 @@ export function LoginModal({ isOpen, onClose, onForgot, onRequestAccess }: Login
       navigate(user.must_change_password ? '/change-password' : '/app');
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.status === 401 ? 'Usuário ou senha inválidos.' : err.message);
+        setError(err.message || (err.status === 401 ? 'Usuario ou senha invalidos.' : 'Falha ao entrar. Tente novamente.'));
       } else {
-        setError('Falha ao entrar. Tente novamente.');
+        setError('Nao foi possivel conectar com o servidor. Verifique se a API esta no ar e tente novamente.');
       }
     } finally {
       setSubmitting(false);

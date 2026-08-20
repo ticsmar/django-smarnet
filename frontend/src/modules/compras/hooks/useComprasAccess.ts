@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { COMPRAS_PERMS, hasPermission } from "../permissions";
+import { hasPermission } from "@/lib/userPermissions";
+import { COMPRAS_PERMS } from "../permissions";
 
 export function useComprasAccess() {
   const { user, authLoading } = useApp();
@@ -11,6 +12,7 @@ export function useComprasAccess() {
       canViewFornecedor: hasPermission(user, COMPRAS_PERMS.viewFornecedor),
       canAddFornecedor: hasPermission(user, COMPRAS_PERMS.addFornecedor),
       canChangeFornecedor: hasPermission(user, COMPRAS_PERMS.changeFornecedor),
+      canDeleteFornecedor: hasPermission(user, COMPRAS_PERMS.deleteFornecedor),
       canViewFornecContato: hasPermission(user, COMPRAS_PERMS.viewFornecContato),
       canAddFornecContato: hasPermission(user, COMPRAS_PERMS.addFornecContato),
       canChangeFornecContato: hasPermission(user, COMPRAS_PERMS.changeFornecContato),

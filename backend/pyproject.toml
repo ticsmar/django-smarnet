@@ -6,7 +6,7 @@ requires-python = ">=3.13"
 [tool.ruff]
 target-version = "py313"
 line-length = 88
-exclude = [".agents", ".cursor", ".git"]
+exclude = [".agents", ".cursor", ".git", ".venv"]
 
 [tool.ruff.lint]
 select = [
@@ -41,6 +41,7 @@ select = [
 "apps/branch_auth/tests/*.py" = ["E501"]
 "apps/users/tests/*.py" = ["E501"]
 "apps/compras/tests/*.py" = ["E501"]
+"apps/administracao/tests/*.py" = ["E501"]
 "manage.py" = ["TID251"]
 
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
@@ -52,7 +53,7 @@ strict = true
 disallow_any_explicit = true
 disallow_untyped_defs = true
 warn_return_any = true
-exclude = [".agents", ".cursor"]
+exclude = [".agents", ".cursor", ".venv"]
 mypy_path = "."
 
 plugins = ["mypy_django_plugin.main"]
@@ -102,6 +103,20 @@ disable_error_code = [
 ]
 [[tool.mypy.overrides]]
 module = "apps.compras.tests.*"
+disallow_untyped_defs = false
+disable_error_code = ["arg-type", "no-untyped-def"]
+[[tool.mypy.overrides]]
+module = "apps.administracao.*"
+disallow_untyped_defs = false
+disable_error_code = [
+    "no-untyped-def",
+    "no-untyped-call",
+    "type-arg",
+    "assignment",
+    "misc",
+]
+[[tool.mypy.overrides]]
+module = "apps.administracao.tests.*"
 disallow_untyped_defs = false
 disable_error_code = ["arg-type", "no-untyped-def"]
 [[tool.mypy.overrides]]

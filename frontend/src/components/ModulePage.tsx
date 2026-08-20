@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Search, Filter, Plus, ChevronLeft, ChevronRight, Edit, Trash2,
   Table2, LayoutList, LayoutGrid, Eye, MoreVertical, Home
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
+import { PathBreadcrumb, type BreadcrumbItemData } from '@/components/ui/breadcrumbs';
 import { t } from '@/lib/i18n';
 
 
@@ -64,21 +65,15 @@ export default function ModulePage({ title, columns, data }: ModulePageProps) {
     usuarios: { group: 'RH', label: 'Usuários' },
   };
   const crumb = breadcrumbMap[pathSegments[0]] || { label: title };
+  const breadcrumbItems: BreadcrumbItemData[] = [
+    { label: 'Início', href: '/app', icon: Home, iconOnly: true },
+    ...(crumb.group ? [{ label: crumb.group }] : []),
+    { label: crumb.label },
+  ];
 
   return (
     <>
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-sm mb-6">
-        <Link to="/app" className="text-muted-foreground hover:text-foreground transition-colors"><Home size={14} /></Link>
-        {crumb.group && (
-          <>
-            <ChevronRight size={14} className="text-muted-foreground/50" />
-            <span className="text-muted-foreground">{crumb.group}</span>
-          </>
-        )}
-        <ChevronRight size={14} className="text-muted-foreground/50" />
-        <span className="text-foreground font-medium">{crumb.label}</span>
-      </nav>
+      <PathBreadcrumb items={breadcrumbItems} className="mb-6" />
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">

@@ -1,5 +1,8 @@
 """Global DRF configuration helpers."""
 
+from apps.administracao.presentation.exception_mappings import (
+    ADMINISTRACAO_EXCEPTION_STATUS_MAP,
+)
 from apps.branch_auth.presentation.exception_mappings import (
     BRANCH_AUTH_EXCEPTION_STATUS_MAP,
 )
@@ -11,4 +14,5 @@ exception_handler = build_exception_handler(
     AUTH_EXCEPTION_STATUS_MAP,
     BRANCH_AUTH_EXCEPTION_STATUS_MAP,
     COMPRAS_EXCEPTION_STATUS_MAP,
+    ADMINISTRACAO_EXCEPTION_STATUS_MAP,
 )

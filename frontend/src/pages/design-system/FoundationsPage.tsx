@@ -22,13 +22,36 @@ export default function FoundationsPage() {
         <h3 className="font-display font-bold text-sm uppercase tracking-widest text-muted-foreground mb-3">
           Superfícies
         </h3>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-3">
           <DSSwatch name="Background" token="background" />
           <DSSwatch name="Surface Low" token="surface-container-low" />
           <DSSwatch name="Surface" token="surface-container" />
           <DSSwatch name="Surface High" token="surface-container-high" />
           <DSSwatch name="Surface Highest" token="surface-container-highest" />
         </div>
+        <p className="text-xs text-muted-foreground mb-8 max-w-2xl">
+          <code className="font-mono text-[11px]">surface-container-low</code> é o fundo do app shell
+          (<code className="font-mono text-[11px]">AppLayout</code>). Valores atuais: claro{' '}
+          <code className="font-mono text-[11px]">20 12% 90%</code> · escuro{' '}
+          <code className="font-mono text-[11px]">220 18% 12%</code>.
+        </p>
+
+        <h3 className="font-display font-bold text-sm uppercase tracking-widest text-muted-foreground mb-3">
+          Sidebar (sempre navy)
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+          <DSSwatch name="Sidebar BG" token="sidebar-background" fg="sidebar-foreground" />
+          <DSSwatch name="Sidebar Accent" token="sidebar-accent" fg="sidebar-accent-foreground" />
+          <DSSwatch name="Group Hover" token="sidebar-group-hover" fg="sidebar-accent-foreground" />
+          <DSSwatch name="Sidebar Border" token="sidebar-border" fg="sidebar-foreground" />
+        </div>
+        <p className="text-xs text-muted-foreground mb-8 max-w-2xl">
+          Hover dos itens pai do menu usa{' '}
+          <code className="font-mono text-[11px]">--sidebar-group-hover</code> (~20% mais claro que{' '}
+          <code className="font-mono text-[11px]">sidebar-accent</code> no tema claro), via classe{' '}
+          <code className="font-mono text-[11px]">.sidebar-group-label</code> — não use{' '}
+          <code className="font-mono text-[11px]">surface-container-low</code> sobre o menu escuro.
+        </p>
 
         <h3 className="font-display font-bold text-sm uppercase tracking-widest text-muted-foreground mb-3">
           Status

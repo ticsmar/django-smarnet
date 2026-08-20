@@ -1,0 +1,2817 @@
+CREATE OR REPLACE PACKAGE SIAOS.PCK_DQANET IS
+
+  -- AUTHOR  : JULIANO
+  -- CREATED : 9/5/02 05:49:22 PM
+  -- PURPOSE : CONJUNTO DE ROTINAS PARA A INTRANET/INTERNET
+
+  -- PUBLIC TYPE DECLARATIONS
+
+  TYPE TMENU IS REF CURSOR ;
+
+  PROCEDURE SP_IN_EMAIL(
+    vc2_de        IN    PASTA_EMAIL.EML_DE%TYPE,
+    vc2_para      IN    PASTA_EMAIL.EML_PARA%TYPE,
+    vc2_assunto   IN    PASTA_EMAIL.EML_ASSUNTO%TYPE,
+    vc2_conteudo  IN    VARCHAR2);
+
+  PROCEDURE SP_IN_EMAIL2(
+    vc2_de        IN    PASTA_EMAIL.EML_DE%TYPE,
+    vc2_para      IN    PASTA_EMAIL.EML_PARA%TYPE,
+    vc2_cc        IN    PASTA_EMAIL.EML_CC%TYPE,
+    vc2_cco       IN    PASTA_EMAIL.EML_CCO%TYPE,
+    vc2_assunto   IN    PASTA_EMAIL.EML_ASSUNTO%TYPE,
+    clb_conteudo  IN    PASTA_EMAIL.EML_CONTEUDO1%TYPE,
+    n_eml_numero  OUT   PASTA_EMAIL.EML_NUMERO%TYPE);
+
+  PROCEDURE SP_IN_GRUPO_CARTEIRA(
+      vc2_nome          IN   GRUPO_CARTEIRA.GCA_NOME%TYPE,
+      vc2_descricao     IN   GRUPO_CARTEIRA.GCA_DESCRICAO%TYPE,
+      n_chapa           IN   GRUPO_CARTEIRA.GCA_RESP_CHAPA%TYPE);
+
+  PROCEDURE SP_DL_GRUPO_CARTEIRA(
+      n_codigo         IN   GRUPO_CARTEIRA.GCA_CODIGO%TYPE);
+
+  PROCEDURE SP_IN_GRUPO_CART_PRO(
+      n_gca_codigo      IN   GRUPO_CART_PRO.GCA_CODIGO%TYPE,
+      c_produto         IN   GRUPO_CART_PRO.PRODUTO%TYPE,
+      n_erro            OUT  INTEGER);
+
+  PROCEDURE SP_DL_GRUPO_CART_PRO(
+      n_gca_codigo      IN   GRUPO_CART_PRO.GCA_CODIGO%TYPE,
+      c_produto         IN   GRUPO_CART_PRO.PRODUTO%TYPE);
+
+  PROCEDURE SP_IN_HTML_EMAIL(
+    vc2_de         IN    PASTA_EMAIL.EML_DE%TYPE,
+    vc2_para       IN    PASTA_EMAIL.EML_PARA%TYPE,
+    vc2_cc         IN    PASTA_EMAIL.EML_CC%TYPE,
+    vc2_cco        IN    PASTA_EMAIL.EML_CCO%TYPE,
+    vc2_assunto    IN    PASTA_EMAIL.EML_ASSUNTO%TYPE,
+    clb_titulo     IN    CLOB,
+    clb_texto      IN    CLOB,
+    clb_titulo_det IN    CLOB,
+    clb_texto_det  IN    CLOB,
+    n_lin_cod      IN    SIAOS.LINGUA.LIN_COD%TYPE,
+    n_eml_numero   OUT   PASTA_EMAIL.EML_NUMERO%TYPE);
+
+  PROCEDURE SP_IN_HTML_EMAIL2(
+    vc2_de         IN    PASTA_EMAIL.EML_DE%TYPE,
+    vc2_para       IN    PASTA_EMAIL.EML_PARA%TYPE,
+    vc2_cc         IN    PASTA_EMAIL.EML_CC%TYPE,
+    vc2_cco        IN    PASTA_EMAIL.EML_CCO%TYPE,
+    vc2_assunto    IN    PASTA_EMAIL.EML_ASSUNTO%TYPE,
+    clb_titulo     IN    CLOB,
+    clb_texto      IN    CLOB,
+    clb_titulo_det IN    CLOB,
+    clb_texto_det  IN    CLOB,
+    n_lin_cod      IN    SIAOS.LINGUA.LIN_COD%TYPE,
+    n_eml_numero   OUT   PASTA_EMAIL.EML_NUMERO%TYPE);
+
+  PROCEDURE SP_UP_USUARIOS(
+     n_usu_chapa    IN   USUARIO.USU_CHAPA%TYPE,
+     n_emp_codigo   IN   USUARIO.EMP_CODIGO%TYPE,
+     n_fus_codigo   IN   USUARIO.FUS_CODIGO%TYPE,
+     n_lin_cod      IN   USUARIO.LIN_COD%TYPE,
+     v_pes_nome     IN   PESSOA.PES_NOME%TYPE,
+     v_pes_sexo     IN   PESSOA.PES_SEXO%TYPE,
+     v_pes_endereco IN   PESSOA.PES_ENDERECO%TYPE,
+     v_pes_bairro   IN   PESSOA.PES_BAIRRO%TYPE,
+     v_pes_cidade   IN   PESSOA.PES_CIDADE%TYPE,
+     n_est_codigo   IN   PESSOA.EST_CODIGO%TYPE,
+     v_pes_estado   IN   PESSOA.PES_ESTADO%TYPE,
+     v_pes_cep      IN   PESSOA.PES_CEP%TYPE,
+     n_pai_codigo   IN   PESSOA.PAI_CODIGO%TYPE,
+     v_fun_apelido  IN   FUNCIONARIO.FUN_APELIDO%TYPE,
+     v_fun_obs      IN   FUNCIONARIO.FUN_OBS%TYPE,
+     n_fun_ramal    IN   FUNCIONARIO.FUN_RAMAL%TYPE,
+     v_fun_local    IN   FUNCIONARIO.FUN_LOCAL%TYPE,
+     v_fun_chave    IN   FUNCIONARIO.FUN_CHAVE%TYPE,
+     v_fun_filial   IN   FUNCIONARIO.FUN_FILIAL%TYPE,
+     n_lpr_codigo   IN   USUARIO.LPR_CODIGO%TYPE,
+     n_usu_token    IN   USUARIO.USU_TOKEN%TYPE,
+     n_erro         OUT  INTEGER);
+
+  PROCEDURE SP_UP_CC(
+      v_codigo          IN   CENTRO_CUSTO.CC_CODIGO%TYPE,
+      v_nome            IN   CENTRO_CUSTO.CC_NOME%TYPE,
+      n_chapa           IN   CENTRO_CUSTO.USU_CHAPA%TYPE,
+      n_resp            IN   CENTRO_CUSTO.CC_RESP%TYPE,
+      v_ativo           IN   CENTRO_CUSTO.CC_ATIVO%TYPE,
+      v_resp            IN   CENTRO_CUSTO.USU_RESP_RH%TYPE,
+      v_cc_depto        IN   CENTRO_CUSTO.CC_DEPTO%TYPE,
+      v_diretor         IN   CENTRO_CUSTO.USU_DIRETOR%TYPE);
+
+  PROCEDURE SP_UP_CC;
+
+  PROCEDURE SP_UP_AUTO_USUARIOS(
+      n_chapa           IN   FUNCIONARIO.FUN_CHAPA%TYPE,
+      v_nome            IN   PESSOA.PES_NOME%TYPE,
+      v_email           IN   PESSOA.PES_EMAIL%TYPE,
+      v_filial          IN   FUNCIONARIO.FUN_FILIAL%TYPE,
+      v_cc              IN   FUNCIONARIO.CC_CODIGO%TYPE,
+      v_apelido         IN   FUNCIONARIO.FUN_APELIDO%TYPE,
+      v_obs             IN   FUNCIONARIO.FUN_OBS%TYPE,
+      v_unidade         IN   FUNCIONARIO.FUN_UNIDADE%TYPE,
+      v_ramal           IN   FUNCIONARIO.FUN_RAMAL%TYPE,
+      v_local           IN   FUNCIONARIO.FUN_LOCAL%TYPE,
+      v_cargo           IN   FUNCIONARIO.FUN_CARGO%TYPE,
+      n_status          IN   VARCHAR2,
+      v_dt_adm          IN   VARCHAR2,
+      v_ext             IN   FUNCIONARIO.FUN_EXTERNO%TYPE,
+      v_chave           IN   FUNCIONARIO.FUN_CHAVE%TYPE,
+      c_transf          IN   FUNCIONARIO.FUN_TRANSF%TYPE,
+      v_end             IN   FUNCIONARIO.FUN_ENDERECO%TYPE,
+      v_cidade          IN   FUNCIONARIO.FUN_CIDADE%TYPE,
+      c_uf              IN   FUNCIONARIO.FUN_UF%TYPE,
+      v_bairro          IN   FUNCIONARIO.FUN_BAIRRO%TYPE,
+      v_cep             IN   FUNCIONARIO.FUN_CEP%TYPE,
+      v_fone_res        IN   VARCHAR2,
+      v_dt_nasc         IN   VARCHAR2,
+      c_sexo            IN   FUNCIONARIO.FUN_SEXO%TYPE,
+      c_civil           IN   FUNCIONARIO.FUN_CIVIL%TYPE,
+      v_rg              IN   FUNCIONARIO.FUN_RG%TYPE,
+      n_emp             IN   GERAL.EMPRESA.EMP_CODIGO%TYPE,
+      n_chapa_resp      IN   FUNCIONARIO.FUN_CHAPA_RESP%TYPE);
+
+  PROCEDURE SP_UP_AUTO_USUARIOS;
+
+
+   FUNCTION SF_ACESSA_OS(
+       n_order_no            IN OELIN.ORDER_NO%TYPE,
+       n_chapa_usu           IN OELIN.RESPONSAVEL%TYPE,
+       n_acesso              IN NUMBER)
+       RETURN NUMBER;
+
+  FUNCTION SF_ACESSA_PRE_OS(
+      n_order_no            IN PROPOSTA.PRP_CODIGO%TYPE,
+      n_chapa_usu           IN PROPOSTA.USU_CHAPA%TYPE,
+      n_acesso              IN NUMBER)
+      RETURN NUMBER;
+
+  PROCEDURE SP_CREATE_USER(
+      v_login           IN   SIAOS.USUARIO.USU_LOGINWEB%TYPE);
+
+  PROCEDURE SP_REVOKE_USER(
+      v_login           IN   SIAOS.USUARIO.USU_LOGINWEB%TYPE);
+
+  FUNCTION SF_RETORNA_COTACAO_MOEDA(
+      d_data            IN   DATE,
+      v_moeda           IN   SIAOS.INDICFIN.MOEDA%TYPE)
+      RETURN NUMBER;
+
+  FUNCTION SF_CONVERTE_MOEDA(
+      n_valor           IN    NUMBER,
+      v_moeda_de        IN    VARCHAR2,
+      v_moeda_para      IN    VARCHAR2,
+      d_data            IN    DATE)
+      RETURN NUMBER;
+
+  ----------------------------------------------------------------------------------------------------------
+  ------------ Checa se a OS pode ser consultada pelo usuario, de aocrdo com a empresa do usuario ----------
+  ----------------------------------------------------------------------------------------------------------
+   FUNCTION SF_CONSULTA_OS(
+     n_order_no   IN OELIN.ORDER_NO%TYPE,
+     n_empresa    IN RASTREIO.EMPRESA.EMP_CODIGO%TYPE)
+   RETURN NUMBER;
+
+  ----------------------------------------------------------
+  -- PROCEDURE DE ACESSO AOS MEIOS DE CONTATOS DE PESSOAS --
+  ----------------------------------------------------------
+
+   PROCEDURE PESSOA_MEIO_CONT(
+      n_operacao        IN   INTEGER,
+      n_pessoa          IN   SIAOS.PESSOA_MEIO_CONT.PES_NUMERO%TYPE,
+      n_codigo          IN   SIAOS.PESSOA_MEIO_CONT.PMC_CODIGO%TYPE,
+      n_tipo            IN   SIAOS.PESSOA_MEIO_CONT.PTC_CODIGO%TYPE,
+      v_referencia      IN   SIAOS.PESSOA_MEIO_CONT.PMC_REFERENCIA%TYPE);
+
+  ----------------------------------------------------------
+  -- TRANSFORMA TEXTO COM SEPARADOR EM LISTA ---------------
+  ----------------------------------------------------------
+
+  TYPE pip_list IS TABLE OF VARCHAR2(32767);
+
+  FUNCTION SF_SPLIT(v_texto     VARCHAR2,
+                    v_separador VARCHAR2 := ',')
+             RETURN pip_list    PIPELINED;
+
+  ----------------------------------------------------------
+  -- TRANSFORMA TEXTO SEM SEPARADOR EM COM SEPARADORES -----
+  ----------------------------------------------------------
+   FUNCTION SF_SEPARAR(v_texto     VARCHAR2,
+                       v_separador VARCHAR2,
+                       n_passo     NUMBER)
+                RETURN VARCHAR2;
+
+  ----------------------------------------------------------
+  -- REMOVE ACENTOS DE UMA STRING                         --
+  -- SE ALTERAR O PARAMENTRO PARA 0 IRA DESCARTAR O PONTO --
+  ----------------------------------------------------------
+  
+  FUNCTION SF_REMOVE_ACENTOS (c_texto IN VARCHAR2)
+    RETURN  VARCHAR2;
+
+  ----------------------------------------------------------
+  -- REMOVE ACENTOS DE UMA STRING                         --
+  -- n_opcao = 0 SOMENTE ACENTOS                          --
+  -- n_opcao = 1 CARACTERES EPECIAIS TAMBEM               --
+  -- n_opcao = 2 PONTUAï¿½ï¿½O TAMBEM                         --
+  ----------------------------------------------------------
+
+  FUNCTION SF_REMOVE_ACENTOS2 (c_texto IN VARCHAR2,
+		                           n_opcao IN INTEGER)
+    RETURN  VARCHAR2;
+
+  FUNCTION SF_USU_CHAPA_USER
+     RETURN NUMBER;
+     
+  FUNCTION SF_PES_NUMERO_USER
+     RETURN NUMBER;
+     
+  FUNCTION SF_FUN_CHAPA_USER
+     RETURN NUMBER;
+     
+  FUNCTION SF_VALIDA_ACESSO(
+    n_ace_codigo     IN   SMARNET.ACESSO.ACE_CODIGO%TYPE)
+  RETURN NUMBER;  
+  
+  FUNCTION REDUCE_NAME(
+    p_name VARCHAR2, 
+    p_caps NUMBER DEFAULT NULL, 
+    p_no_reduce NUMBER DEFAULT NULL)
+  RETURN VARCHAR2;
+  
+  FUNCTION SF_PESSOA_FUNC_ATIVO (n_pes_numero   IN  SIAOS.PESSOA.PES_NUMERO%TYPE)
+    RETURN  VARCHAR2;
+      
+  FUNCTION SF_PESSOA_USU_ATIVO (n_pes_numero   IN  SIAOS.PESSOA.PES_NUMERO%TYPE)
+    RETURN  VARCHAR2;
+
+  PROCEDURE SP_IN_PESSOA(
+    n_pesssoa_id IN OUT SIAOS.PESSOA.PES_NUMERO%TYPE,
+    v_nome       IN     SIAOS.PESSOA.PES_NOME%TYPE,
+    v_email      IN     SIAOS.PESSOA.PES_EMAIL%TYPE := NULL,
+    n_ativo      IN     SIAOS.PESSOA.PES_ATIVO%TYPE := 1,
+    v_cidade     IN     SIAOS.PESSOA.PES_CIDADE%TYPE := NULL,
+    n_estado_id  IN     SIAOS.PESSOA.EST_CODIGO%TYPE := NULL,
+    v_estado     IN     SIAOS.PESSOA.PES_ESTADO%TYPE := NULL,
+    n_cep        IN     SIAOS.PESSOA.PES_CEP%TYPE := NULL,
+    n_pais_id    IN     SIAOS.PESSOA.PAI_CODIGO%TYPE := NULL,
+    c_sexo       IN     SIAOS.PESSOA.PES_SEXO%TYPE := NULL,
+    v_endereco   IN     SIAOS.PESSOA.PES_ENDERECO%TYPE := NULL,
+    v_bairro     IN     SIAOS.PESSOA.PES_BAIRRO%TYPE := NULL);
+
+  PROCEDURE SP_IN_HTML_EMAIL_EXTERNO(
+    vc2_de         IN    PASTA_EMAIL.EML_DE%TYPE,
+    vc2_para       IN    PASTA_EMAIL.EML_PARA%TYPE,
+    vc2_cc         IN    PASTA_EMAIL.EML_CC%TYPE,
+    vc2_cco        IN    PASTA_EMAIL.EML_CCO%TYPE,
+    vc2_assunto    IN    PASTA_EMAIL.EML_ASSUNTO%TYPE,
+    clb_titulo     IN    CLOB,
+    clb_texto      IN    CLOB,
+    clb_titulo_det IN    CLOB,
+    clb_texto_det  IN    CLOB,
+    n_lin_cod      IN    SIAOS.LINGUA.LIN_COD%TYPE,
+    n_eml_numero   OUT   PASTA_EMAIL.EML_NUMERO%TYPE);
+
+END PCK_DQANET;
+/
+CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
+
+  -- AUTHOR  : JULIANO
+  -- CREATED : 9/5/02 05:49:22 PM
+  -- PURPOSE : CONJUNTO DE ROTINAS PARA A INTRANET/INTERNET
+
+
+  ----------------------------------------------------------
+  ------- PROCEDURE INSERT DADOS EM PASTA EMAIL    ---------
+  ----------------------------------------------------------
+
+  PROCEDURE SP_IN_EMAIL(
+    vc2_de        IN    PASTA_EMAIL.EML_DE%TYPE,
+    vc2_para      IN    PASTA_EMAIL.EML_PARA%TYPE,
+    vc2_assunto   IN    PASTA_EMAIL.EML_ASSUNTO%TYPE,
+    vc2_conteudo  IN    VARCHAR2)IS
+    
+    n_eml_numero        PASTA_EMAIL.EML_NUMERO%TYPE;
+    
+  BEGIN
+    
+    PCK_DQANET.SP_IN_EMAIL2(vc2_de,vc2_para,NULL,NULL,vc2_assunto,vc2_conteudo,n_eml_numero);
+    /*
+    INSERT INTO PASTA_EMAIL
+               (EML_DE, EML_PARA, EML_ASSUNTO, EML_CONTEUDO1, EML_CAIXA)
+        VALUES (vc2_de, vc2_para ,vc2_assunto ,vc2_conteudo ,'E');
+   */
+   EXCEPTION WHEN OTHERS THEN
+     COMMIT;      
+     --RAISE_APPLICATION_ERROR(-20001,'Erro na montagem do e-mails: SP_IN_EMAIL'));
+     SIAOS.PCK_DQANET.SP_IN_EMAIL2('smarnet@smar.com.br', 'juliano@smar.com.br', '', '', 'Erro na montagem do e-mails: SP_IN_EMAIL', vc2_assunto, n_eml_numero);
+  END SP_IN_EMAIL;
+
+
+  ----------------------------------------------------------
+  -- PROCEDURE INSERT DADOS EM PASTA EMAIL + ANEXO ---------
+  ----------------------------------------------------------
+
+  PROCEDURE SP_IN_EMAIL2(
+    vc2_de        IN    PASTA_EMAIL.EML_DE%TYPE,
+    vc2_para      IN    PASTA_EMAIL.EML_PARA%TYPE,
+    vc2_cc        IN    PASTA_EMAIL.EML_CC%TYPE,
+    vc2_cco       IN    PASTA_EMAIL.EML_CCO%TYPE,
+    vc2_assunto   IN    PASTA_EMAIL.EML_ASSUNTO%TYPE,
+    clb_conteudo  IN    PASTA_EMAIL.EML_CONTEUDO1%TYPE,
+    n_eml_numero  OUT   PASTA_EMAIL.EML_NUMERO%TYPE)IS
+    
+    n_tem_email         NUMBER := 0;
+    
+  BEGIN
+
+    IF TRIM(vc2_para) IS NULL THEN
+      n_tem_email := 0;
+    ELSIF NVL(INSTR(TRIM(vc2_para),'@',1,1),0) = 0 THEN
+      n_tem_email := 0;
+    ELSE
+      n_tem_email := 1;
+    END IF;
+    
+    IF n_tem_email = 1 THEN
+      
+        INSERT
+          INTO PASTA_EMAIL (EML_DE, EML_PARA, EML_ASSUNTO, EML_CONTEUDO1, EML_CAIXA,EML_CC,EML_CCO)
+        VALUES (vc2_de, vc2_para ,vc2_assunto ,clb_conteudo ,'E',vc2_cc,vc2_cco)
+     RETURNING EML_NUMERO
+          INTO n_eml_numero;
+     
+     ELSE
+        INSERT
+          INTO PASTA_EMAIL (EML_DE, EML_PARA, EML_ASSUNTO, EML_CONTEUDO1, EML_CAIXA)
+        VALUES ('smarnet@smar.com.br', vc2_de ,'Erro endereï¿½o de email: ' || vc2_para , 'E-mail: '||vc2_assunto||'</br></br>'||clb_conteudo ,'E');            
+     END IF;
+     
+   EXCEPTION WHEN OTHERS THEN
+     COMMIT;
+     --RAISE_APPLICATION_ERROR(-20001,'Erro na montagem do e-mails: SP_IN_EMAIL2'));
+     SIAOS.PCK_DQANET.SP_IN_EMAIL2('smarnet@smar.com.br', 'juliano@smar.com.br', '', '', 'Erro na montagem do e-mails: SP_IN_EMAIL2', vc2_assunto, n_eml_numero);
+  END SP_IN_EMAIL2;
+
+
+
+  ----------------------------------------------------------
+  -- PROCEDURE INSERT DADOS EM PASTA EMAIL + ANEXO ---------
+  ----------------------------------------------------------
+
+  PROCEDURE SP_IN_HTML_EMAIL(
+    vc2_de         IN    PASTA_EMAIL.EML_DE%TYPE,
+    vc2_para       IN    PASTA_EMAIL.EML_PARA%TYPE,
+    vc2_cc         IN    PASTA_EMAIL.EML_CC%TYPE,
+    vc2_cco        IN    PASTA_EMAIL.EML_CCO%TYPE,
+    vc2_assunto    IN    PASTA_EMAIL.EML_ASSUNTO%TYPE,
+    clb_titulo     IN    CLOB,
+    clb_texto      IN    CLOB,
+    clb_titulo_det IN    CLOB,
+    clb_texto_det  IN    CLOB,
+    n_lin_cod      IN    SIAOS.LINGUA.LIN_COD%TYPE,
+    n_eml_numero   OUT   PASTA_EMAIL.EML_NUMERO%TYPE)IS
+
+  BEGIN
+
+    SP_IN_HTML_EMAIL2(vc2_de, vc2_para, vc2_cc, vc2_cco, vc2_assunto, clb_titulo, clb_texto, clb_titulo_det, clb_texto_det, n_lin_cod, n_eml_numero);
+
+  EXCEPTION WHEN OTHERS THEN
+
+    --RAISE_APPLICATION_ERROR(-20001,'Erro na montagem do e-mails: SP_IN_HTML_EMAIL'));
+    SIAOS.PCK_DQANET.SP_IN_EMAIL2('smarnet@smar.com.br', 'juliano@smar.com.br', '', '', 'Erro na montagem do e-mails: SP_IN_HTML_EMAIL', vc2_assunto, n_eml_numero);
+
+  END SP_IN_HTML_EMAIL;
+
+
+  ----------------------------------------------------------
+  -- PROCEDURE INSERT DADOS EM PASTA EMAIL + ANEXO ---------
+  ----------------------------------------------------------
+
+  PROCEDURE SP_IN_HTML_EMAIL2(
+    vc2_de         IN    PASTA_EMAIL.EML_DE%TYPE,
+    vc2_para       IN    PASTA_EMAIL.EML_PARA%TYPE,
+    vc2_cc         IN    PASTA_EMAIL.EML_CC%TYPE,
+    vc2_cco        IN    PASTA_EMAIL.EML_CCO%TYPE,
+    vc2_assunto    IN    PASTA_EMAIL.EML_ASSUNTO%TYPE,
+    clb_titulo     IN    CLOB,
+    clb_texto      IN    CLOB,
+    clb_titulo_det IN    CLOB,
+    clb_texto_det  IN    CLOB,
+    n_lin_cod      IN    SIAOS.LINGUA.LIN_COD%TYPE,
+    n_eml_numero   OUT   PASTA_EMAIL.EML_NUMERO%TYPE)IS
+
+    clb_corpo           CLOB;
+    clb_titulo2         CLOB;
+    clb_texto2          CLOB;
+    clb_titulo3         CLOB;
+    clb_texto3          CLOB;
+    n_pos_tit           INTEGER := 0;
+    n_pos_txt           INTEGER := 0;
+    n_i                 INTEGER := 0;
+    v_width             VARCHAR2(20) :=  ' width="410"';
+    v_data              VARCHAR2(200);
+    v_aut_email         VARCHAR2(200);
+    v_desc_email        VARCHAR2(200);
+    v_endereco          VARCHAR2(600);
+    v_detalhes          VARCHAR2(200);
+    v_br                VARCHAR2(6) := NULL;
+
+  BEGIN
+
+    IF n_lin_cod = 1 THEN
+       v_data := TO_CHAR(SYSDATE,'dd') || ' DE ' || UPPER(TO_CHAR(SYSDATE , 'Month' , 'NLS_DATE_LANGUAGE=PORTUGUESE')) || ' DE ' || TO_CHAR(SYSDATE,'YYYY');
+       v_aut_email := 'E-mail autom&aacute;tico - SmarNet';
+       v_desc_email:= 'E-mail de notifica&ccedil;&atilde;o dos sistemas Smarnet';
+       v_detalhes  := 'DETALHES';
+       v_endereco  := '<p><font face="Calibri, Arial" color="#8C8D8F"><font size="2">Departamento de TIC</font><br /><br/>Tel.:  +55 016 3946 3599<br />Fax: +55 016 3946 3514<br />Endere&ccedil;o:  Rua Dr. Ant&oacute;nio Furlan Junior, 1028 Sert&atilde;ozinho, SP, Brasil CEP 14.170-480<br/>E-mail <font color="#378CC7"><a href="#" target="_blank" title="smarnet@smar.com.br">smarnet@smar.com.br</a></font>.<br /></font></p>';
+    ELSE
+       v_data := UPPER(TO_CHAR(SYSDATE , 'Month' , 'NLS_DATE_LANGUAGE=ENGLISH')) || ' ' || TO_CHAR(SYSDATE,'dd') || ', ' || TO_CHAR(SYSDATE,'YYYY');
+       v_aut_email := 'SmarNet - Automatic E-mail';
+       v_desc_email := 'E-mail notification of Smarnet systems';
+       v_detalhes  := 'DETAILS';
+       v_endereco  := '<p><font face="Calibri, Arial" color="#8C8D8F"><font size="2">IT Departament</font><br /><br/>Tel.:  +55 016 3946 3599<br />Fax: +55 016 3946 3514<br />Address:  Rua Dr. Ant&oacute;nio Furlan Junior, 1028 Sert&atilde;ozinho, SP, Brasil CEP 14.170-480<br/>E-mail <font color="#378CC7"><a href="#" target="_blank" title="smarnet@smar.com.br">smarnet@smar.com.br</a></font>.<br /></font></p>';
+    END IF;
+
+    IF clb_titulo_det IS NULL THEN
+       v_width := '';
+    END IF;
+
+    clb_corpo := '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html lang="pt-br"><head><title>';
+    clb_corpo := clb_corpo || vc2_assunto || '</title>';
+    clb_corpo := clb_corpo || '<style type="text/css"> ';
+    clb_corpo := clb_corpo || 'a:link, a:visited, a:hover, a:active {text-decoration:none;color:#366fa3}';
+    clb_corpo := clb_corpo || 'a:hover {text-decoration:underline;}';
+    clb_corpo := clb_corpo || '</style></head>';
+    clb_corpo := clb_corpo || '<body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0"><center><font face="Calibri, Arial" color="#4C4D4F">'||v_aut_email||'</font><br /> ';
+    clb_corpo := clb_corpo || '<table width="500"><tr><td align="center"><table border="0" cellspacing="0" cellpadding="1" align="center" width="770" style="background-color:#9B9B9B;">';
+    clb_corpo := clb_corpo || '<tr><td><table border="0" cellspacing="0" cellpadding="0" width="100%" height="25" style="background-color:#FFF;">';
+--    clb_corpo := clb_corpo || '<tr><td width="23" height="20">&nbsp;</td><td>&nbsp;</td><td width="23">&nbsp;</td></tr>';
+    clb_corpo := clb_corpo || '<tr><td width="23" height="40"></td><td align="left" style="font-size:10px;"><br/><img src="http://www.smarnet.com.br/dqanet/imagens/logo/smarnet.jpg" width="179" height="40" alt="SmarNet - Intranet Smar"><br/><br/></td>';
+    clb_corpo := clb_corpo || '<td width="387" height="25" align="right"><br/>';
+    clb_corpo := clb_corpo || '<a style="font-size:19px; -font-size:17px; line-height:18px; padding:0 0 1px 0;" target="_blank" href="www.smarnet.com.br"><font face="Calibri, Arial" color="#454545"><b>SmarNet - Intranet Smar</b></font></a><br>';
+    clb_corpo := clb_corpo || '<font face="Calibri, Arial" color="#454545"><span style="line-height:18px;">'||v_desc_email||'</span></font><br/><br/></td>';
+    clb_corpo := clb_corpo || '<td width="23"></td></tr>';
+--    clb_corpo := clb_corpo || '<tr><td width="23" height="20">&nbsp;</td><td>&nbsp;</td><td width="23">&nbsp;</td></tr>';
+    clb_corpo := clb_corpo || '</table><table border="0" cellspacing="0" cellpadding="0" width="100%" height="27" style="background-color:#4D4D4D;">';
+    clb_corpo := clb_corpo || '<tr><td width="23" style="background-color:#FF0000;"></td><td align="left" width="170" style="background-color:#FF0000; font-size:11px; -font-size:9px; text-transform:uppercase;"><font face="Calibri, Arial" color="#FFFFFF"><b>';
+    clb_corpo := clb_corpo || v_data || '</b></font></td><td align="left" width="10" style="font-size:0;">';
+    clb_corpo := clb_corpo || '<img src="http://www.smarnet.com.br/dqanet/imagens/email/ponta_seta_vermelha.gif" align="left" width="10" height="20" style="display:block;" alt="." /></td><td width="7"></td>';
+    clb_corpo := clb_corpo || '<td align="left" style="font-size:16px; -font-size:13px; text-transform:uppercase; text-shadow:1px 1px 1px #333333; height:27px;"><font face="Calibri, Arial" color="#FFFFFF"><b>';
+    clb_corpo := clb_corpo || vc2_assunto || '</b></font></td></tr></table>';
+    clb_corpo := clb_corpo || '<table border="0" cellspacing="0" cellpadding="0" width="100%" style="background-color:#FFFFFF;"><tr><td valign="top" height="1" style="background-color:#E9E9E9;"></td></tr><tr><td valign="top" height="1" style="background-color:#D5D5D5;"></td></tr><tr><td height="15" style="background-color:#FFFFFF;"></td></tr></table>';
+    clb_corpo := clb_corpo || '<table border="0" cellspacing="0" cellpadding="0" width="100%" style="background-color:#FFFFFF;"><tr><td width="17"></td><td' || v_width || ' valign="top">';
+
+    n_pos_tit  := NVL(INSTR(clb_titulo,'[SEP]'), 0);
+
+    IF n_pos_tit = 0 THEN
+
+      clb_corpo := clb_corpo || '<table border="0" cellspacing="0" cellpadding="0" align="left"' || v_width || '> <tr><td align="left" style="border-bottom:dotted 1px #CCCCCC; padding:0 0 13px 0;">';
+      clb_corpo := clb_corpo || '<table border="0" cellspacing="0" cellpadding="0" width="100%"><tr><td style="font-size:19px; -font-size:17px; padding:0 0 8px 0; line-height:22px;"><font color="#333333" face="Calibri, Arial"><b>';
+      clb_corpo := clb_corpo || clb_titulo || '</b></font></td></tr><tr><td style="font-size:14px; -font-size:12px; line-height:18px;"><font face="Calibri, Arial" color="#333333"><p>';
+      clb_corpo := clb_corpo || clb_texto || '</p></font></td></tr></table></td></tr></table>';
+
+    ELSE
+
+      clb_titulo2 := clb_titulo;
+      clb_texto2  := clb_texto;
+
+      LOOP
+
+        n_pos_tit := INSTR(clb_titulo2,'[SEP]')-1;
+        n_pos_txt := INSTR(clb_texto2 ,'[SEP]')-1;
+
+        IF n_pos_tit = -1 THEN
+           n_pos_tit := LENGTH(clb_titulo);
+           n_pos_txt := LENGTH(clb_texto);
+           n_i := 1000;
+        END IF;
+
+        IF n_i > 0 THEN
+           v_br := '<br />';
+        END IF;
+
+        clb_titulo3 := SUBSTR(clb_titulo2,0,n_pos_tit);
+        clb_texto3  := SUBSTR(clb_texto2 ,0,n_pos_txt);
+
+        clb_corpo := clb_corpo || '<table border="0" cellspacing="0" cellpadding="0" align="left"' || v_width || '> <tr><td align="left" style="border-bottom:dotted 1px #CCCCCC; padding:0 0 13px 0;">';
+        clb_corpo := clb_corpo || '<table border="0" cellspacing="0" cellpadding="0" width="100%"><tr><td style="font-size:19px; -font-size:17px; padding:0 0 8px 0; line-height:22px;"><font color="#333333" face="Calibri, Arial"><b>';
+        clb_corpo := clb_corpo || v_br || clb_titulo3 || '</b></font></td></tr><tr><td style="font-size:14px; line-height:18px;"><font face="Calibri, Arial" color="#333333"><p>';
+        clb_corpo := clb_corpo || clb_texto3 || '</p></font></td></tr></table></td></tr></table>';
+
+        clb_titulo2 := SUBSTR(clb_titulo2,n_pos_tit+6,LENGTH(clb_titulo2));
+        clb_texto2  := SUBSTR(clb_texto2 ,n_pos_txt+6,LENGTH(clb_texto2));
+
+        n_i := n_i + 1;
+
+        EXIT WHEN n_i >= 1000;
+
+      END LOOP;
+
+    END IF;
+
+
+    clb_corpo := clb_corpo || '</td>';
+
+    IF clb_titulo_det IS NOT NULL THEN
+
+      clb_corpo := clb_corpo || '<td width="24"></td>';
+      clb_corpo := clb_corpo || '<td align="right" valign="top">';
+      clb_corpo := clb_corpo || '<table border="0" cellspacing="0" cellpadding="0" align="right" width="300"><tr><td align="left" valign="top" width="278" style="background-color:#F7F6F8; border:solid 1px #CCCCCC; font-size:16px; padding:10px;">';
+      clb_corpo := clb_corpo || '<font face="Calibri, Arial" color="#666666"><span style="font-size:11px; -font-size:9px; text-shadow:1px 1px 1px #DBDBDB; letter-spacing:2px;">'||v_detalhes||'</span></font><br />';
+      clb_corpo := clb_corpo || '<font face="Calibri, Arial" color="#454545"><b>' || clb_titulo_det || '</b><br />';
+      clb_corpo := clb_corpo || clb_texto_det || '</font></td></tr></table></td>';
+
+    END IF;
+
+    clb_corpo := clb_corpo || '<td width="17"></td></tr></table>';
+    clb_corpo := clb_corpo || '<table border="0" cellspacing="0" cellpadding="0" width="100%" style="background-color:#FFFFFF;"><tr><td height="10"></td></tr></table>';
+    clb_corpo := clb_corpo || '<table border="0" cellspacing="0" cellpadding="0" width="100%" style="background-color:#424244"><tr><td width="50"></td><td align="left"></td><td width="50"></td></tr></table>';
+    clb_corpo := clb_corpo || '<table border="0" cellspacing="0" cellpadding="0" width="100%" style="background-color:#000; font-size:10px; line-height:12px; padding:16px 35px;"><tr><td align="left" valign="top"><p>';
+    clb_corpo := clb_corpo || v_endereco;
+    clb_corpo := clb_corpo || '</td><td width="180" align="left" valign="middle"><img src="http://www.smarnet.com.br/dqanet/imagens/email/logo_invertido.png" width="180" height="58" alt="Nova Smar S/A."></td></tr></table>';
+    clb_corpo := clb_corpo || '</td></tr></table></td></tr></table></center></body></html>';
+
+    SIAOS.PCK_DQANET.SP_IN_EMAIL2(vc2_de, vc2_para, vc2_cc, vc2_cco, vc2_assunto, clb_corpo, n_eml_numero);
+
+    COMMIT;
+
+  EXCEPTION WHEN OTHERS THEN
+
+     RAISE_APPLICATION_ERROR(-20001,'Erro na montagem do e-mails tamanho do texto'||LENGTH(clb_corpo));
+
+  END SP_IN_HTML_EMAIL2;
+
+
+  ----------------------------------------------------------
+  ------- PROCEDURE INSERT DADOS EM GRUPO_CARTEIRA  --------
+  ----------------------------------------------------------
+
+  PROCEDURE SP_IN_GRUPO_CARTEIRA(
+      vc2_nome          IN   GRUPO_CARTEIRA.GCA_NOME%TYPE,
+      vc2_descricao     IN   GRUPO_CARTEIRA.GCA_DESCRICAO%TYPE,
+      n_chapa           IN   GRUPO_CARTEIRA.GCA_RESP_CHAPA%TYPE) IS
+
+  BEGIN
+      INSERT INTO GRUPO_CARTEIRA (GCA_NOME,GCA_DESCRICAO,GCA_RESP_CHAPA)
+           VALUES (vc2_nome,vc2_descricao,n_chapa);
+      COMMIT;
+  END SP_IN_GRUPO_CARTEIRA;
+
+
+
+  ----------------------------------------------------------
+  ------- PROCEDURE DELETE DADOS EM GRUPO_CARTEIRA  --------
+  ----------------------------------------------------------
+
+  PROCEDURE SP_DL_GRUPO_CARTEIRA(
+      n_codigo         IN   GRUPO_CARTEIRA.GCA_CODIGO%TYPE) IS
+
+  BEGIN
+      DELETE GRUPO_CARTEIRA
+       WHERE GCA_CODIGO = n_codigo;
+      COMMIT;
+  END SP_DL_GRUPO_CARTEIRA;
+
+
+
+  ----------------------------------------------------------
+  ---- PROCEDURE INSERT DADOS EM GRUPO_CARTEIRA PRODUTO ----
+  ----------------------------------------------------------
+
+  PROCEDURE SP_IN_GRUPO_CART_PRO(
+      n_gca_codigo      IN   GRUPO_CART_PRO.GCA_CODIGO%TYPE,
+      c_produto         IN   GRUPO_CART_PRO.PRODUTO%TYPE,
+      n_erro            OUT  INTEGER) IS
+
+  BEGIN
+      INSERT INTO GRUPO_CART_PRO(GCA_CODIGO,PRODUTO)
+           VALUES (n_gca_codigo,c_produto);
+      COMMIT;
+
+      EXCEPTION
+
+      WHEN OTHERS THEN
+
+        n_erro := 1;
+
+  END SP_IN_GRUPO_CART_PRO;
+
+
+  ----------------------------------------------------------
+  ---- PROCEDURE DELETA DADOS EM GRUPO_CARTEIRA PRODUTO ----
+  ----------------------------------------------------------
+
+  PROCEDURE SP_DL_GRUPO_CART_PRO(
+      n_gca_codigo      IN   GRUPO_CART_PRO.GCA_CODIGO%TYPE,
+      c_produto         IN   GRUPO_CART_PRO.PRODUTO%TYPE) IS
+
+  BEGIN
+      DELETE GRUPO_CART_PRO
+       WHERE GCA_CODIGO = n_gca_codigo
+         AND PRODUTO = c_produto;
+   COMMIT;
+
+  END SP_DL_GRUPO_CART_PRO;
+
+
+
+  ----------------------------------------------------------
+  -------- PROCEDURE ATUALIZA DADOS DE USUARIOS ------------
+  ----------------------------------------------------------
+
+  PROCEDURE SP_UP_USUARIOS(
+     n_usu_chapa    IN   USUARIO.USU_CHAPA%TYPE,
+     n_emp_codigo   IN   USUARIO.EMP_CODIGO%TYPE,
+     n_fus_codigo   IN   USUARIO.FUS_CODIGO%TYPE,
+     n_lin_cod      IN   USUARIO.LIN_COD%TYPE,
+     v_pes_nome     IN   PESSOA.PES_NOME%TYPE,
+     v_pes_sexo     IN   PESSOA.PES_SEXO%TYPE,
+     v_pes_endereco IN   PESSOA.PES_ENDERECO%TYPE,
+     v_pes_bairro   IN   PESSOA.PES_BAIRRO%TYPE,
+     v_pes_cidade   IN   PESSOA.PES_CIDADE%TYPE,
+     n_est_codigo   IN   PESSOA.EST_CODIGO%TYPE,
+     v_pes_estado   IN   PESSOA.PES_ESTADO%TYPE,
+     v_pes_cep      IN   PESSOA.PES_CEP%TYPE,
+     n_pai_codigo   IN   PESSOA.PAI_CODIGO%TYPE,
+     v_fun_apelido  IN   FUNCIONARIO.FUN_APELIDO%TYPE,
+     v_fun_obs      IN   FUNCIONARIO.FUN_OBS%TYPE,
+     n_fun_ramal    IN   FUNCIONARIO.FUN_RAMAL%TYPE,
+     v_fun_local    IN   FUNCIONARIO.FUN_LOCAL%TYPE,
+     v_fun_chave    IN   FUNCIONARIO.FUN_CHAVE%TYPE,
+     v_fun_filial   IN   FUNCIONARIO.FUN_FILIAL%TYPE,
+     n_lpr_codigo   IN   USUARIO.LPR_CODIGO%TYPE,
+     n_usu_token    IN   USUARIO.USU_TOKEN%TYPE,
+     n_erro         OUT  INTEGER) IS
+
+     n_pes_numero        PESSOA.PES_NUMERO%TYPE;
+     n_fun_chapa         FUNCIONARIO.FUN_CHAPA%TYPE;
+
+   BEGIN
+
+    BEGIN
+
+       SELECT PES_NUMERO
+         INTO n_pes_numero
+         FROM USUARIO
+        WHERE USUARIO.USU_CHAPA = n_usu_chapa;
+
+    EXCEPTION WHEN NO_DATA_FOUND THEN
+       n_erro := 1;
+    END ;
+
+    BEGIN
+
+       SELECT MIN(FUN_CHAPA)
+         INTO n_fun_chapa
+         FROM FUNCIONARIO
+        WHERE FUNCIONARIO.PES_NUMERO = n_pes_numero
+          AND FUNCIONARIO.FUN_ATIVO = 'Y';
+
+    EXCEPTION WHEN NO_DATA_FOUND THEN
+       NULL;
+    END ;
+
+    IF n_erro IS NULL THEN
+
+      IF n_fun_chapa IS NOT NULL THEN
+
+        UPDATE FUNCIONARIO
+           SET FUN_APELIDO    = v_fun_apelido,
+               FUN_OBS        = v_fun_obs,
+               FUN_RAMAL      = n_fun_ramal,
+               FUN_LOCAL      = v_fun_local,
+               FUN_CHAVE      = v_fun_chave,
+               FUN_FILIAL     = v_fun_filial
+         WHERE FUN_CHAPA      = n_fun_chapa;
+
+      END IF;
+
+      UPDATE USUARIO
+         SET USU_NOME     = v_pes_nome,
+             ORIGEM       = v_fun_filial,
+             EMP_CODIGO   = n_emp_codigo,
+             FUS_CODIGO   = n_fus_codigo,
+             LIN_COD      = n_lin_cod,
+             LPR_CODIGO   = n_lpr_codigo,
+             USU_TOKEN    = n_usu_token
+       WHERE USU_CHAPA    = n_usu_chapa;
+
+      UPDATE PESSOA
+         SET PES_NOME     = SUBSTR(TRIM(v_pes_nome),1,100),
+             PES_SEXO     = SUBSTR(TRIM(v_pes_sexo),1,1),
+             PES_ENDERECO = SUBSTR(TRIM(v_pes_endereco),1,100),
+             PES_BAIRRO   = SUBSTR(TRIM(v_pes_bairro),1,60),
+             PES_CIDADE   = SUBSTR(TRIM(v_pes_cidade),1,60),
+             EST_CODIGO   = n_est_codigo,
+             PES_ESTADO   = SUBSTR(TRIM(v_pes_estado),1,30),
+             PES_CEP      = SUBSTR(TRIM(v_pes_cep),1,11),
+             PAI_CODIGO   = n_pai_codigo
+       WHERE PES_NUMERO   = n_pes_numero;
+
+     END IF;
+
+     COMMIT;
+
+   END SP_UP_USUARIOS;
+
+
+
+
+  ----------------------------------------------------------
+  ----- PROCEDURE ATUALIZA DADOS DE CENTRO DE CUSTO --------
+  ----------------------------------------------------------
+
+  PROCEDURE SP_UP_CC(
+      v_codigo          IN   CENTRO_CUSTO.CC_CODIGO%TYPE,
+      v_nome            IN   CENTRO_CUSTO.CC_NOME%TYPE,
+      n_chapa           IN   CENTRO_CUSTO.USU_CHAPA%TYPE,
+      n_resp            IN   CENTRO_CUSTO.CC_RESP%TYPE,
+      v_ativo           IN   CENTRO_CUSTO.CC_ATIVO%TYPE,
+      v_resp            IN   CENTRO_CUSTO.USU_RESP_RH%TYPE,
+      v_cc_depto        IN   CENTRO_CUSTO.CC_DEPTO%TYPE,
+      v_diretor         IN   CENTRO_CUSTO.USU_DIRETOR%TYPE)IS
+
+      v_codigo2              CENTRO_CUSTO.CC_CODIGO%TYPE;
+      n_erro                 INTEGER;
+
+   BEGIN
+
+    BEGIN
+
+       SELECT CC_CODIGO
+         INTO v_codigo2
+         FROM SIAOS.CENTRO_CUSTO
+        WHERE CC_CODIGO = v_codigo;
+
+      EXCEPTION
+
+        WHEN NO_DATA_FOUND THEN
+
+          n_erro := 1;
+
+    END ;
+
+    IF n_erro = 1 THEN
+
+      INSERT INTO SIAOS.CENTRO_CUSTO (CC_CODIGO,CC_NOME,USU_CHAPA,CC_RESP,CC_ATIVO,USU_RESP_RH,CC_DEPTO,USU_DIRETOR,USU_APRV_CUSTO)
+           VALUES (v_codigo,v_nome,n_chapa,n_resp,v_ativo,v_resp,v_cc_depto,v_diretor,v_diretor);
+
+    ELSE
+
+       UPDATE SIAOS.CENTRO_CUSTO
+          SET CC_NOME     = v_nome,
+              USU_CHAPA   = n_chapa,
+--              CC_RESP     = n_resp,
+              CC_ATIVO    = v_ativo,
+--              USU_RESP_RH = v_resp,
+              CC_DEPTO    = v_cc_depto,
+              USU_DIRETOR = v_diretor
+        WHERE CC_CODIGO = v_codigo;
+
+      END IF;
+
+     COMMIT;
+
+   END SP_UP_CC;
+
+  ----------------------------------------------------------
+  ----- PROCEDURE ATUALIZA DADOS DE CENTRO DE CUSTO --------
+  ----------------------------------------------------------
+
+  PROCEDURE SP_UP_CC IS
+
+    v_cc_ger    SIAOS.FUNCIONARIO.CC_CODIGO%TYPE;
+    n_ch_ger    SIAOS.FUNCIONARIO.FUN_CHAPA%TYPE;
+    v_cc_dir    SIAOS.FUNCIONARIO.CC_CODIGO%TYPE;
+    n_ch_dir    SIAOS.FUNCIONARIO.FUN_CHAPA%TYPE;
+    v_ativo     VARCHAR2(1);
+    n_e_dept    INTEGER := 0;
+    n_qtd_fn    INTEGER := 0;
+    n_insert    INTEGER := 1;
+
+  BEGIN
+
+   FOR c_cc IN (SELECT SUBSTR(TRIM(T.CTT_CUSTO),1,10) CODIGO,
+                       TRIM(T.CTT_DESC01) DESCRICAO,
+                       TO_NUMBER(TRIM(T.CTT_ZZMAT)) CHAPA_GERENTE,
+                       TO_NUMBER(TRIM(T.CTT_ZZDIR)) CHAPA_DIRETOR,
+                       SUBSTR(TRIM(T.CTT_CCSUP),1,10) CTT_CCSUP,
+                       DECODE(T.CTT_BLOQ,2,'Y','N') ATIVO,
+                       T.CTT_CLASSE
+                  FROM PROTPROD.CTT010 T
+                 WHERE T.D_E_L_E_T_ = ' '
+								   AND TRIM(T.CTT_FILIAL) = '04'
+                   --AND SUBSTR(TRIM(T.CTT_CUSTO),1,10) = '2003001'
+                   AND LENGTH(TRIM(CTT_CUSTO)) = 7
+                 ORDER BY
+                       DECODE(T.CTT_BLOQ,2,'Y','N'))
+   LOOP
+
+     BEGIN
+
+       SELECT SUBSTR(TRIM(CC_CODIGO),0,10),
+              FUN_CHAPA
+         INTO v_cc_ger,
+              n_ch_ger
+         FROM SIAOS.FUNCIONARIO
+        WHERE FUN_CHAPA = c_cc.CHAPA_GERENTE;
+
+        BEGIN
+
+          SELECT MIN(USU_CHAPA)
+            INTO n_ch_ger
+            FROM USUARIO U,
+                 FUNCIONARIO F
+           WHERE U.PES_NUMERO = F.PES_NUMERO
+             AND F.FUN_CHAPA  = n_ch_ger
+             AND U.USU_STATUS = 0
+           ORDER BY U.USU_STATUS;
+
+        EXCEPTION WHEN OTHERS THEN
+          NULL;
+        END;
+
+     EXCEPTION WHEN OTHERS THEN
+       v_cc_ger  := NULL;
+       n_ch_ger  := NULL;
+     END;
+
+     BEGIN
+
+       SELECT DECODE(SUBSTR(TRIM(CC_CODIGO),0,10),NULL,v_cc_ger,SUBSTR(TRIM(CC_CODIGO),0,10)),
+              FUN_CHAPA
+         INTO v_cc_dir,
+              n_ch_dir
+         FROM SIAOS.FUNCIONARIO
+        WHERE FUN_CHAPA = c_cc.CHAPA_DIRETOR;
+
+        BEGIN
+
+          SELECT MIN(USU_CHAPA)
+            INTO n_ch_dir
+            FROM USUARIO U,
+                 FUNCIONARIO F
+           WHERE U.PES_NUMERO = F.PES_NUMERO
+             AND F.FUN_CHAPA  = n_ch_dir
+             AND U.USU_STATUS = 0
+           ORDER BY U.USU_STATUS;
+
+        EXCEPTION WHEN OTHERS THEN
+          NULL;
+        END;
+
+     EXCEPTION WHEN OTHERS THEN
+       n_ch_dir := NULL;
+     END;
+
+     IF c_cc.ATIVO = 'N' THEN
+       v_ativo := 'N';
+     ELSE
+       v_ativo := 'Y';
+     END IF;
+
+     IF LENGTH(TRIM(c_cc.CODIGO)) = 7 THEN
+       n_e_dept := 1;
+     ELSE
+       n_e_dept := 0;
+     END IF;
+
+     FOR c_cc2 IN (SELECT CC.CC_CODIGO
+                    FROM SIAOS.CENTRO_CUSTO CC
+                   WHERE TRIM(CC.CC_NRPROT) = SUBSTR(TRIM(c_cc.CODIGO),0,10)
+									   AND CC.CC_ATIVO != 'O'
+                   ORDER BY
+                         TRIM(cc.CC_CODIGO))
+     LOOP
+       n_insert := 0;
+			 
+       /*
+       IF c_cc.CTT_CLASSE = 2 THEN
+         SELECT NVL(COUNT(FUN_CHAPA),0)
+           INTO n_qtd_fn
+           FROM SIAOS.FUNCIONARIO F
+          INNER JOIN SIAOS.CENTRO_CUSTO CC ON CC.CC_CODIGO = F.CC_CODIGO
+          WHERE CC.CC_CODIGO = c_cc2.CC_CODIGO
+            AND F.FUN_ATIVO != 'N';
+       ELSE
+         n_qtd_fn := 1;
+       END IF;
+       */
+			 
+       UPDATE SIAOS.CENTRO_CUSTO CC
+          SET CC.CC_ATIVO        = v_ativo, --DECODE(n_qtd_fn,0,'N',v_ativo),
+              CC.CC_NOME         = DECODE(n_qtd_fn,0,CC.CC_NOME,SUBSTR(TRIM(c_cc.DESCRICAO),0,50)),
+              CC.USU_DIRETOR     = DECODE(n_ch_dir,NULL,CC.USU_DIRETOR,n_ch_dir),
+              CC.USU_CHAPA       = DECODE(n_ch_ger,NULL,CC.USU_CHAPA,n_ch_ger),
+              CC.CC_RESP         = c_cc.CTT_CCSUP,
+              CC.CC_DEPTO        = n_e_dept
+        WHERE TRIM(CC.CC_CODIGO) = TRIM(c_cc2.CC_CODIGO)
+          AND CC.CC_ATIVO != 'O';
+        IF SQL%NOTFOUND THEN
+          n_insert := 1;
+        END IF;
+
+     END LOOP;
+
+     IF n_insert = 1 THEN
+
+       BEGIN
+
+         INSERT
+           INTO SIAOS.CENTRO_CUSTO (CC_CODIGO,CC_NOME,USU_CHAPA,USU_DIRETOR,CC_ATIVO,USU_RESP_RH,CC_DEPTO,USU_APRV_CUSTO,CC_NRPROT,CC_RESP)
+         VALUES (SUBSTR(TRIM(c_cc.CODIGO),0,10),c_cc.DESCRICAO,n_ch_ger,v_cc_dir,v_ativo,n_ch_ger,n_e_dept,n_ch_dir,c_cc.CODIGO,SUBSTR(TRIM(c_cc.CTT_CCSUP),0,10));
+
+       EXCEPTION WHEN OTHERS THEN
+         BEGIN
+
+           INSERT
+             INTO SIAOS.CENTRO_CUSTO (CC_CODIGO,CC_NOME,CC_ATIVO)
+           VALUES (SUBSTR(TRIM(c_cc.CODIGO),0,10),c_cc.DESCRICAO,v_ativo);
+
+         EXCEPTION WHEN OTHERS THEN
+           NULL;
+         END;
+       END;
+
+     END IF;
+     n_insert := 1;
+   END LOOP;
+
+   COMMIT;
+
+/*
+   FOR c_cc IN (SELECT II.CC_CODIGO
+                  FROM MULTGESTOR.CCUSTO V
+                 RIGHT JOIN CENTRO_CUSTO II ON V.CODIGO = II.CC_CODIGO
+                 WHERE CODIGO IS NULL
+                   AND II.CC_ATIVO = 'Y')
+   LOOP
+
+       UPDATE SIAOS.CENTRO_CUSTO CC
+          SET CC.CC_ATIVO = 'N'
+        WHERE CC.CC_CODIGO = c_cc.CC_CODIGO;
+
+   END LOOP;
+*/
+   COMMIT;
+
+  EXCEPTION WHEN OTHERS THEN
+     NULL;
+  END SP_UP_CC;
+
+  ----------------------------------------------------------
+  -- PROCEDURE ATUALIZA DADOS DE USUARIOS AUTOMATICAMENTE --
+  ----------------------------------------------------------
+
+    PROCEDURE SP_UP_AUTO_USUARIOS(
+      n_chapa           IN   FUNCIONARIO.FUN_CHAPA%TYPE,
+      v_nome            IN   PESSOA.PES_NOME%TYPE,
+      v_email           IN   PESSOA.PES_EMAIL%TYPE,
+      v_filial          IN   FUNCIONARIO.FUN_FILIAL%TYPE,
+      v_cc              IN   FUNCIONARIO.CC_CODIGO%TYPE,
+      v_apelido         IN   FUNCIONARIO.FUN_APELIDO%TYPE,
+      v_obs             IN   FUNCIONARIO.FUN_OBS%TYPE,
+      v_unidade         IN   FUNCIONARIO.FUN_UNIDADE%TYPE,
+      v_ramal           IN   FUNCIONARIO.FUN_RAMAL%TYPE,
+      v_local           IN   FUNCIONARIO.FUN_LOCAL%TYPE,
+      v_cargo           IN   FUNCIONARIO.FUN_CARGO%TYPE,
+      n_status          IN   VARCHAR2,
+      v_dt_adm          IN   VARCHAR2,
+      v_ext             IN   FUNCIONARIO.FUN_EXTERNO%TYPE,
+      v_chave           IN   FUNCIONARIO.FUN_CHAVE%TYPE,
+      c_transf          IN   FUNCIONARIO.FUN_TRANSF%TYPE,
+      v_end             IN   FUNCIONARIO.FUN_ENDERECO%TYPE,
+      v_cidade          IN   FUNCIONARIO.FUN_CIDADE%TYPE,
+      c_uf              IN   FUNCIONARIO.FUN_UF%TYPE,
+      v_bairro          IN   FUNCIONARIO.FUN_BAIRRO%TYPE,
+      v_cep             IN   FUNCIONARIO.FUN_CEP%TYPE,
+      v_fone_res        IN   VARCHAR2,
+      v_dt_nasc         IN   VARCHAR2,
+      c_sexo            IN   FUNCIONARIO.FUN_SEXO%TYPE,
+      c_civil           IN   FUNCIONARIO.FUN_CIVIL%TYPE,
+      v_rg              IN   FUNCIONARIO.FUN_RG%TYPE,
+      n_emp             IN   GERAL.EMPRESA.EMP_CODIGO%TYPE,
+      n_chapa_resp      IN   FUNCIONARIO.FUN_CHAPA_RESP%TYPE)IS
+
+      n_tem_pessoa           INTEGER;
+      n_tem_funcionario      INTEGER;
+      v_ativo                SIAOS.FUNCIONARIO.FUN_ATIVO%TYPE;
+      n_pessoa               PESSOA.PES_NUMERO%TYPE;
+      c_uf2                  FUNCIONARIO.FUN_UF%TYPE;
+
+   BEGIN
+
+      BEGIN
+
+       SELECT NVL(FUN_ATIVO,'Y')
+         INTO v_ativo
+         FROM SIAOS.FUNCIONARIO
+        WHERE FUN_CHAPA = n_chapa;
+
+      EXCEPTION WHEN NO_DATA_FOUND THEN
+        v_ativo := 'Y';
+      END ;
+
+      BEGIN
+
+       SELECT DECODE(PPE_CODIGO,NULL,'Y','N')
+         INTO v_ativo
+         FROM GERAL.PRE_PESSOA
+        WHERE FUN_CHAPA = n_chapa;
+
+      EXCEPTION WHEN NO_DATA_FOUND THEN
+         NULL;
+      END ;
+
+      IF v_ativo = 'Y' THEN
+
+         IF n_status = 0 THEN
+            v_ativo := 'Y';
+         ELSE
+            v_ativo := 'N';
+         END IF;
+
+          -- VE SE FUNCIONARIO JA EXISTE COM OUTRA CHAPA
+          -- SE SIM ELE JA ESTA NA TABELA PESSOA
+          -- SE NAO, DEVE SER CADATRADO EM PRE-PESSOA
+          BEGIN
+
+           SELECT NVL(COUNT(FUN_CHAPA),0)
+             INTO n_tem_pessoa
+             FROM SIAOS.FUNCIONARIO
+            WHERE FUN_RG = v_rg;
+
+            IF n_tem_pessoa > 0 THEN
+
+             SELECT MIN(PES_NUMERO)
+               INTO n_pessoa
+               FROM SIAOS.FUNCIONARIO
+              WHERE FUN_RG = v_rg;
+
+            END IF;
+
+          EXCEPTION WHEN NO_DATA_FOUND THEN
+            n_tem_pessoa := NULL;
+          END;
+
+          IF n_tem_pessoa = 0 THEN
+
+           SELECT NVL(COUNT(*),0)
+             INTO n_tem_pessoa
+             FROM SIAOS.PESSOA
+            WHERE UPPER(PES_NOME) = UPPER(v_nome);
+
+            IF n_tem_pessoa > 0 THEN
+
+             SELECT MIN(PES_NUMERO)
+               INTO n_pessoa
+               FROM SIAOS.PESSOA
+              WHERE UPPER(PES_NOME) = UPPER(v_nome);
+
+            END IF;
+
+          END IF;
+
+          BEGIN
+
+           SELECT E.EST_CODIGO
+             INTO c_uf2
+             FROM GERAL.ESTADO E,
+                  GERAL.PAIS P
+            WHERE E.EST_SIGLA = UPPER(TRIM(C_UF))
+              AND P.PAI_CODIGO = E.PAI_CODIGO
+              AND P.PAI_CODIGO = 76;
+
+          EXCEPTION WHEN NO_DATA_FOUND THEN
+            c_uf2 := c_uf*1;
+          END ;
+
+          IF n_tem_pessoa = 0 THEN
+          -- SE NAO, DEVE SER CADATRADO EM PRE-PESSOA E EM FUNCIONARIO
+
+             INSERT INTO GERAL.PRE_PESSOA (PPE_NOME,PPE_EMAIL,TEP_CODIGO,FUS_CODIGO,PRE_SEXO,LIN_COD,EST_CODIGO,PAI_CODIGO,FUN_CHAPA,PPE_ENDERECO,PPE_CIDADE,PPE_BAIRRO,PPE_CEP)
+                  VALUES (v_nome,v_email,'S',18,c_sexo,1,c_uf2,76,n_chapa,v_end,v_cidade,v_bairro,v_cep);
+
+             BEGIN
+
+                 INSERT INTO SIAOS.FUNCIONARIO (FUN_CHAPA,FUN_APELIDO,CC_CODIGO,FUN_OBS,FUN_UNIDADE,FUN_RAMAL,FUN_LOCAL,FUN_CARGO,FUN_ATIVO,FUN_DT_ADM,FUN_EXTERNO,FUN_CHAVE,FUN_TRANSF,FUN_ENDERECO,FUN_CIDADE,FUN_UF,FUN_BAIRRO,FUN_CEP,FUN_NASCIMENTO,FUN_SEXO,FUN_CIVIL,FUN_CHAPA_RESP,FUN_RG)
+                       VALUES (n_chapa,v_apelido,v_cc,v_obs,v_unidade,v_ramal,v_local,v_cargo,v_ativo,TO_DATE(v_dt_adm,'YYYY-MM-DD'),v_ext,v_chave,c_transf,v_end,v_cidade,c_uf,v_bairro,v_cep,TO_DATE(v_dt_nasc,'YYYY-MM-DD'),c_sexo,c_civil,n_chapa_resp,v_rg);
+
+             EXCEPTION WHEN OTHERS THEN
+
+                   UPDATE SIAOS.FUNCIONARIO
+                      SET FUN_APELIDO = v_apelido,
+                          CC_CODIGO = v_cc,
+                          FUN_OBS = v_obs,
+                          FUN_UNIDADE = v_unidade,
+                          FUN_RAMAL = v_ramal,
+                          FUN_LOCAL = v_local,
+                          FUN_CARGO = v_cargo,
+                          FUN_ATIVO = v_ativo,
+                          FUN_DT_ADM = TO_DATE(v_dt_adm,'YYYY-MM-DD'),
+                          FUN_EXTERNO = v_ext,
+                          FUN_CHAVE = v_chave,
+                          FUN_TRANSF = c_transf,
+                          FUN_ENDERECO = v_end,
+                          FUN_CIDADE = v_cidade,
+                          FUN_UF = c_uf,
+                          FUN_BAIRRO = v_bairro,
+                          FUN_CEP = v_cep,
+                          FUN_NASCIMENTO = TO_DATE(v_dt_nasc,'YYYY-MM-DD'),
+                          FUN_SEXO = c_sexo,
+                          FUN_CIVIL = c_civil,
+                          FUN_CHAPA_RESP = n_chapa_resp,
+                          FUN_RG = v_rg,
+                          FUN_FILIAL = v_filial
+                    WHERE FUN_CHAPA = n_chapa;
+
+             END;
+
+          ELSIF n_tem_pessoa > 0 THEN
+          -- SE SIM ELE JA ESTA NA TABELA PESSOA
+
+            BEGIN
+
+               SELECT NVL(COUNT(FUN_CHAPA),0)
+                 INTO n_tem_funcionario
+                 FROM SIAOS.FUNCIONARIO
+                WHERE FUN_CHAPA = n_chapa;
+
+            EXCEPTION WHEN NO_DATA_FOUND THEN
+                n_tem_funcionario := 0;
+            END;
+
+            IF n_tem_funcionario = 0 THEN
+            -- SE TEM PESSOA PARA ESSE FUNCIONARIO (COM OUTRA CHAPA)
+            -- BUSCA O MENOR CODIGO DE PESSOA
+
+               IF v_dt_adm IS NOT NULL THEN
+                  INSERT INTO SIAOS.FUNCIONARIO (FUN_CHAPA,PES_NUMERO,FUN_APELIDO,CC_CODIGO,FUN_OBS,FUN_UNIDADE,FUN_RAMAL,FUN_LOCAL,FUN_CARGO,FUN_ATIVO,FUN_DT_ADM,FUN_EXTERNO,FUN_CHAVE,FUN_TRANSF,FUN_ENDERECO,FUN_CIDADE,FUN_UF,FUN_BAIRRO,FUN_CEP,FUN_NASCIMENTO,FUN_SEXO,FUN_CIVIL,FUN_CHAPA_RESP,FUN_RG)
+                       VALUES (n_chapa,n_pessoa,v_apelido,v_cc,v_obs,v_unidade,v_ramal,v_local,v_cargo,v_ativo,TO_DATE(v_dt_adm,'YYYY-MM-DD'),v_ext,v_chave,c_transf,v_end,v_cidade,c_uf,v_bairro,v_cep,TO_DATE(v_dt_nasc,'YYYY-MM-DD'),c_sexo,c_civil,n_chapa_resp,v_rg);
+               END IF;
+
+            ELSIF n_tem_funcionario > 0 THEN
+
+               BEGIN
+
+                 SELECT PES_NUMERO
+                   INTO n_pessoa
+                   FROM SIAOS.FUNCIONARIO
+                  WHERE FUN_CHAPA = n_chapa;
+
+               EXCEPTION WHEN NO_DATA_FOUND THEN
+                    NULL;
+               END ;
+
+               IF v_dt_adm IS NOT NULL THEN
+                   UPDATE SIAOS.FUNCIONARIO
+                      SET FUN_APELIDO = v_apelido,
+                          CC_CODIGO = v_cc,
+                          FUN_OBS = v_obs,
+                          FUN_UNIDADE = v_unidade,
+                          FUN_RAMAL = v_ramal,
+                          FUN_LOCAL = v_local,
+                          FUN_CARGO = v_cargo,
+                          FUN_ATIVO = v_ativo,
+                          FUN_DT_ADM = TO_DATE(v_dt_adm,'YYYY-MM-DD'),
+                          FUN_EXTERNO = v_ext,
+                          FUN_CHAVE = v_chave,
+                          FUN_TRANSF = c_transf,
+                          FUN_ENDERECO = v_end,
+                          FUN_CIDADE = v_cidade,
+                          FUN_UF = c_uf,
+                          FUN_BAIRRO = v_bairro,
+                          FUN_CEP = v_cep,
+                          FUN_NASCIMENTO = TO_DATE(v_dt_nasc,'YYYY-MM-DD'),
+                          FUN_SEXO = c_sexo,
+                          FUN_CIVIL = c_civil,
+                          FUN_CHAPA_RESP = n_chapa_resp,
+                          FUN_RG = v_rg,
+                          FUN_FILIAL = v_filial
+                    WHERE FUN_CHAPA = n_chapa;
+
+              END IF;
+
+            END IF;
+
+          END IF;
+
+        ELSE
+
+           IF n_status = 0 THEN
+              v_ativo := 'Y';
+           ELSE
+              v_ativo := 'N';
+           END IF;
+
+           UPDATE SIAOS.FUNCIONARIO
+              SET FUN_APELIDO = v_apelido,
+                  CC_CODIGO = v_cc,
+                  FUN_OBS = v_obs,
+                  FUN_UNIDADE = v_unidade,
+                  FUN_RAMAL = v_ramal,
+                  FUN_LOCAL = v_local,
+                  FUN_CARGO = v_cargo,
+                  FUN_ATIVO = v_ativo,
+                  FUN_DT_ADM = TO_DATE(v_dt_adm,'YYYY-MM-DD'),
+                  FUN_EXTERNO = v_ext,
+                  FUN_CHAVE = v_chave,
+                  FUN_TRANSF = c_transf,
+                  FUN_ENDERECO = v_end,
+                  FUN_CIDADE = v_cidade,
+                  FUN_UF = c_uf,
+                  FUN_BAIRRO = v_bairro,
+                  FUN_CEP = v_cep,
+                  FUN_NASCIMENTO = TO_DATE(v_dt_nasc,'YYYY-MM-DD'),
+                  FUN_SEXO = c_sexo,
+                  FUN_CIVIL = c_civil,
+                  FUN_CHAPA_RESP = n_chapa_resp,
+                  FUN_RG = v_rg,
+                  FUN_FILIAL = v_filial
+            WHERE FUN_CHAPA = n_chapa;
+
+        END IF;
+
+      COMMIT;
+
+   END SP_UP_AUTO_USUARIOS;
+
+  ----------------------------------------------------------
+  -- PROCEDURE ATUALIZA DADOS DE USUARIOS AUTOMATICAMENTE --
+  ----------------------------------------------------------
+
+    PROCEDURE SP_UP_AUTO_USUARIOS IS
+
+      c_uf2                  FUNCIONARIO.FUN_UF%TYPE;
+      v_fun_externo          FUNCIONARIO.FUN_EXTERNO%TYPE;
+      v_fun_transf           FUNCIONARIO.FUN_TRANSF%TYPE;
+      n_emp_codigo           GERAL.EMPRESA.EMP_CODIGO%TYPE;
+      n_resp_setor           INTEGER;
+      n_usuario              INTEGER;
+      n_erro                 INTEGER;
+      v_nome                 VARCHAR2(200);
+
+   BEGIN
+
+      /*
+      SELECT INFO.FUN_CHAPA INFO_CHAPA,
+                            INFO.PES_NUMERO,
+                            INFO.FUN_FILIAL,
+                            RH.FUN_CHAPA,
+                            INITCAP(TRIM(RH.FUN_NOME)) FUN_NOME,
+                            SUBSTR(TRIM(RH.FUN_UNID),0,5) FUN_UNID,
+                            TRIM(RH.FUN_LOCAL) FUN_LOCAL,
+                            TRIM(RH.TIPO_FUNCIONARIO) TIPO_FUNCIONARIO,
+                            RH.TIPO_FUNC,
+                            SUBSTR(TRIM(RH.FUN_CARGO),0,50) FUN_CARGO,
+                            DECODE(NVL(TRIM(RH.FUN_ATIVO),'DEMITIDO'),'DEMITIDO','N','Y') FUN_ATIVO,
+                            INFO.FUN_ATIVO INFO_ATIVO,
+                            TRIM(RH.FUN_EMAIL) FUN_EMAIL,
+                            RH.FUN_DATA_ADM,
+                            TRIM(RH.FUN_ENDE) FUN_ENDE,
+                            TRIM(RH.FUN_CIDA) FUN_CIDA,
+                            TRIM(RH.FUN_ESTA) FUN_ESTA,
+                            TRIM(RH.FUN_BAIR) FUN_BAIR,
+                            TRIM(RH.FUN_CEP)  FUN_CEP,
+                            TRIM(RH.FUN_FONE) FUN_FONE,
+                            RH.FUN_NASC,
+                            SUBSTR(TRIM(RH.CC_CODIGO),0,9) CC_CODIGO,
+                            RH.FUN_DIVI,
+                            RH.FUNC_GERENTE,
+                            RH.FUNC_DIRETOR,
+                            DECODE(TRIM(RH.FUN_SEXO),'MASCULINO','M','F') FUN_SEXO,
+                            DECODE(TRIM(RH.FUN_CIVI),'SOLTEIRO(A)','S',
+                                   DECODE(TRIM(RH.FUN_CIVI),'CASADO(A)','C',
+                                   DECODE(TRIM(RH.FUN_CIVI),'AMAZIADO(A)','A',
+                                   DECODE(TRIM(RH.FUN_CIVI),'DESQUITADO(A)','D',
+                                   DECODE(TRIM(RH.FUN_CIVI),'DIVORCIADO(A)','I','V'))))) FUN_CIVI,
+                            RH.FILIAL,
+                            SUBSTR(TRIM(RH.RG),0,12) RG,
+                            RESP_SETOR
+                       FROM MULTGESTOR.SIAOS_FOLFUN RH,
+                            SIAOS.FUNCIONARIO INFO
+                      WHERE RH.FUN_CHAPA = INFO.FUN_CHAPA(+)
+                   ORDER BY INFO.FUN_CHAPA DESC,
+                            RH.FUN_CHAPA
+      */
+
+      FOR c_func IN (SELECT INFO.FUN_CHAPA INFO_CHAPA,
+                            INFO.PES_NUMERO,
+                            INFO.FUN_FILIAL,
+                            TO_CHAR(TO_NUMBER(RH.RA_MAT)) FUN_CHAPA,
+                            INITCAP(DECODE(TRIM(RH.RA_NSOCIAL), NULL, TRIM(RH.RA_NOMECMP), TRIM(RH.RA_NSOCIAL))) FUN_NOME,
+                            SUBSTR(TRIM(RH.RA_ZZUNIDA),1,5) FUN_UNID,
+                            --'' FUN_LOCAL,--Nï¿½O PRECISA
+                            --'' TIPO_FUNCIONARIO,--Nï¿½O PRECISA,
+                            TRIM((SELECT CARGO.RJ_DESC FROM PROTPROD.SRJ010 CARGO WHERE CARGO.RJ_FUNCAO = RH.RA_CODFUNC AND SUBSTR(RH.RA_FILIAL,1,2) = TRIM(CARGO.RJ_FILIAL))) FUN_CARGO,
+                            DECODE(TRIM(RH.RA_DEMISSA),NULL,'Y','N') FUN_ATIVO,
+                            INFO.FUN_ATIVO INFO_ATIVO,
+                            TRIM(RH.RA_EMAIL2) FUN_EMAIL,
+                            TO_DATE(RH.RA_ADMISSA,'YYYYMMDD') FUN_DATA_ADM,
+                            TRIM(RH.RA_ENDEREC)||DECODE(TRIM(RH.RA_NUMENDE),NULL,NULL,', '||TRIM(RH.RA_NUMENDE)) FUN_ENDE,
+                            TRIM((SELECT CIDADE.CC2_MUN FROM PROTPROD.CC2010 CIDADE WHERE CIDADE.CC2_CODMUN = RH.RA_CODMUNN AND CIDADE.CC2_EST = RH.RA_ESTADO)) FUN_CIDA,
+                            RH.RA_ESTADO FUN_ESTA,
+                            TRIM(RH.RA_BAIRRO) FUN_BAIR,
+                            TRIM(RH.RA_CEP)  FUN_CEP,
+                            TRIM(RH.RA_TELEFON) FUN_FONE,
+                            TO_DATE(RH.RA_NASC,'YYYYMMDD') FUN_NASC,
+                            RH.RA_CC CC_CODIGO_PROTHEUS, --MUITAS CONTAS VINCULADAS
+                            --DECODE(TRIM(RH.RA_CC),NULL,INFO.CC_CODIGO,(SELECT MAX(C.CC_CODIGO) FROM SIAOS.CENTRO_CUSTO C WHERE TRIM(C.CC_NRPROT) = TRIM(RH.RA_CC) AND C.CC_ATIVO != 'O')) CC_CODIGO,
+                            DECODE(TRIM(RH.RA_CC),NULL,INFO.CC_CODIGO,TRIM(RH.RA_CC)) CC_CODIGO,
+                            INFO.CC_CODIGO CC_CODIGO_ANTIGO,
+                            TRIM(CC.CTT_DESC01) FUN_DIVI,
+                            DECODE(TRIM(CC.CTT_ZZMAT),NULL,NULL,TO_CHAR(TO_NUMBER(CC.CTT_ZZMAT))) FUNC_GERENTE,
+                            DECODE(TRIM(CC.CTT_ZZDIR),NULL,NULL,TO_CHAR(TO_NUMBER(CC.CTT_ZZDIR))) FUNC_DIRETOR,
+                            RH.RA_SEXO FUN_SEXO,
+                            RH.RA_ESTCIVI FUN_CIVI,
+                            RH.RA_FILIAL FILIAL2,--VERIFICAR ABAIXO
+                            CASE WHEN SUBSTR(RH.RA_FILIAL,1,2) = '04' THEN 'IN'
+															   WHEN RH.RA_FILIAL = '0201' THEN 'ST'
+                                 WHEN RH.RA_FILIAL = '0113' THEN 'SP'
+                                 WHEN RH.RA_FILIAL = '0112' THEN 'RJ'
+                                 WHEN RH.RA_FILIAL = '0111' THEN 'MG'
+                                 WHEN RH.RA_FILIAL = '0110' THEN 'PE'
+                                 WHEN RH.RA_FILIAL = '0109' THEN 'BA'
+                                 WHEN RH.RA_FILIAL = '0108' THEN 'SP'
+                                 WHEN RH.RA_FILIAL = '0107' THEN 'PR'
+                                 WHEN RH.RA_FILIAL = '0106' THEN 'PR'
+                                 WHEN RH.RA_FILIAL = '0105' THEN 'SP'
+                                 WHEN RH.RA_FILIAL = '0104' THEN 'MG'																	 
+                                 ELSE 'ST' END  FILIAL,
+                            CASE WHEN SUBSTR(RH.RA_FILIAL,1,2) = '01' THEN '1'
+                                 WHEN SUBSTR(RH.RA_FILIAL,1,2) = '02' THEN '3'
+                                 WHEN SUBSTR(RH.RA_FILIAL,1,2) = '03' THEN '1'
+                                 WHEN SUBSTR(RH.RA_FILIAL,1,2) = '04' THEN '1'
+                                 ELSE '2' END  TIPO_FUNC,
+                            SUBSTR(TRIM(RH.RA_RG),1,12) RG,
+                            DECODE(TRIM(RH.RA_ZZRSPS),NULL,NULL,TO_CHAR(TO_NUMBER(RH.RA_ZZRSPS))) RESP_SETOR
+                       FROM PROTPROD.SRA010 RH
+                       LEFT JOIN SIAOS.FUNCIONARIO INFO ON INFO.FUN_CHAPA = TO_CHAR(TO_NUMBER(RH.RA_MAT))
+                       LEFT JOIN PROTPROD.CTT010 CC ON  CC.CTT_CUSTO = RH.RA_CC
+											                              AND SUBSTR(CC.CTT_FILIAL,1,2) = SUBSTR(RH.RA_FILIAL,1,2)
+                      WHERE SUBSTR(RA_FILIAL,1,2) NOT IN ('01','02','03')--(RA_MAT  != '002389' OR RA_FILIAL != '0105')
+                        AND RH.D_E_L_E_T_ != '*'
+												AND RH.RA_PROCES = '00001'
+                        AND NVL(INFO.FUN_TERCEIRO,0) = 0
+                       -- and PES_NUMERO = 5081
+                        --AND RH.RA_MAT = '060525'
+                      ORDER BY INFO.FUN_CHAPA DESC, RH.RA_MAT)
+      LOOP
+
+        v_nome := REPLACE(c_func.FUN_NOME,' De ',' de ');
+        v_nome := REPLACE(v_nome,' Da ',' da ');
+        v_nome := REPLACE(v_nome,' Do ',' do ');
+        v_nome := REPLACE(v_nome,' Das ',' das ');
+        v_nome := REPLACE(v_nome,' Dos ',' dos ');
+
+        BEGIN
+
+          SELECT MIN(USU_CHAPA)
+            INTO n_resp_setor
+            FROM USUARIO U,
+                 FUNCIONARIO F
+           WHERE U.PES_NUMERO = F.PES_NUMERO
+             AND F.FUN_CHAPA  = c_func.RESP_SETOR
+             AND U.USU_STATUS = 0
+           ORDER BY U.USU_STATUS;
+
+        EXCEPTION WHEN OTHERS THEN
+          n_resp_setor := c_func.RESP_SETOR;
+        END;
+
+        BEGIN
+
+          SELECT MIN(USU_CHAPA)
+            INTO n_usuario
+            FROM USUARIO U,
+                 FUNCIONARIO F
+           WHERE U.PES_NUMERO = F.PES_NUMERO
+             AND F.FUN_CHAPA  = c_func.INFO_CHAPA
+             AND U.USU_STATUS = 0
+           ORDER BY U.USU_STATUS;
+
+        EXCEPTION WHEN OTHERS THEN
+          n_usuario := NULL;
+        END;
+
+        IF c_func.TIPO_FUNC IN (1,5,6,7) THEN  --('SMAR','ESTAGIARIOS','ESTAGIARIOS SEM REMUNERACAO','ADOT') THEN
+
+             v_fun_externo := 'N';
+             v_fun_transf  := 'N';
+             n_emp_codigo  := '1';
+
+        ELSIF c_func.TIPO_FUNC = 2 THEN--= 'SMAR COMERCIAL' THEN
+
+           v_fun_externo := 'Y';
+           v_fun_transf  := 'N';
+           n_emp_codigo  := '1';
+
+        ELSIF c_func.TIPO_FUNC = 3 THEN--= 'SMAR COMERCIAL' THEN
+
+           v_fun_externo := 'Y';
+           v_fun_transf  := 'Y';
+           n_emp_codigo  := '2';
+
+        ELSIF c_func.TIPO_FUNC = 10 THEN--= 'CONSELHO' THEN
+
+           v_fun_externo := 'Y';
+           v_fun_transf  := 'Y';
+           n_emp_codigo  := '1';
+
+        ELSIF c_func.FUN_UNID = 'S R S' THEN
+
+           v_fun_externo := 'Y';
+           v_fun_transf  := 'Y';
+           n_emp_codigo  := '76';
+
+        ELSIF c_func.FUN_UNID = 'STD' THEN
+
+           v_fun_externo := 'Y';
+           v_fun_transf  := 'Y';
+           n_emp_codigo  := '3';
+
+        ELSE
+
+           v_fun_externo := 'Y';
+           v_fun_transf  := 'Y';
+           n_emp_codigo  := '13';
+
+        END IF;
+
+        BEGIN
+
+            SELECT E.EST_CODIGO
+              INTO c_uf2
+              FROM GERAL.ESTADO E,
+                   GERAL.PAIS P
+             WHERE E.EST_SIGLA = UPPER(TRIM(c_func.FUN_ESTA))
+               AND P.PAI_CODIGO = E.PAI_CODIGO
+               AND P.PAI_CODIGO = 76;
+
+         EXCEPTION WHEN NO_DATA_FOUND THEN
+           c_uf2 := 1;
+         END;
+
+         IF c_func.INFO_CHAPA IS NULL THEN
+
+           BEGIN
+
+              INSERT INTO GERAL.PRE_PESSOA (PPE_NOME,PPE_EMAIL,TEP_CODIGO,FUS_CODIGO,PRE_SEXO,LIN_COD,EST_CODIGO,PAI_CODIGO,FUN_CHAPA,PPE_ENDERECO,PPE_CIDADE,PPE_BAIRRO,PPE_CEP,EMP_CODIGO)
+                  VALUES (v_nome,NULL,'S',18,c_func.FUN_SEXO,1,c_uf2,76,c_func.FUN_CHAPA,c_func.FUN_ENDE,c_func.FUN_CIDA,c_func.FUN_BAIR,c_func.FUN_CEP,n_emp_codigo);
+
+            EXCEPTION WHEN OTHERS THEN
+                NULL;
+            END;
+
+           BEGIN
+
+              INSERT INTO SIAOS.FUNCIONARIO
+                     (FUN_CHAPA,CC_CODIGO,FUN_UNIDADE,FUN_CARGO,FUN_DT_ADM,FUN_ENDERECO,FUN_CIDADE,FUN_UF,FUN_BAIRRO,FUN_CEP,FUN_NASCIMENTO,FUN_SEXO,FUN_CIVIL,FUN_RG,FUN_FILIAL,FUN_CHAPA_RESP,FUN_ATIVO,FUN_TRANSF,FUN_EXTERNO)
+              VALUES (c_func.FUN_CHAPA,c_func.CC_CODIGO,c_func.FUN_UNID,c_func.FUN_CARGO,c_func.FUN_DATA_ADM,c_func.FUN_ENDE,c_func.FUN_CIDA,c_uf2,c_func.FUN_BAIR,c_func.FUN_CEP,c_func.FUN_NASC,c_func.FUN_SEXO,c_func.FUN_CIVI,c_func.RG,c_func.FILIAL,c_func.RESP_SETOR,c_func.FUN_ATIVO,v_fun_transf,v_fun_externo);
+
+            EXCEPTION WHEN OTHERS THEN
+               BEGIN
+
+                  INSERT INTO SIAOS.FUNCIONARIO
+                         (FUN_CHAPA,FUN_UNIDADE,FUN_CARGO,FUN_DT_ADM,FUN_ENDERECO,FUN_CIDADE,FUN_UF,FUN_BAIRRO,FUN_CEP,FUN_NASCIMENTO,FUN_SEXO,FUN_CIVIL,FUN_RG,FUN_FILIAL,FUN_ATIVO,FUN_TRANSF,FUN_EXTERNO)
+                  VALUES (c_func.FUN_CHAPA,c_func.FUN_UNID,c_func.FUN_CARGO,c_func.FUN_DATA_ADM,c_func.FUN_ENDE,c_func.FUN_CIDA,c_uf2,c_func.FUN_BAIR,c_func.FUN_CEP,c_func.FUN_NASC,c_func.FUN_SEXO,c_func.FUN_CIVI,c_func.RG,c_func.FILIAL,c_func.FUN_ATIVO,v_fun_transf,v_fun_externo);
+
+                EXCEPTION WHEN OTHERS THEN
+                    NULL;
+                END;
+            END;
+
+         ELSE
+
+           BEGIN
+
+               UPDATE SIAOS.FUNCIONARIO
+                  SET CC_CODIGO      = c_func.CC_CODIGO,
+                      FUN_UNIDADE    = c_func.FUN_UNID,
+                      FUN_CARGO      = c_func.FUN_CARGO,
+                      FUN_DT_ADM     = c_func.FUN_DATA_ADM,
+                      FUN_ENDERECO   = c_func.FUN_ENDE,
+                      FUN_CIDADE     = c_func.FUN_CIDA,
+                      FUN_UF         = c_uf2,
+                      FUN_BAIRRO     = c_func.FUN_BAIR,
+                      FUN_CEP        = c_func.FUN_CEP,
+                      FUN_NASCIMENTO = c_func.FUN_NASC,
+                      FUN_SEXO       = c_func.FUN_SEXO,
+                      FUN_CIVIL      = c_func.FUN_CIVI,
+                      FUN_RG         = c_func.RG,
+                      FUN_FILIAL     = c_func.FILIAL,
+                      FUN_CHAPA_RESP = c_func.RESP_SETOR,
+                      FUN_ATIVO      = c_func.FUN_ATIVO,
+                      FUN_EXTERNO    = v_fun_externo,
+                      FUN_TRANSF     = v_fun_transf
+                WHERE FUN_CHAPA      = c_func.FUN_CHAPA;
+
+            EXCEPTION WHEN OTHERS THEN
+              BEGIN
+                 UPDATE SIAOS.FUNCIONARIO
+                    SET FUN_UNIDADE    = c_func.FUN_UNID,
+                        FUN_CARGO      = c_func.FUN_CARGO,
+                        FUN_DT_ADM     = c_func.FUN_DATA_ADM,
+                        FUN_ENDERECO   = c_func.FUN_ENDE,
+                        FUN_CIDADE     = c_func.FUN_CIDA,
+                        FUN_UF         = c_uf2,
+                        FUN_BAIRRO     = c_func.FUN_BAIR,
+                        FUN_CEP        = c_func.FUN_CEP,
+                        FUN_NASCIMENTO = c_func.FUN_NASC,
+                        FUN_SEXO       = c_func.FUN_SEXO,
+                        FUN_CIVIL      = c_func.FUN_CIVI,
+                        FUN_RG         = c_func.RG,
+                        FUN_FILIAL     = c_func.FILIAL,
+                        FUN_ATIVO      = c_func.FUN_ATIVO
+                  WHERE FUN_CHAPA      = c_func.FUN_CHAPA;
+
+              EXCEPTION WHEN OTHERS THEN
+                  NULL;
+              END;
+
+            END;
+
+            BEGIN
+
+               UPDATE SIAOS.PESSOA
+                  SET PES_NOME   = SUBSTR(v_nome,0,100)
+                WHERE PES_NUMERO = c_func.PES_NUMERO;
+
+            EXCEPTION WHEN OTHERS THEN
+                NULL;
+            END;
+
+            IF c_func.FUN_ATIVO = 'N' AND c_func.INFO_ATIVO = 'Y' THEN
+               SMARNET.PCK_ACESSO.SP_INATIVA_FUNCIONARIO(n_usuario,n_erro);
+            END IF;
+
+         END IF;
+
+         IF n_usuario IS NOT NULL AND c_func.FUN_ATIVO = 'Y' THEN
+           BEGIN
+             UPDATE USUARIO
+                SET CC_CODIGO = c_func.CC_CODIGO,
+                    USU_NOME  = SUBSTR(v_nome,0,60)
+              WHERE USU_CHAPA = n_usuario;
+            EXCEPTION WHEN OTHERS THEN
+              SP_UP_CC;
+              UPDATE USUARIO
+                 SET CC_CODIGO = c_func.CC_CODIGO,
+                     USU_NOME  = SUBSTR(v_nome,0,60)
+               WHERE USU_CHAPA = n_usuario;              
+            END;
+         END IF;
+
+      END LOOP;
+
+      COMMIT;
+
+   EXCEPTION WHEN OTHERS THEN
+     SP_UP_CC;
+   END SP_UP_AUTO_USUARIOS;
+
+
+  ----------------------------------------------------------
+  -------------------- FUNCAO ACESSA O.S. ------------------
+  ----------------------------------------------------------
+   FUNCTION SF_ACESSA_OS(
+   n_order_no            IN OELIN.ORDER_NO%TYPE,
+   n_chapa_usu           IN OELIN.RESPONSAVEL%TYPE,
+   n_acesso              IN NUMBER)
+   RETURN NUMBER
+
+   IS
+   n_os           NUMBER;
+   n_restricao    NUMBER;
+   n_resposta     NUMBER(1);
+   v_cc           USUARIO.CC_CODIGO%TYPE;
+   n_gdi_cod      NUMBER(11);
+
+   BEGIN
+
+      n_resposta := 1; --ACESSO LIBEADO
+
+      --
+      -- CONSULTA DE OS'S
+      --
+      IF n_acesso = 51 THEN
+
+          BEGIN
+            -- SELECT QUE RETORNA SE O USUARIO POSSUI ALGUM TIPO DE RESTRICAO DE ACESSO A O.S..
+            SELECT COUNT(*)
+                   INTO n_restricao
+                   FROM ACESSO_OS
+                   WHERE ACESSO_OS.USU_CHAPA = n_chapa_usu;
+
+            -- SE RESTRICAO FOR MAIOR QUE ZERO ELE TEM RESTRICAO.
+            IF (n_restricao > 0) THEN
+
+               SELECT COUNT(OEHDR.ORDER_NO)
+                      INTO n_os
+                      FROM OEHDR, ACESSO_OS
+                      WHERE ACESSO_OS.CODIGO = OEHDR.CUST_KEY
+                      AND OEHDR.ORDER_NO = n_order_no;
+
+                  -- SE n_os MAIOR QUE ZERO E QUE ESTA LIBERADO
+
+                  IF (n_os <=0) THEN
+                  -- SE n_os IGUAL A ZERO NAO ESTA LIBERADO
+                     n_resposta := 0;
+                     RETURN (n_resposta);-- ACESSO NEGADO
+
+                  END IF;
+
+            END IF; --- FIM IF (n_restricao > 0)
+
+          END;
+
+      END IF;
+
+
+      --
+      -- APROVACAO COMERCIAL
+      --
+      IF n_acesso = 173 THEN
+
+       BEGIN
+
+         BEGIN
+           -- BUSCA DIVIS?O DA OS
+           SELECT ORIGEM.GDI_CODIGO
+             INTO n_gdi_cod
+             FROM OEHDR,
+                  ORIGEM
+            WHERE OEHDR.ORIGEM = ORIGEM.ORIGEM
+                  AND OEHDR.ORDER_NO = n_order_no;
+
+           EXCEPTION
+
+             WHEN NO_DATA_FOUND THEN
+
+              RETURN (0);
+
+         END;
+
+         BEGIN
+           -- BUSCA CENTRO DE CUSTO DO USUARIO
+           SELECT USUARIO.CC_CODIGO
+             INTO v_cc
+             FROM USUARIO
+            WHERE USUARIO.USU_CHAPA = n_chapa_usu;
+
+           EXCEPTION
+
+             WHEN NO_DATA_FOUND THEN
+
+               RETURN (0);
+
+         END;
+
+        -- BLOQUEIA TUDO
+        n_resposta := 0;
+        -- 7.04.01.1
+        -- SE USUARIO ADM DE CONTRATOS NACIONAL E O.S. NAO DIVIS?O INTERNACIONAL - LIBERA
+        IF ((v_cc = '7.02.09.0') AND (n_gdi_cod != 3)) THEN
+
+              n_resposta := 1;
+       -- 7.07.15.2
+       -- SE USUARIO ADM DE CONTRATOS INTERNACIONAL E O.S. DIVIS?O INTERNACIONAL - LIBERA
+        ELSIF ((v_cc = '7.02.09.0') AND (n_gdi_cod = 3)) THEN
+
+              n_resposta := 1;
+       -- 7.07.00.0
+       -- SE USUARIO ADM DE CONTRATOS INTERNACIONAL E O.S. DIVIS?O INTERNACIONAL - LIBERA
+        ELSIF ((v_cc = '7.02.09.0') AND (n_gdi_cod = 3)) THEN
+
+              n_resposta := 1;
+
+         END IF;
+
+       END;
+
+      END IF;
+
+      --
+      -- APROVACAO TECNICA
+      --
+      IF n_acesso = 174 THEN
+
+       BEGIN
+
+         BEGIN
+           -- BUSCA DIVIS?O DA OS
+           SELECT ORIGEM.GDI_CODIGO
+             INTO n_gdi_cod
+             FROM OEHDR,
+                  ORIGEM
+            WHERE OEHDR.ORIGEM = ORIGEM.ORIGEM
+                  AND OEHDR.ORDER_NO = n_order_no;
+
+           EXCEPTION
+
+             WHEN NO_DATA_FOUND THEN
+
+              RETURN (0);
+
+         END;
+
+         BEGIN
+           -- BUSCA CENTRO DE CUSTO DO USUARIO
+           SELECT USUARIO.CC_CODIGO
+             INTO v_cc
+             FROM USUARIO
+            WHERE USUARIO.USU_CHAPA = n_chapa_usu;
+
+           EXCEPTION
+
+             WHEN NO_DATA_FOUND THEN
+
+              RETURN (0);
+
+         END;
+
+        -- BLOQUEIA TUDO
+        n_resposta := 0;
+        -- 7.04.03.0
+        -- SE USUARIO ADM DE CONTRATOS NACIONAL E O.S. NAO DIVIS?O INTERNACIONAL - LIBERA
+        IF ((v_cc = '2008001') AND (n_gdi_cod != 3)) THEN
+
+              n_resposta := 1;
+       -- 7.07.05.00
+       -- SE USUARIO ADM DE CONTRATOS INTERNACIONAL E O.S. DIVIS?O INTERNACIONAL - LIBERA
+        ELSIF ((v_cc = '2008001') AND (n_gdi_cod = 3)) THEN
+
+              n_resposta := 1;
+       -- 7.07.05.0
+       -- SE USUARIO ADM DE CONTRATOS INTERNACIONAL E O.S. DIVIS?O INTERNACIONAL - LIBERA
+        ELSIF ((v_cc = '2008001') AND (n_gdi_cod = 3)) THEN
+
+              n_resposta := 1;
+
+         END IF;
+
+       END;
+
+      END IF;
+
+      --
+      -- DISTRBUIC?O
+      --
+      IF n_acesso = 175 THEN
+
+       BEGIN
+
+         BEGIN
+           -- BUSCA DIVIS?O DA OS
+           SELECT ORIGEM.GDI_CODIGO
+             INTO n_gdi_cod
+             FROM OEHDR,
+                  ORIGEM
+            WHERE OEHDR.ORIGEM = ORIGEM.ORIGEM
+                  AND OEHDR.ORDER_NO = n_order_no;
+
+           EXCEPTION
+
+             WHEN NO_DATA_FOUND THEN
+
+              RETURN (0);
+
+         END;
+
+         BEGIN
+           -- BUSCA CENTRO DE CUSTO DO USUARIO
+           SELECT USUARIO.CC_CODIGO
+             INTO v_cc
+             FROM USUARIO
+            WHERE USUARIO.USU_CHAPA = n_chapa_usu;
+
+           EXCEPTION
+
+             WHEN NO_DATA_FOUND THEN
+
+              RETURN (0);
+
+         END;
+
+        -- BLOQUEIA TUDO
+        n_resposta := 0;
+        -- 7.04.01.1
+        -- SE USUARIO ADM DE CONTRATOS NACIONAL E O.S. NAO DIVIS?O INTERNACIONAL - LIBERA
+        IF ((v_cc = '2008001') AND (n_gdi_cod != 3)) THEN
+
+              n_resposta := 1;
+       -- 7.07.05.0
+       -- SE USUARIO ADM DE CONTRATOS INTERNACIONAL E O.S. DIVIS?O INTERNACIONAL - LIBERA
+        ELSIF ((v_cc = '2008001') AND (n_gdi_cod = 3)) THEN
+
+              n_resposta := 1;
+       -- 7.07.05.0
+       -- SE USUARIO ADM DE CONTRATOS INTERNACIONAL E O.S. DIVIS?O INTERNACIONAL - LIBERA
+        ELSIF ((v_cc = '2008001') AND (n_gdi_cod = 3)) THEN
+
+              n_resposta := 1;
+
+         END IF;
+
+       END;
+
+      END IF;
+
+    RETURN (n_resposta);
+
+   END SF_ACESSA_OS;
+
+
+
+  ----------------------------------------------------------
+  ----------------- FUNCAO ACESSA PRE - O.S. ---------------
+  ----------------------------------------------------------
+
+   FUNCTION SF_ACESSA_PRE_OS(
+   n_order_no            IN PROPOSTA.PRP_CODIGO%TYPE,
+   n_chapa_usu           IN PROPOSTA.USU_CHAPA%TYPE,
+   n_acesso              IN NUMBER)
+   RETURN NUMBER
+   IS
+
+   n_resposta     NUMBER(1);
+   v_cc           USUARIO.CC_CODIGO%TYPE;
+
+   BEGIN
+
+      n_resposta := 1; --ACESSO LIBEADO
+
+      --
+      -- GERENCIA DE PRE-OS'S
+      --
+      IF n_acesso = 105 THEN
+
+          BEGIN
+
+          SELECT *
+          INTO v_cc
+          FROM DUAL;
+
+          END;
+
+      END IF;
+
+    RETURN (n_resposta);
+
+   END SF_ACESSA_PRE_OS;
+
+  -----------------------------------------------------------
+  -----------------  FUNCAO  CRIA  USUARIOS  ---------------
+  ----------------------------------------------------------
+
+  PROCEDURE SP_CREATE_USER (
+      v_login           IN   SIAOS.USUARIO.USU_LOGINWEB%TYPE)
+      IS
+      pragma AUTONOMOUS_TRANSACTION;
+      -- Necessario para definir uma transac?o especifica para a procedure de modo que
+      -- a mesma possa ser invocada por um trigger e que contenha operac?es DDL e/ou DCL
+      v_sql                  VARCHAR2(2000);
+      v_tablespace           VARCHAR2(200);
+
+
+    BEGIN
+
+     SELECT TEMPORARY_TABLESPACE
+       INTO v_tablespace
+       FROM USER_USERS
+      WHERE USERNAME = 'SIAOS';
+
+      v_sql := 'CREATE USER "'||UPPER(v_login)||'" IDENTIFIED BY WCMAGIFKSV DEFAULT TABLESPACE USERS TEMPORARY TABLESPACE ' || v_tablespace;
+      EXECUTE IMMEDIATE v_sql;
+      v_sql := 'GRANT USUARIO_SMAR TO "'||UPPER(v_login)||'"';
+      EXECUTE IMMEDIATE v_sql;
+      v_sql := 'GRANT CONNECT TO "'||UPPER(v_login)||'"';
+      EXECUTE IMMEDIATE v_sql;
+      v_sql := 'ALTER USER "'||UPPER(v_login)||'" DEFAULT ROLE ALL';
+      EXECUTE IMMEDIATE v_sql;
+
+    END SP_CREATE_USER;
+
+
+  ----------------------------------------------------------
+  -----------------  FUNCAO APAGA  USUARIOS  ---------------
+  ----------------------------------------------------------
+
+  PROCEDURE SP_REVOKE_USER(
+      v_login           IN   SIAOS.USUARIO.USU_LOGINWEB%TYPE)IS
+      v_sql                  VARCHAR2(2000);
+
+      pragma AUTONOMOUS_TRANSACTION;
+
+    BEGIN
+      v_sql := 'REVOKE CONNECT FROM "'||v_login||'"';
+      EXECUTE IMMEDIATE v_sql;
+    END SP_REVOKE_USER;
+
+
+  ----------------------------------------------------------
+  ---------------  FUNCAO CONVERSOR DE MOEDAS --------------
+  ----------------------------------------------------------
+
+   FUNCTION SF_RETORNA_COTACAO_MOEDA(
+      d_data     IN     DATE,
+      v_moeda    IN     SIAOS.INDICFIN.MOEDA%TYPE)
+       RETURN NUMBER IS
+
+      n_cotacao         SIAOS.MOEDA.CAMBIO%TYPE;
+
+    BEGIN
+
+
+      IF TRIM(v_moeda) != 'R$' THEN
+          SELECT M.CAMBIO
+            INTO n_cotacao
+            FROM SIAOS.MOEDA M
+           WHERE M.DATA <= d_data
+             AND TRIM(M.COD_MOEDA) = TRIM(v_moeda)
+           ORDER BY 
+                 M.DATA DESC
+           FETCH FIRST ROW ONLY;
+ /*
+            FROM SIAOS.MOEDA
+           WHERE MOEDA.DATA = (SELECT MAX(M.DATA)
+                                 FROM SIAOS.MOEDA M
+                                WHERE M.DATA <= d_data
+                                AND TRIM(M.COD_MOEDA) = TRIM(v_moeda))
+             AND TRIM(MOEDA.COD_MOEDA) = TRIM(v_moeda);
+             */
+      ELSE
+
+         n_cotacao := 1;
+
+      END IF;
+
+     RETURN(n_cotacao);
+
+    END SF_RETORNA_COTACAO_MOEDA;
+
+
+   ----------------------------------------------------------
+  ---------------  FUNCAO CONVERSOR DE MOEDAS --------------
+  ----------------------------------------------------------
+
+     FUNCTION SF_CONVERTE_MOEDA(
+        n_valor          IN    NUMBER,
+        v_moeda_de       IN    VARCHAR2,
+        v_moeda_para     IN    VARCHAR2,
+        d_data           IN    DATE)
+        RETURN NUMBER IS
+
+        n_retorno            NUMBER(15,3) := 0.00;
+        n_cota_de            SIAOS.MOEDA.CAMBIO%TYPE := 0.00;
+        n_cota_para          SIAOS.MOEDA.CAMBIO%TYPE := 0.00;
+        n_cota_dollar        SIAOS.MOEDA.CAMBIO%TYPE := 0.00;
+        n_cota_dollar_eur    SIAOS.MOEDA.CAMBIO%TYPE := 0.00;
+        d_data2              DATE;
+        v_moeda_para_p       SIAOS.OEHDR.MOEDA%TYPE;
+
+    BEGIN
+
+      v_moeda_para_p := v_moeda_para;
+
+
+      IF d_data IS NULL THEN
+         d_data2 := SYSDATE;
+      ELSE
+         d_data2 := d_data;
+      END IF;
+
+      IF TRIM(v_moeda_para_p) = 'USD' THEN
+         v_moeda_para_p := 'US';
+      END IF;
+
+      n_cota_de     := SIAOS.PCK_DQANET.SF_RETORNA_COTACAO_MOEDA(d_data2,v_moeda_de);
+      n_cota_para   := SIAOS.PCK_DQANET.SF_RETORNA_COTACAO_MOEDA(d_data2,v_moeda_para_p);
+      n_cota_dollar := SIAOS.PCK_DQANET.SF_RETORNA_COTACAO_MOEDA(d_data2,'US');
+      n_cota_dollar_eur := SIAOS.PCK_DQANET.SF_RETORNA_COTACAO_MOEDA(d_data2,'ERL');
+
+      --IF n_valor > 0 THEN
+      IF (nvl(n_valor,0)!=0) THEN
+          IF TRIM(v_moeda_de) = TRIM(v_moeda_para_P)  THEN
+
+            n_retorno := n_valor;
+
+          ELSIF (TRIM(v_moeda_de) = 'R$') AND (TRIM(v_moeda_para_p) = 'US') THEN
+
+            n_retorno := (n_valor/n_cota_para);
+
+          ELSIF (TRIM(v_moeda_de) = 'R$') AND (TRIM(v_moeda_para_p) = 'EUR') THEN
+
+           n_retorno := (n_valor/n_cota_dollar_eur);
+
+          ELSIF (TRIM(v_moeda_de) = 'USD') AND (TRIM(v_moeda_para_p) = 'R$') THEN
+
+            n_retorno := (n_valor*n_cota_dollar);
+
+          ELSIF (TRIM(v_moeda_de) = 'USD') AND (TRIM(v_moeda_para_p) = 'EUR') THEN
+
+            n_retorno := (n_valor/n_cota_para);
+
+          ELSIF (TRIM(v_moeda_de) = 'USD') AND (TRIM(v_moeda_para_p) = 'US') THEN
+
+            n_retorno := n_valor;
+
+          ELSIF (TRIM(v_moeda_de) = 'EUR') AND (TRIM(v_moeda_para_p) = 'US') THEN
+
+            n_retorno := (n_valor*n_cota_de);
+
+          ELSIF (TRIM(v_moeda_de) = 'EUR') AND (TRIM(v_moeda_para_p) = 'R$') THEN
+
+            n_retorno := (n_valor*n_cota_dollar_eur);
+
+          END IF;
+
+      END IF;
+
+      RETURN n_retorno;
+
+    END SF_CONVERTE_MOEDA;
+
+
+
+
+  ----------------------------------------------------------------------------------------------------------
+  ------------ Checa se a OS pode ser consultada pelo usuario, de aocrdo com a empresa do usuario ----------
+  ----------------------------------------------------------------------------------------------------------
+   FUNCTION SF_CONSULTA_OS(
+     n_order_no   IN OELIN.ORDER_NO%TYPE,
+     n_empresa    IN RASTREIO.EMPRESA.EMP_CODIGO%TYPE)
+   RETURN NUMBER IS --   1 - Pode consultar     0 - Nao pode
+     n_resposta      NUMBER(11) := 0;
+     n_tem_os        NUMBER(11);
+     n_emp           NUMBER(11);
+   BEGIN
+
+       IF(n_empresa != 1) THEN
+
+          SELECT O.EMP_ABERTURA
+            INTO n_emp
+            FROM SIAOS.OEHDR O
+           WHERE O.ORDER_NO = n_order_no;
+
+          IF n_emp = n_empresa THEN
+
+             n_resposta := 1;
+
+          ELSE
+
+                SELECT NVL(COUNT(*),0)
+                  INTO n_emp
+                  FROM RASTREIO.EMPRESA
+                 WHERE EMPRESA.EMP_CODIGO = n_empresa
+                   AND EMPRESA.EMP_TIPO = 'S';
+
+                IF(n_emp = 0) THEN
+
+                        SELECT NVL(COUNT(*),0)
+                          INTO n_emp
+                          FROM GERAL.EMPRESA
+                         WHERE EMPRESA.EMP_CODIGO = n_empresa
+                           AND EMPRESA.EMP_ACESSO = 'T';
+
+                        IF(n_emp = 1) THEN
+
+                            n_resposta := 1;
+
+                        ELSE
+
+                            SELECT NVL(COUNT(*),0)
+                              INTO n_tem_os
+                              FROM OEHDR,
+                                   GERAL.EMP_CLIE
+                             WHERE OEHDR.CUST_KEY      = EMP_CLIE.CODIGO
+                               AND EMP_CLIE.EMP_CODIGO = n_empresa
+                               AND OEHDR.ORDER_NO      = n_order_no;
+
+                            IF(n_tem_os = 1) THEN
+                               n_resposta := 1;
+                            ELSE
+
+                              SELECT U.EMP_CODIGO
+                                INTO n_emp
+                                FROM SIAOS.OEHDR O
+                               INNER JOIN SIAOS.VENDEDOR_OS VO ON VO.ORDER_NO = O.ORDER_NO
+                               INNER JOIN SIAOS.ARSALESP A ON A.SALESP_KEY = VO.SALESP_KEY
+                               INNER JOIN SIAOS.USUARIO U ON U.USU_CHAPA = A.USU_CHAPA
+                               WHERE O.ORDER_NO = n_order_no
+                                 AND VO.VOS_CODIGO = 1;
+
+                              IF n_emp = n_empresa THEN
+                                 n_resposta := 1;
+                              ELSE
+                                 n_resposta := 0;
+                              END IF;
+                            END IF;
+
+                        END IF;
+                ELSE
+
+                        n_resposta := 1;
+
+                END IF;
+
+           END IF;
+
+        ELSE
+
+             n_resposta := 1;
+
+        END IF;
+
+        RETURN(n_resposta);
+
+   END SF_CONSULTA_OS;
+
+  ----------------------------------------------------------
+  -- PROCEDURE DE ACESSO AOS MEIOS DE CONTATOS DE PESSOAS --
+  ----------------------------------------------------------
+
+  PROCEDURE PESSOA_MEIO_CONT(
+      n_operacao        IN   INTEGER,
+      n_pessoa          IN   SIAOS.PESSOA_MEIO_CONT.PES_NUMERO%TYPE,
+      n_codigo          IN   SIAOS.PESSOA_MEIO_CONT.PMC_CODIGO%TYPE,
+      n_tipo            IN   SIAOS.PESSOA_MEIO_CONT.PTC_CODIGO%TYPE,
+      v_referencia      IN   SIAOS.PESSOA_MEIO_CONT.PMC_REFERENCIA%TYPE)IS
+
+      n_novo_codigo          SIAOS.PESSOA_MEIO_CONT.PMC_CODIGO%TYPE;
+
+   BEGIN
+
+     IF n_operacao = 1 THEN
+
+        SELECT NVL(MAX(PMC_CODIGO),0)+1
+          INTO n_novo_codigo
+          FROM SIAOS.PESSOA_MEIO_CONT
+         WHERE PES_NUMERO = n_pessoa;
+
+        INSERT
+	 		    INTO SIAOS.PESSOA_MEIO_CONT (PES_NUMERO,PMC_CODIGO,PTC_CODIGO,PMC_REFERENCIA)
+			  VALUES (n_pessoa,n_novo_codigo,n_tipo,v_referencia);
+
+     ELSIF n_operacao = 2 THEN
+
+        DELETE
+	 		    FROM SIAOS.PESSOA_MEIO_CONT
+			   WHERE PES_NUMERO = n_pessoa
+			     AND PMC_CODIGO = n_codigo;
+
+     ELSIF n_operacao = 3 THEN
+
+        UPDATE SIAOS.PESSOA_MEIO_CONT
+	 		     SET PMC_REFERENCIA = v_referencia
+			   WHERE PES_NUMERO = n_pessoa
+			     AND PMC_CODIGO = n_codigo;
+
+     END IF;
+
+     COMMIT;
+
+   EXCEPTION WHEN OTHERS THEN
+     NULL;
+   END PESSOA_MEIO_CONT;
+
+  ----------------------------------------------------------
+  -- TRANSFORMA TEXTO COM SEPARADOR EM LISTA ---------------
+  ----------------------------------------------------------
+
+  ----------------------------------------------------------
+  -- EX:
+  -- SELECT T.COLUMN_VALUE NOME
+  -- FROM TABLE(pkg1.SF_SPLIT('JOï¿½O;PEDRO;MARIA',';')) T
+  ----------------------------------------------------------
+
+
+  FUNCTION SF_SPLIT(v_texto     VARCHAR2,
+                    v_separador VARCHAR2 := ',')
+             RETURN pip_list    PIPELINED IS
+
+    v_texto_parte               VARCHAR2(32767);
+    v_texto_sobra               VARCHAR2(32767);
+    n_posicao                   NUMBER;
+    n_tamanho                   NUMBER;
+
+  BEGIN
+    v_texto_parte := v_texto;
+    v_texto_sobra := v_texto;
+
+    IF v_texto IS NOT NULL THEN
+
+      LOOP
+
+        n_posicao := INSTR(v_texto_sobra,v_separador,1);
+        n_tamanho := LENGTH(v_texto_sobra);
+
+        v_texto_parte := SUBSTR(v_texto_sobra,1,n_posicao-1);
+        v_texto_sobra := SUBSTR(v_texto_sobra,n_posicao+1,n_tamanho);
+
+        IF v_texto_sobra IS NULL THEN
+           RETURN;
+        END IF;
+
+        IF n_posicao = 0 THEN
+          PIPE ROW(v_texto_sobra);
+          EXIT;
+        ELSE
+          PIPE ROW(v_texto_parte);
+        END IF;
+
+      END LOOP;
+
+    END IF;
+
+    RETURN;
+
+  END SF_SPLIT;
+
+  ----------------------------------------------------------
+  -- TRANSFORMA TEXTO SEM SEPARADOR EM COM SEPARADORES -----
+  ----------------------------------------------------------
+
+  FUNCTION SF_SEPARAR(v_texto     VARCHAR2,
+                      v_separador VARCHAR2,
+                      n_passo     NUMBER)
+               RETURN VARCHAR2   IS
+
+    v_retorno               VARCHAR2(32767);
+--    n_posicao               NUMBER;
+    n_tamanho               NUMBER;
+    n_andamento             NUMBER := 1;
+    c_parte                 VARCHAR2(32767);
+
+  BEGIN
+
+    IF v_texto IS NOT NULL THEN
+        n_tamanho := LENGTH(v_texto);
+
+        LOOP
+
+          c_parte := SUBSTR(v_texto, n_andamento, n_passo);
+
+          IF v_retorno IS NULL THEN
+             v_retorno := c_parte;
+          ELSE
+             v_retorno := v_retorno || v_separador || c_parte;
+          END IF;
+
+          n_andamento := n_andamento + n_passo;
+
+          EXIT WHEN n_tamanho < n_andamento;
+
+        END LOOP;
+
+    END IF;
+
+    RETURN v_retorno;
+
+  END SF_SEPARAR;
+
+  ----------------------------------------------------------
+  -- REMOVE ACENTOS DE UMA STRING                         --
+  -- SE ALTERAR O PARAMENTRO PARA 0 IRA DESCARTAR O PONTO --
+  ----------------------------------------------------------
+
+  FUNCTION SF_REMOVE_ACENTOS (c_texto IN VARCHAR2)
+    RETURN  VARCHAR2 IS
+  BEGIN
+
+      RETURN SF_REMOVE_ACENTOS2(c_texto,0);
+  END; 
+
+  ----------------------------------------------------------
+  -- REMOVE ACENTOS DE UMA STRING                         --
+  -- n_opcao = 0 SOMENTE ACENTOS                          --
+  -- n_opcao = 1 CARACTERES EPECIAIS TAMBEM               --
+  -- n_opcao = 2 PONTUAÇÃO TAMBEM                         --
+  ----------------------------------------------------------
+
+  FUNCTION SF_REMOVE_ACENTOS2 (c_texto IN VARCHAR2,
+		                           n_opcao IN INTEGER)
+    RETURN  VARCHAR2 IS
+    c_saida     VARCHAR2(2000);
+  BEGIN
+
+      c_saida := TRANSLATE(TRIM(c_texto),'âàãáÁÂÀÃéêÉÊíÍóôõÓÔÕüúÜÚçÇ&;:','aaaaAAAAeeEEiIoooOOOuuUUcCE,.');
+      c_saida := REPLACE(c_saida,'''','');
+
+			IF n_opcao = 1 OR  n_opcao = 2 THEN
+         c_saida := TRANSLATE(c_saida,'"´`^~#$%|*()<>','                ');
+		  END IF;
+			IF n_opcao = 2 THEN
+         c_saida := TRANSLATE(c_saida,';:?!','    ');
+		  END IF;
+
+      RETURN TRIM(c_saida);
+  END; -- Function REMOVE_ACENTO
+  
+  ----------------------------------------------------------
+  -- RETORNA USU_CHAPA DO USER ORACLE                     --
+  ----------------------------------------------------------
+  FUNCTION SF_USU_CHAPA_USER
+     RETURN NUMBER IS
+     
+     n_usu_chapa    SIAOS.USUARIO.USU_CHAPA%TYPE := NULL;
+     vc_userCon     VARCHAR2(100) := USER;
+     
+  BEGIN
+    
+    SELECT U.USU_CHAPA
+      INTO n_usu_chapa
+      FROM SIAOS.USUARIO U
+     WHERE UPPER(U.USU_LOGINWEB) = UPPER(vc_userCon)
+       AND U.USU_STATUS = 0
+       AND U.USU_EMAIL IS NOT NULL;
+
+    RETURN(n_usu_chapa);
+
+  EXCEPTION WHEN OTHERS THEN
+    
+    IF USER IN ('GERAL','SIAOS') THEN
+      n_usu_chapa := 2623;
+    ELSE
+      n_usu_chapa := 7;
+    END IF;
+    
+    RETURN(n_usu_chapa);
+    
+  END SF_USU_CHAPA_USER;
+  
+  ----------------------------------------------------------
+  -- RETORNA PES_NUMERO DO USER ORACLE                     --
+  ----------------------------------------------------------
+  FUNCTION SF_PES_NUMERO_USER
+     RETURN NUMBER IS
+     
+     n_pes_numero    SIAOS.USUARIO.PES_NUMERO%TYPE := NULL;
+     
+  BEGIN
+    
+    SELECT U.PES_NUMERO
+      INTO n_pes_numero
+      FROM SIAOS.USUARIO U
+     WHERE UPPER(U.USU_LOGIN) = USER
+       AND U.USU_STATUS = 0
+       AND U.USU_EMAIL IS NULL;
+
+    RETURN(n_pes_numero);
+
+  EXCEPTION WHEN OTHERS THEN
+    
+    IF USER = 'SIAOS' THEN
+      n_pes_numero := 612;
+    END IF;
+    
+    RETURN(n_pes_numero);
+    
+  END SF_PES_NUMERO_USER;
+    
+  ----------------------------------------------------------
+  -- RETORNA FUN_CHAPA DO USER ORACLE                     --
+  ----------------------------------------------------------  
+  FUNCTION SF_FUN_CHAPA_USER
+     RETURN NUMBER IS
+     
+     n_fun_chapa    SIAOS.FUNCIONARIO.FUN_CHAPA%TYPE := NULL;
+     
+  BEGIN
+    
+    SELECT MAX(F.FUN_CHAPA)
+      INTO n_fun_chapa
+      FROM SIAOS.FUNCIONARIO F
+     WHERE F.PES_NUMERO = SIAOS.PCK_DQANET.SF_PES_NUMERO_USER()
+       AND F.FUN_ATIVO = 'Y';
+
+    RETURN(n_fun_chapa);
+
+  EXCEPTION WHEN OTHERS THEN
+    
+    IF USER IN ('SIAOS','SYSTEM') THEN
+      n_fun_chapa := 1;
+    END IF;
+    
+    RETURN(n_fun_chapa);
+    
+  END SF_FUN_CHAPA_USER;
+    
+  ----------------------------------------------------------
+  -- RETORNA FUN_CHAPA DO USER ORACLE                     --
+  ----------------------------------------------------------  
+  FUNCTION SF_VALIDA_ACESSO(
+    n_ace_codigo     IN   SMARNET.ACESSO.ACE_CODIGO%TYPE)
+  RETURN NUMBER IS
+     
+     n_tem_acesso    INTEGER := 0;
+     
+  BEGIN
+    IF NVL(n_ace_codigo, 0) != 0 THEN
+      SELECT COUNT(A.USU_CHAPA)
+        INTO n_tem_acesso
+        FROM SMARNET.ACESSO_FUNC A
+       WHERE A.USU_CHAPA = SF_FUN_CHAPA_USER()
+         AND A.ACE_CODIGO = n_ace_codigo;         
+    END IF;
+    
+    IF n_tem_acesso > 0 THEN
+      RETURN(1);
+    ELSE
+      RETURN(0);    
+    END IF;
+
+  EXCEPTION WHEN OTHERS THEN    
+    RETURN(0);    
+  END SF_VALIDA_ACESSO;
+    
+  ----------------------------------------------------------
+  -- RETORNA FUN_CHAPA DO USER ORACLE                     --
+  ----------------------------------------------------------  
+  FUNCTION REDUCE_NAME(
+    p_name VARCHAR2, 
+    p_caps NUMBER DEFAULT NULL, 
+    p_no_reduce NUMBER DEFAULT NULL)
+  RETURN VARCHAR2
+  IS
+    v_name         VARCHAR2(4000) := TRIM(LOWER(p_name)); -- Name to be reduced
+    v_part         VARCHAR2(4000);
+    v_length       NUMBER;
+    v_last         NUMBER;
+    v_middle_name  VARCHAR2(4000) := '';
+    v_last_name    VARCHAR2(4000) := '';
+    v_first_name   VARCHAR2(4000);
+    v_reduced_name VARCHAR2(4000);
+  BEGIN
+    v_part := REPLACE(SUBSTR(v_name, INSTR(v_name, ' ')), '.', '');
+    v_length := REGEXP_COUNT(v_part, ' ');
+
+    IF v_length > 0 THEN
+      v_last := v_length - 1;
+      IF REGEXP_LIKE(v_part, '(junior|jr|filho|neto)$', 'i') THEN
+        v_last_name := INITCAP(SUBSTR(v_part, 1, INSTR(v_part, ' ', -1)));
+        v_last := v_last - 1;
+      ELSE
+        v_last_name := INITCAP(SUBSTR(v_part, 1, INSTR(v_part, ' ')));
+      END IF;
+
+      FOR i IN 1..v_last LOOP
+        IF REGEXP_SUBSTR(v_part, '(\w+)', 1, i) NOT IN ('e', 'de', 'do', 'da', 'dos', 'das', 'em') THEN
+          v_middle_name := v_middle_name || INITCAP(SUBSTR(REGEXP_SUBSTR(v_part, '(\w+)', 1, i), 1, 1)) || '. ';
+        END IF;
+      END LOOP;
+
+      IF v_middle_name IS NOT NULL THEN
+        v_middle_name := ' ' || v_middle_name;
+      END IF;
+
+      v_first_name := INITCAP(SUBSTR(v_name, 1, INSTR(v_name, ' ')));
+    ELSE
+      v_first_name := INITCAP(v_name);
+    END IF;
+
+    IF p_caps = 1 THEN
+      IF v_middle_name IS NOT NULL THEN
+        v_reduced_name := UPPER(TRIM(v_first_name) || ' ' || TRIM(v_middle_name) || ' ' || TRIM(v_last_name));
+      ELSE
+        v_reduced_name := UPPER(TRIM(v_first_name) || ' ' || TRIM(v_last_name));
+      END IF;
+    ELSIF v_middle_name IS NOT NULL THEN
+      v_reduced_name := TRIM(v_first_name) || ' ' || TRIM(v_middle_name) || ' ' || TRIM(v_last_name);
+    ELSE
+      v_reduced_name := TRIM(v_first_name) || ' ' || TRIM(v_last_name);
+    END IF;
+
+    RETURN TRIM(v_reduced_name);
+  END;
+
+
+  ----------------------------------------------------------
+  -- CHAPA DO FUNCIONARIO ATIVO (PELA PESSOA)             --
+  ----------------------------------------------------------
+
+  FUNCTION SF_PESSOA_FUNC_ATIVO (n_pes_numero   IN  SIAOS.PESSOA.PES_NUMERO%TYPE)
+    RETURN  VARCHAR2 IS
+    n_fun_chapa     SIAOS.FUNCIONARIO.FUN_CHAPA%TYPE;
+  BEGIN
+    
+    SELECT MAX(F.FUN_CHAPA)
+      INTO n_fun_chapa
+      FROM SIAOS.FUNCIONARIO F
+     WHERE F.PES_NUMERO = n_pes_numero
+       AND F.FUN_ATIVO = 'Y';   
+
+    RETURN TRIM(n_fun_chapa);
+    
+  EXCEPTION WHEN OTHERS THEN
+    RETURN NULL;
+  END;
+  
+
+  ----------------------------------------------------------
+  -- CHAPA DO FUNCIONARIO ATIVO (PELA PESSOA)             --
+  ----------------------------------------------------------
+
+  FUNCTION SF_PESSOA_USU_ATIVO (n_pes_numero   IN  SIAOS.PESSOA.PES_NUMERO%TYPE)
+    RETURN  VARCHAR2 IS
+    n_usu_chapa     SIAOS.USUARIO.USU_CHAPA%TYPE;
+  BEGIN
+    
+    SELECT MAX(U.USU_CHAPA)
+      INTO n_usu_chapa
+      FROM SIAOS.USUARIO U
+     WHERE U.PES_NUMERO = n_pes_numero
+       AND U.USU_STATUS = 0;   
+
+    RETURN TRIM(n_usu_chapa);
+    
+  EXCEPTION WHEN OTHERS THEN
+    RETURN NULL;
+  END;
+  
+  ----------------------------------------------------------
+  -- cadastro de pessoa                                   --
+  ----------------------------------------------------------  
+  PROCEDURE SP_IN_PESSOA(
+    n_pesssoa_id IN OUT SIAOS.PESSOA.PES_NUMERO%TYPE,
+    v_nome       IN     SIAOS.PESSOA.PES_NOME%TYPE,
+    v_email      IN     SIAOS.PESSOA.PES_EMAIL%TYPE := NULL,
+    n_ativo      IN     SIAOS.PESSOA.PES_ATIVO%TYPE := 1,
+    v_cidade     IN     SIAOS.PESSOA.PES_CIDADE%TYPE := NULL,
+    n_estado_id  IN     SIAOS.PESSOA.EST_CODIGO%TYPE := NULL,
+    v_estado     IN     SIAOS.PESSOA.PES_ESTADO%TYPE := NULL,
+    n_cep        IN     SIAOS.PESSOA.PES_CEP%TYPE := NULL,
+    n_pais_id    IN     SIAOS.PESSOA.PAI_CODIGO%TYPE := NULL,
+    c_sexo       IN     SIAOS.PESSOA.PES_SEXO%TYPE := NULL,
+    v_endereco   IN     SIAOS.PESSOA.PES_ENDERECO%TYPE := NULL,
+    v_bairro     IN     SIAOS.PESSOA.PES_BAIRRO%TYPE := NULL) IS
+  BEGIN
+
+    IF n_pesssoa_id IS NOT NULL THEN
+        
+       UPDATE PESSOA
+          SET PES_NOME     = v_nome,
+              PES_EMAIL    = COALESCE(v_email, PES_EMAIL),
+              PES_ATIVO    = COALESCE(n_ativo, PES_ATIVO),
+              PES_CIDADE   = COALESCE(v_cidade, PES_CIDADE),
+              EST_CODIGO   = COALESCE(n_estado_id, EST_CODIGO),
+              PES_ESTADO   = COALESCE(v_estado, PES_ESTADO),
+              PES_CEP      = COALESCE(n_cep, PES_CEP),
+              PAI_CODIGO   = COALESCE(n_pais_id, PAI_CODIGO),
+              PES_SEXO     = COALESCE(c_sexo, PES_SEXO),
+              PES_ENDERECO = COALESCE(v_endereco, PES_ENDERECO),
+              PES_BAIRRO   = COALESCE(v_bairro, PES_BAIRRO)
+        WHERE PES_NUMERO   = n_pesssoa_id;       
+
+    ELSE  
+      
+      IF v_email IS NOT NULL THEN
+        
+         SELECT MAX(PES_NUMERO) PES_CODIGO
+           INTO n_pesssoa_id
+           FROM SIAOS.PESSOA
+          WHERE TRIM(PES_EMAIL) = TRIM(v_email)
+            AND PES_ATIVO = 1;
+          
+      END IF;
+      
+      IF n_pesssoa_id IS NULL THEN
+        BEGIN
+          INSERT INTO PESSOA
+            (PES_NOME, PES_EMAIL, PES_ATIVO, PES_CIDADE, EST_CODIGO, PES_ESTADO, PES_CEP, PAI_CODIGO, PES_SEXO, PES_ENDERECO, PES_BAIRRO)
+          VALUES
+            (v_nome, v_email, 1, v_cidade, n_estado_id, v_estado, n_cep, n_pais_id, c_sexo, v_endereco, v_bairro)
+          RETURNING PESSOA.PES_NUMERO
+               INTO n_pesssoa_id;
+
+        EXCEPTION WHEN OTHERS THEN
+          RAISE_APPLICATION_ERROR(-20010, 'ERRO AO INSERIR PESSOA');
+        END;
+        
+      ELSE
+        RAISE_APPLICATION_ERROR(-20010, 'Email "'||v_email||'" já cadastrado!');
+      END IF;
+    
+    END IF;
+    
+  END SP_IN_PESSOA;
+  
+  ----------------------------------------------------------
+  -- PROCEDURE INSERT DADOS EM PASTA EMAIL + ANEXO ---------
+  ----------------------------------------------------------
+
+  PROCEDURE SP_IN_HTML_EMAIL_EXTERNO(
+    vc2_de         IN    PASTA_EMAIL.EML_DE%TYPE,
+    vc2_para       IN    PASTA_EMAIL.EML_PARA%TYPE,
+    vc2_cc         IN    PASTA_EMAIL.EML_CC%TYPE,
+    vc2_cco        IN    PASTA_EMAIL.EML_CCO%TYPE,
+    vc2_assunto    IN    PASTA_EMAIL.EML_ASSUNTO%TYPE,
+    clb_titulo     IN    CLOB,
+    clb_texto      IN    CLOB,
+    clb_titulo_det IN    CLOB,
+    clb_texto_det  IN    CLOB,
+    n_lin_cod      IN    SIAOS.LINGUA.LIN_COD%TYPE,
+    n_eml_numero   OUT   PASTA_EMAIL.EML_NUMERO%TYPE)IS
+
+    clb_corpo           CLOB;
+    clb_titulo2         CLOB;
+    clb_texto2          CLOB;
+    clb_titulo3         CLOB;
+    clb_texto3          CLOB;
+    n_pos_tit           INTEGER := 0;
+    n_pos_txt           INTEGER := 0;
+    n_i                 INTEGER := 0;
+    v_width             VARCHAR2(20) :=  ' width="410";';
+    v_data              VARCHAR2(200);
+    v_aut_email         VARCHAR2(200);
+    v_desc_email        VARCHAR2(200);
+    v_endereco          VARCHAR2(600);
+    v_detalhes          VARCHAR2(200);
+    v_br                VARCHAR2(6) := NULL;
+    v_address1nome      VARCHAR2(50);
+    v_address1numero    VARCHAR2(20);
+    v_address1email     VARCHAR2(80);
+    v_address2nome      VARCHAR2(50);
+    v_address2numero    VARCHAR2(20);
+    v_address2email     VARCHAR2(200);
+    v_address3nome      VARCHAR2(50);
+    v_address3numero    VARCHAR2(20);
+    v_address3email     VARCHAR2(200);
+    v_address4nome      VARCHAR2(50);
+    v_address4numero    VARCHAR2(20);
+    v_address4email     VARCHAR2(200);
+    v_subject           VARCHAR2(50);
+
+  BEGIN
+
+    v_address1numero := '+55 16 3946-3599';
+    v_address2numero := '+55 16 3946-3599';
+    v_address3numero := '+55 16 3946-3599';
+    v_address4numero := '+55 16 3946-3509';
+    
+    IF n_lin_cod = 1 THEN
+       v_data := TO_CHAR(SYSDATE,'dd') || ' DE ' || UPPER(TO_CHAR(SYSDATE , 'Month' , 'NLS_DATE_LANGUAGE=PORTUGUESE')) || ' DE ' || TO_CHAR(SYSDATE,'YYYY');
+       v_aut_email := 'E-mail autom&aacute;tico - SmarNet';
+       v_desc_email:= 'E-mail de notifica&ccedil;&atilde;o dos sistemas Smarnet';
+       v_detalhes  := 'DETALHES:';
+       v_endereco  := 'Rua Dr. Ant&ocirc;nio Furlan Junior, 1028 / Sert&atilde;ozinho, SP 14170-480 Brasil';
+       v_address1nome := 'Comercial';
+       v_address1email := 'orcamento@smar.com.br';
+       v_address2nome := 'P&oacute;s-venda';
+       v_address2email:= 'pedido@smar.com.br';
+       v_address3nome := 'Compras';
+       v_address3email := 'divisaodecompras@smar.com.br';
+       v_address4nome := 'Assist&ecirc;ncia T&eacute;cnica';
+       v_address4email := 'assistencia.tecnica@smar.com.br';
+       v_subject := 'Assunto:';
+    ELSE
+       v_data := UPPER(TO_CHAR(SYSDATE , 'Month' , 'NLS_DATE_LANGUAGE=ENGLISH')) || ' ' || TO_CHAR(SYSDATE,'dd') || ', ' || TO_CHAR(SYSDATE,'YYYY');
+       v_aut_email := 'SmarNet - Automatic E-mail';
+       v_desc_email:= 'E-mail notification of Smarnet systems';
+       v_detalhes  := 'DETAILS:';
+       v_endereco  := '1028 Dr. Ant&ocirc;nio Furlan Junior Street / Sert&atilde;ozinho, SP 14170-480 Brazil';
+       v_address1nome := 'Sales & Quote';
+       v_address1email := 'insales@smar.com.br';
+       v_address2nome := 'After Sales';
+       v_address2email := 'po@smar.com.br';
+       v_address3nome := 'Purchases';
+       v_address3email := 'comprasinternacionais@smar.com.br';
+       v_address4nome := 'Technical Assistance';
+       v_address4email := 'assistencia.tecnica@smar.com.br';
+       v_subject := 'Subject:';
+    END IF;
+
+    IF clb_titulo_det IS NULL THEN
+       v_width := '';
+    END IF;
+
+    clb_corpo := '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> <html lang="pt-br"> <head> ';
+    clb_corpo := clb_corpo || '<meta name="viewport" content="width=device-width, initial-scale=1"> <meta charset="iso-8859-1"> ';
+    clb_corpo := clb_corpo || '<title>' || vc2_assunto || '</title> ';
+    clb_corpo := clb_corpo || '<style> * { margin: 0px; } ';
+    clb_corpo := clb_corpo || 'body { font-family: sans-serif; margin: 0; padding: 0; background-color: #CCC; } ';
+    clb_corpo := clb_corpo || '.container { display: flex; flex-direction: column; max-width: 800px; margin: 10px auto; background-color: #CCC; } ';
+    clb_corpo := clb_corpo || '.header { display: flex; flex-direction: column; padding: 0px; background-color: #F0F8FF; } ';
+    clb_corpo := clb_corpo || '.header-section { flex-grow: 0; } ';
+    clb_corpo := clb_corpo || '.header-section:nth-child(1) { height: 60px; display: flex; flex-direction: row; text-align: right; } ';
+    clb_corpo := clb_corpo || '.header-section:nth-child(2) { height: 10px; } ';
+    clb_corpo := clb_corpo || '.header-section:nth-child(3) { height: 30px; display: flex; flex-direction: row; padding: 0px; margin: 0px; background-color: orange; } ';
+    clb_corpo := clb_corpo || '.header .diagonal-logo { width: 620px; height: 60px; background-color: #0047AB; clip-path: polygon(0 0, 90% 0, 100% 100%, 0 100%); } ';
+    clb_corpo := clb_corpo || '.content { display:flex; align-items: flex-start; width: 760px; margin: auto; position: relative; padding: 20px; min-height: 200px; background-color: #F0F8FF; } ';
+    clb_corpo := clb_corpo || '.column { display: inline-block; vertical-align: top; } ';
+    clb_corpo := clb_corpo || '.data { height: 30px; width: 200px; background-color: orange; } ';
+    clb_corpo := clb_corpo || '.data p {font-size: 11px; font-weight: bolder; margin: 8px 0px 0px 5px; } ';
+    clb_corpo := clb_corpo || '.header .subject { height: 30px; width: 600px; clip-path: polygon(3% 0, 100% 0, 100% 100%, 0 100%); background-color: black; } ';
+    clb_corpo := clb_corpo || '.header .subject p { font-size: 14px; font-weight: bolder; margin: 7px 0px 0px 20px; color: #fff; } ';
+    clb_corpo := clb_corpo || '.footer { display: flex; flex-direction: column; background-color: #0047AB; padding: 0px; } ';
+    clb_corpo := clb_corpo || '.footer-section { flex-grow: 0; } ';
+    clb_corpo := clb_corpo || '.footer-section:nth-child(1) { height: 60px; display: flex; flex-direction: row; } ';
+    clb_corpo := clb_corpo || '.footer-section:nth-child(2) { height: 100px; display: flex; flex-direction: row; justify-content: space-around; padding: 30px 0px 0px 20px; } ';
+    clb_corpo := clb_corpo || '.footer-section:nth-child(3) { height: 30px; display: flex; padding: 0px; margin: 0px; } ';
+    clb_corpo := clb_corpo || '.footer .diagonal-logo { width: 420px; height: 70px; background-color: orange; clip-path: polygon(0 0, 90% 0, 100% 100%, 0 100%); } ';
+    clb_corpo := clb_corpo || '.footer .address { width: auto; font-size: 14px; margin: 5px; color: #fff; padding: 4px; } ';
+    clb_corpo := clb_corpo || '.footer .address a { color: lightskyblue; font-size: 12px; text-decoration: none; } ';
+    clb_corpo := clb_corpo || '.footer .address a:hover { color: lightblue; font-size: 12px; text-decoration: underline; } ';
+    clb_corpo := clb_corpo || '.footer .addressHome { height: 30px; width: 600px; clip-path: polygon(3% 0, 100% 0, 100% 100%, 0 100%); background-color: #F0F8FF; } ';
+    clb_corpo := clb_corpo || '.footer .addressHome p { font-size: 14px; font-weight: bolder; text-align: left; margin: 7px 0px 0px 20px; color: darkblue; } ';
+    clb_corpo := clb_corpo || 'h1 { font-size: 16px; margin-top: 0px; margin-bottom: 5px; padding: 0px; } ';
+    clb_corpo := clb_corpo || 'h2 { font-size: 14px; color: #555; } ';
+    clb_corpo := clb_corpo || 'h3 { padding: 5px 0px; font-size: 13px; font-weight: bolder; } ';
+    clb_corpo := clb_corpo || '.citacao { border: solid 2px #ddd; background-color: #eee; color: #555; padding: 4px; margin-top: 5px; margin-right: 0px; font-size: 12px; flex-shrink: 0;' || v_width || ' } ';
+    clb_corpo := clb_corpo || '.assunto { padding: 10px 4px; font-size: 14px; text-align: justify; margin-right: 20px; width: auto; } ';
+    clb_corpo := clb_corpo || '.logo { height: 40px; padding: 25px 0px 0px 0px; } ';
+    clb_corpo := clb_corpo || '.logo1 { height: 40px; padding: 25px 0px 0px 145px; } ';
+    clb_corpo := clb_corpo || '.copyright { padding: 6px 0px; align-self: center; font-size: 12px; } ';
+    clb_corpo := clb_corpo || '.logoAzul { height: 35px; padding: 13px 5px 5px 45px; } ';
+    clb_corpo := clb_corpo || '.logoBranca { height: 50px; padding: 13px 5px 5px 195px; } ';
+    clb_corpo := clb_corpo || '.emptyDiv { height: 30px; width: 200px; } ';
+    clb_corpo := clb_corpo || '</style> </head> <body> ';
+    clb_corpo := clb_corpo || '<div class="container"> <p class="copyright">' || v_aut_email || '</p> ';
+    clb_corpo := clb_corpo || '<div class="header"> <div class="header-section"> <div class="diagonal-logo"></div> <img class="logoAzul" src="https://www.smarnet.com.br/dqanet/imagens/email/Logo_Azul.png" alt="Logo"></div> ';
+    clb_corpo := clb_corpo || '<div class="header-section">&nbsp;</div> <div class="header-section"><div class="data"> <p>' || v_data || '</p> </div> ';
+    clb_corpo := clb_corpo || '<div class="subject"> <p>' || v_subject || ' ' || vc2_assunto || '</p> </div> </div> </div> ';
+    clb_corpo := clb_corpo || '<div class="content"> ';
+    
+    n_pos_tit := NVL(INSTR(clb_titulo,'[SEP]'), 0);
+    
+    IF n_pos_tit = 0 THEN
+    
+      clb_corpo := clb_corpo || '<div class="assunto"> <h1>' || clb_titulo || '</h1> ';
+      clb_corpo := clb_corpo || '<p>' || clb_texto || '</p> </div> ';
+ 
+    ELSE
+
+      clb_titulo2 := clb_titulo;
+      clb_texto2  := clb_texto;
+
+      LOOP
+
+        n_pos_tit := INSTR(clb_titulo2,'[SEP]')-1;
+        n_pos_txt := INSTR(clb_texto2 ,'[SEP]')-1;
+
+        IF n_pos_tit = -1 THEN
+           n_pos_tit := LENGTH(clb_titulo);
+           n_pos_txt := LENGTH(clb_texto);
+           n_i := 1000;
+        END IF;
+
+        IF n_i > 0 THEN
+           v_br := '<br /> ';
+        END IF;
+
+        clb_titulo3 := SUBSTR(clb_titulo2,0,n_pos_tit);
+        clb_texto3  := SUBSTR(clb_texto2 ,0,n_pos_txt);
+    
+        clb_corpo := clb_corpo || '<div class="assunto"> <h1>' || clb_titulo3 || '</h1> ';
+        clb_corpo := clb_corpo || '<p>' || clb_texto3 || '</p> </div> ';
+      
+        clb_titulo2 := SUBSTR(clb_titulo2,n_pos_tit+6,LENGTH(clb_titulo2));
+        clb_texto2  := SUBSTR(clb_texto2 ,n_pos_txt+6,LENGTH(clb_texto2));
+
+        n_i := n_i + 1;
+
+        EXIT WHEN n_i >= 1000;
+
+      END LOOP;
+
+    END IF;   
+    
+    IF clb_titulo_det IS NOT NULL THEN
+
+       clb_corpo := clb_corpo || '<div class="citacao"> <h2>' || v_detalhes || '</h2> ';
+       clb_corpo := clb_corpo || '<p><b>' || clb_titulo_det || ':</b> ' || clb_texto_det || '</p> </div> ';
+
+    END IF;
+    
+    clb_corpo := clb_corpo || '</div> ';
+    clb_corpo := clb_corpo || '<div class="footer"> <div class="footer-section"> <div class="diagonal-logo"> ';
+    clb_corpo := clb_corpo || '<a href="https://www.linkedin.com/company/nova-smar-s-a/" rel="noopener noreferrer" target="_blank"><img class="logo1" src="https://www.smarnet.com.br/dqanet/imagens/email/icon_1.png" title="LinkedIn" alt="LinkedIn"></a> ';
+    clb_corpo := clb_corpo || '<a href="https://www.instagram.com/novasmar_sa/" rel="noopener noreferrer" target="_blank"><img class="logo" src="https://www.smarnet.com.br/dqanet/imagens/email/icon_2.png" title="Instagram" alt="Instagram"></a> ';
+    clb_corpo := clb_corpo || '<a href="https://www.facebook.com/novasmar/?ref=br_rs" rel="noopener noreferrer" target="_blank"><img class="logo" src="https://www.smarnet.com.br/dqanet/imagens/email/icon_4.png" title="Facebook" alt="Facebook"></a> ';
+    clb_corpo := clb_corpo || '<a href="https://twitter.com/smar_br" rel="noopener noreferrer" target="_blank"><img class="logo" src="https://www.smarnet.com.br/dqanet/imagens/email/icon_5.png" title="Twitter" alt="Twitter"></a> ';
+    clb_corpo := clb_corpo || '<a href="https://www.youtube.com/@novasmarsa5860" rel="noopener noreferrer" target="_blank"><img class="logo" src="https://www.smarnet.com.br/dqanet/imagens/email/icon_3.png" title="YouTube" alt="YouTube"></a> ';
+    clb_corpo := clb_corpo || '</div> <img class="logoBranca" src="https://www.smarnet.com.br/dqanet/imagens/email/Logo_Branca.png" alt="Logo"> </div> ';
+    clb_corpo := clb_corpo || '<div class="footer-section"> <div class="address"> <h3>' || v_address1nome || '</h3> <p>' || v_address1numero || '</p> <p><a href="mailto:' || v_address1email || '">' || v_address1email || '</a></p> </div> ';
+    clb_corpo := clb_corpo || '<div class="address"> <h3>' || v_address2nome || '</h3> <p>' || v_address2numero || '</p> <p><a href="mailto:' || v_address2email || '">' || v_address2email || '</a></p> </div> ';
+    clb_corpo := clb_corpo || '<div class="address"> <h3>' || v_address3nome || '</h3> <p>' || v_address3numero || '</p> <p><a href="mailto:' || v_address3email || '">' || v_address3email || '</a></p> </div> ';
+    clb_corpo := clb_corpo || '<div class="address"> <h3>' || v_address4nome || '</h3> <p>' || v_address4numero || '</p> <p><a href="mailto:' || v_address4email || '">' || v_address4email || '</a></p> </div> ';
+    clb_corpo := clb_corpo || '</div> <div class="footer-section"> <div class="emptyDiv">&nbsp;</div> ';
+    clb_corpo := clb_corpo || '<div class="addressHome"> <p>' || v_endereco || '</p> </div> </div> </div> ';
+    clb_corpo := clb_corpo || '<p class="copyright">Copyright &COPY; 2025 Nova Smar S/A - Smar Technology Company</p> </div> </body> </html>';
+    
+
+
+    SIAOS.PCK_DQANET.SP_IN_EMAIL2(vc2_de, vc2_para, vc2_cc, vc2_cco, vc2_assunto, clb_corpo, n_eml_numero);
+
+    COMMIT;
+
+  EXCEPTION WHEN OTHERS THEN
+
+     RAISE_APPLICATION_ERROR(-20001,'Erro na montagem do e-mail tamanho do texto'||LENGTH(clb_corpo));
+
+  END SP_IN_HTML_EMAIL_EXTERNO;
+  
+END PCK_DQANET;
+/

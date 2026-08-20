@@ -24,6 +24,7 @@ def test_list_users_returns_paginated_dto() -> None:
                 is_active=True,
                 is_superuser=False,
                 groups=["access_admins"],
+                product_permissions=[],
                 last_login=None,
                 date_joined=datetime(2025, 1, 1, tzinfo=UTC),
             )

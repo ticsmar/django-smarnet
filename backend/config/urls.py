@@ -4,6 +4,9 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+admin.site.site_header = "SmarNet - Admin"
+admin.site.site_title = "SmarNet - Admin"
+admin.site.index_title = "SmarNet - Admin"
 from apps.shared.presentation.views.metrics_view import MetricsView
 
 urlpatterns = [
@@ -19,4 +22,5 @@ urlpatterns = [
     path("api/admin/", include("apps.users.presentation.api.admin_urls")),
     path("api/branch-auth/", include("apps.branch_auth.presentation.api.urls")),
     path("api/compras/", include("apps.compras.presentation.api.urls")),
+    path("api/administracao/", include("apps.administracao.presentation.api.urls")),
 ]

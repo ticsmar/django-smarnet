@@ -3,6 +3,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
+from django.db import DatabaseError
 
 from apps.users.domain.exceptions.admin_exceptions import UserNotFoundError
 from apps.users.infrastructure.repositories.user_security_repository_impl import (
@@ -10,6 +11,7 @@ from apps.users.infrastructure.repositories.user_security_repository_impl import
 )
 
 
+@pytest.mark.django_db
 def test_reset_password_sets_must_change_flag() -> None:
     repository = UserSecurityRepositoryImpl()
     user = MagicMock()
@@ -35,6 +37,7 @@ def test_reset_password_sets_must_change_flag() -> None:
     assert profile.must_change_password is True
 
 
+@pytest.mark.django_db
 def test_change_password_clears_must_change_flag() -> None:
     repository = UserSecurityRepositoryImpl()
     user = MagicMock()
@@ -65,3 +68,47 @@ def test_change_password_unknown_user_raises() -> None:
         pytest.raises(UserNotFoundError),
     ):
         repository.change_password("missing", "new-secret")
+
+
+@pytest.mark.django_db
+def test_reset_password_propagates_profile_database_error() -> None:
+    repository = UserSecurityRepositoryImpl()
+    user = MagicMock()
+    profile = MagicMock()
+    profile.save.side_effect = DatabaseError("profile write failed")
+    with (
+        patch(
+            "apps.users.infrastructure.repositories.user_security_repository_impl._get_user",
+            return_value=user,
+        ),
+        patch(
+            "apps.users.infrastructure.repositories.user_security_repository_impl._ensure_profile",
+            return_value=profile,
+        ),
+        patch(
+            "apps.users.infrastructure.repositories.user_security_repository_impl.get_random_string",
+            return_value="temp-abc-123",
+        ),
+        pytest.raises(DatabaseError),
+    ):
+        repository.reset_password(1)
+
+
+@pytest.mark.django_db
+def test_change_password_propagates_profile_database_error() -> None:
+    repository = UserSecurityRepositoryImpl()
+    user = MagicMock()
+    profile = MagicMock()
+    profile.save.side_effect = DatabaseError("profile write failed")
+    with (
+        patch(
+            "apps.users.infrastructure.repositories.user_security_repository_impl._get_user_by_username",
+            return_value=user,
+        ),
+        patch(
+            "apps.users.infrastructure.repositories.user_security_repository_impl._ensure_profile",
+            return_value=profile,
+        ),
+        pytest.raises(DatabaseError),
+    ):
+        repository.change_password("alice", "new-secret")

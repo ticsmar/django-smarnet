@@ -1,5 +1,5 @@
 # ---------- Stage 1: build (baixa e extrai o Instant Client) ----------
-FROM python:3.12-slim AS builder
+FROM python:3.13-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
@@ -13,7 +13,7 @@ RUN mkdir -p /opt/oracle && \
     ln -sf /opt/oracle/instantclient_19_25/libclntsh.so.19.1 /opt/oracle/instantclient_19_25/libclntsh.so
 
 # ---------- Stage 2: imagem final (só o necessário em runtime) ----------
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libaio1t64 \
@@ -33,4 +33,5 @@ RUN pip install --no-cache-dir -r requirements/production.txt
 
 COPY backend/ .
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
+# Inline startup avoids Windows CRLF issues on the bind-mounted entrypoint.sh
+CMD ["sh", "-c", "python manage.py collectstatic --noinput && exec gunicorn --bind 0.0.0.0:8000 config.wsgi:application"]

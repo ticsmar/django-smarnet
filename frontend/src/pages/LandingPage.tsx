@@ -1,10 +1,10 @@
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BarChart3, Shield, Globe, Puzzle, Settings, Cpu, Network } from 'lucide-react';
 import heroImage from '@/assets/hero-industrial.jpg';
 import warehouseImage from '@/assets/warehouse-industrial.jpg';
 import { useApp } from '@/contexts/AppContext';
 import { t } from '@/lib/i18n';
-import { LGPDBanner } from '@/components/LGPDBanner';
 import { LandingNav } from '@/components/LandingNav';
 import { SmarnetLogo } from '@/components/SmarnetLogo';
 
@@ -159,13 +159,11 @@ export default function LandingPage() {
         <SmarnetLogo size="md" />
         <div className="flex items-center gap-6 text-sm text-muted-foreground">
           <a href="https://smar.com.br" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">smar.com.br</a>
-          <span className="hover:text-foreground transition-colors cursor-pointer">{t('footer.privacy', locale)}</span>
+          <Link to="/privacy" className="hover:text-foreground transition-colors">{t('footer.privacy', locale)}</Link>
           <span className="hover:text-foreground transition-colors cursor-pointer">{t('footer.status', locale)}</span>
         </div>
         <p className="text-xs text-muted-foreground">{t('footer.rights', locale)}</p>
       </footer>
-
-      <LGPDBanner />
     </div>
   );
 }
