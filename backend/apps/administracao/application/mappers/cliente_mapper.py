@@ -1,6 +1,7 @@
 """Map cliente query records to application output DTOs."""
 
 from collections.abc import Callable, Sequence
+from typing import TypeVar
 
 from apps.administracao.application.dtos.cliente_dtos import (
     ClienteDetailOutputDTO,
@@ -243,7 +244,10 @@ def _format_socio(item: CnpjSocio) -> str | None:
     return nome or qual or None
 
 
-def _format_list[T](
+T = TypeVar("T")
+
+
+def _format_list(  # noqa: UP047
     items: Sequence[T],
     formatter: Callable[[T], str | None],
 ) -> list[str]:
