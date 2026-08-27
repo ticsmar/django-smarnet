@@ -4,7 +4,7 @@ import { ComponentDoc, DocSection, VariantSection, PropsTable, UsageNote } from 
 export default function AlertsPage() {
   return (
     <ComponentDoc
-      summary="Três componentes de alerta com 10 cores semânticas e 3 tons (solid, soft, outline): BannerAlert (full-width com ações), InlineAlert (chip compacto) e ToastAlert (notificação visual estática)."
+      summary="Três componentes de alerta com 10 cores semânticas e 3 tons (solid, light, outline): BannerAlert (full-width com ações), InlineAlert (chip compacto) e ToastAlert (notificação visual estática)."
       importPath="@/components/ui/alerts"
     >
       <DocSection title="BannerAlert" description="Banner full-width com título, descrição e ações.">
@@ -49,7 +49,7 @@ export default function AlertsPage() {
         <PropsTable
           rows={[
             { name: 'color', type: '"primary" | "secondary" | "success" | "warning" | "alert" | "info" | "destructive" | …', default: '"info"', description: 'Cor semântica.' },
-            { name: 'tone', type: '"solid" | "soft" | "outline"', default: '"soft"', description: 'Tom visual.' },
+            { name: 'tone', type: '"solid" | "light" | "outline"', default: '"soft"', description: 'Tom visual. soft é alias de light.' },
             { name: 'title / description', type: 'ReactNode', description: 'Conteúdos textuais.' },
             { name: 'icon', type: 'LucideIcon | null', description: 'Ícone customizado. null oculta.' },
             { name: 'actions', type: 'BannerAlertAction[]', description: '[{ label, onClick, variant? }]' },

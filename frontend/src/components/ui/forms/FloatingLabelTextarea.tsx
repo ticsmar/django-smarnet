@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { FormFieldStatus } from './FormField';
+import { fieldControlClassName } from './fieldControl';
 
 export interface FloatingLabelTextareaProps
   extends Omit<React.ComponentProps<'textarea'>, 'size'> {
@@ -80,7 +81,7 @@ export const FloatingLabelTextarea = React.forwardRef<
             className={cn(
               'peer w-full min-h-[100px] px-3 pt-5 pb-2 rounded-md border bg-background text-foreground text-sm transition-all outline-none resize-y',
               borderClass,
-              disabled && 'opacity-50 cursor-not-allowed bg-muted/30',
+              fieldControlClassName,
               className,
             )}
             {...props}

@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
  *
  * Tons:
  * - solid: cor preenchida, texto contraste
- * - soft: fundo /10, texto na cor, borda /20 (estado/etiqueta)
+ * - light (alias: soft): fundo /10, texto na cor, borda /20 (estado/etiqueta)
  * - outline: borda na cor, texto na cor, sem fundo
  */
 const badgeVariants = cva(
@@ -52,7 +52,7 @@ export type BadgeColor =
   | 'destructive'
   | 'neutral';
 
-export type BadgeTone = 'solid' | 'soft' | 'outline';
+export type BadgeTone = 'solid' | 'soft' | 'light' | 'outline';
 
 const SOLID_BY_COLOR: Record<BadgeColor, string> = {
   primary: 'border-transparent bg-primary text-primary-foreground',

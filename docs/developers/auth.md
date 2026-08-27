@@ -36,7 +36,7 @@ O perfil em `/me/profile/` une:
 - Listagens/detalhes de entidades com `emp_codigo` filtram pelo `emp_codigo` do usuário logado.
 - `emp_codigo` nulo no registro é tratado como **`1`**.
 
-Permissões no frontend são strings `app_label.codename` (ex.: `compras_infrastructure.view_fornecedor`). Superusuário passa em todas as checagens de permissão no cliente.
+Permissões no frontend são strings `app_label.codename` (ex.: `purchasing_infrastructure.view_fornecedor`). Superusuário passa em todas as checagens de permissão no cliente.
 
 ## Grupos e papéis
 

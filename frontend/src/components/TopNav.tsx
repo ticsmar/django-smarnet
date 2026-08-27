@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Bell, User, Settings, Globe, Moon, Sun, Monitor, LogOut, ChevronDown, Menu,
+  Bell, User, Settings, Globe, Moon, Sun, Monitor, Shield, LogOut, ChevronDown, Menu,
 } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { t, Locale, localeNames } from '@/lib/i18n';
@@ -55,7 +55,8 @@ export function TopNav() {
     close();
   }
 
-  const themeIcons = { light: Sun, dark: Moon, system: Monitor };
+  const themeIcons = { light: Sun, dark: Moon, system: Monitor, admin: Shield };
+  const themeLabels = { light: 'Light', dark: 'Dark', system: 'System', admin: 'Admin' };
   const ThemeIcon = themeIcons[theme];
 
   return (
@@ -64,7 +65,7 @@ export function TopNav() {
       className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl supports-[padding:max(0px)]:pt-[env(safe-area-inset-top)]"
       style={{ borderBottom: '1px solid hsl(var(--border) / 0.5)' }}
     >
-      <div className="px-3 sm:px-4 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2">
+      <div className="flex h-14 items-center justify-between gap-2 px-3 sm:h-16 sm:px-4">
         <div className="flex items-center gap-1.5 min-w-0">
           {/* No desktop colapsado o hambúrguer fica no rail escuro; aqui só mobile ou menu expandido. */}
           {(isMobile || sidebarOpen) ? (
@@ -144,7 +145,7 @@ export function TopNav() {
             </button>
             {openMenu === 'theme' ? (
               <div className="absolute right-0 top-full mt-1 bg-background rounded-xl shadow-ambient-lg py-2 min-w-[140px] border border-border/40">
-                {(['light', 'dark', 'system'] as const).map((th) => {
+                {(['light', 'dark', 'system', 'admin'] as const).map((th) => {
                   const Icon = themeIcons[th];
                   return (
                     <button
@@ -153,7 +154,7 @@ export function TopNav() {
                       onClick={() => { setTheme(th); close(); }}
                       className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-surface-container-low transition-colors ${theme === th ? 'text-secondary font-semibold' : 'text-foreground'}`}
                     >
-                      <Icon size={14} /> {th.charAt(0).toUpperCase() + th.slice(1)}
+                      <Icon size={14} /> {themeLabels[th]}
                     </button>
                   );
                 })}

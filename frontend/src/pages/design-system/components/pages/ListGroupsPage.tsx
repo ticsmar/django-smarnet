@@ -9,7 +9,7 @@ import {
 const listGroupProps: PropDef[] = [
   { name: 'items', type: 'ListGroupItem[]', required: true, description: 'Array de itens da lista.' },
   { name: 'color', type: 'ListGroupColor', default: "'neutral'", description: '10 cores semânticas.' },
-  { name: 'tone', type: "'solid' | 'soft' | 'outline'", default: "'soft'", description: 'Tom visual dos itens.' },
+  { name: 'tone', type: "'solid' | 'light' | 'outline'", default: "'soft'", description: 'Tom visual dos itens. soft é alias de light.' },
   { name: 'showChevron', type: 'boolean', default: 'false', description: 'Exibe chevron à direita.' },
 ];
 
@@ -41,10 +41,10 @@ export default function ListGroupsPage() {
     >
       <DocSection title="ColoredListGroup" description="Lista interativa com ícones, badges e tons de cor.">
         <VariantSection
-          title="Tons: solid, soft, outline"
+          title="Tons: solid, light, outline"
           preview={
             <div className="grid gap-4 md:grid-cols-3">
-              {(['solid', 'soft', 'outline'] as const).map((tone) => (
+              {(['solid', 'light', 'outline'] as const).map((tone) => (
                 <ColoredListGroup key={tone} items={sampleItems.slice(0, 3)} color="primary" tone={tone} showChevron />
               ))}
             </div>
@@ -56,13 +56,13 @@ export default function ListGroupsPage() {
     { label: 'Relatórios', description: '5 novos', icon: FileText },
   ]}
   color="primary"
-  tone="soft"
+  tone="light"
   showChevron
 />`}
         />
 
         <VariantSection
-          title="Todas as cores (soft)"
+          title="Todas as cores (light)"
           preview={
             <div className="grid gap-3 md:grid-cols-4">
               {COLORS.map((c) => (
@@ -73,12 +73,12 @@ export default function ListGroupsPage() {
                     { label: 'Item 2', icon: Settings },
                   ]}
                   color={c}
-                  tone="soft"
+                  tone="light"
                 />
               ))}
             </div>
           }
-          code={`<ColoredListGroup items={items} color="success" tone="soft" />`}
+          code={`<ColoredListGroup items={items} color="success" tone="light" />`}
         />
 
         <VariantSection

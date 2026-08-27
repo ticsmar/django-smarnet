@@ -13,14 +13,23 @@ import NotFound from "./pages/NotFound";
 import { AppLayout } from "./components/AppLayout";
 import { AdminLayout } from "./components/AdminLayout";
 import { ModuleIndexPage } from "./components/ModuleIndexPage";
+import { PermissionRoute } from "./components/PermissionRoute";
+import { ComingSoonPage } from "./pages/ComingSoonPage";
 import { DeviceTokensPage, DeviceManagerRoute } from "./modules/device";
 import { AccessAdminRoute } from "./modules/admin";
-import { FornecedoresPage as ComprasFornecedoresPage, FornecedorDetailPage, ComprasFornecedorRoute } from "./modules/compras";
+import {
+  FornecedoresPage as ComprasFornecedoresPage,
+  FornecedorDetailPage,
+  PurchasingFornecedorRoute,
+  PURCHASING_PERMS,
+} from "./modules/purchasing";
 import {
   ClientesPage as AdministracaoClientesPage,
   ClienteDetailPage,
-  AdministracaoClienteRoute,
-} from "./modules/administracao";
+  CommercialClienteRoute,
+  COMMERCIAL_PERMS,
+} from "./modules/commercial";
+import { ADMINISTRATION_PERMS } from "./modules/administration";
 import { lazy, Suspense } from "react";
 import { canAccessAdminDevArea } from "@/lib/adminDevAccess";
 
@@ -35,11 +44,12 @@ const CountriesAdmin = lazy(() => import("./pages/admin/CountriesAdmin"));
 const StatesAdmin = lazy(() => import("./pages/admin/StatesAdmin"));
 const AccessAdmin = lazy(() => import("./pages/admin/AccessAdmin"));
 const SystemAdmin = lazy(() => import("./pages/admin/SystemAdmin"));
+const FileManagerSistemasAdmin = lazy(() => import("./pages/admin/FileManagerSistemasAdmin"));
 
 // Profile (TopNav) + Home hub
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const HomePage = lazy(() => import("./pages/HomePage"));
-const OrdemProducaoListPage = lazy(() => import("./pages/producao/OrdemProducaoListPage"));
+const OrdemProducaoListPage = lazy(() => import("./modules/production/pages/OrdemProducaoListPage"));
 
 // Design System (standalone)
 const DesignSystemLayout = lazy(() => import("./pages/design-system/DesignSystemLayout"));
@@ -94,6 +104,7 @@ const DSCPanels = lazy(() => import("./pages/design-system/components/pages/Pane
 const DSCListGroups = lazy(() => import("./pages/design-system/components/pages/ListGroupsPage"));
 const DSCDropdowns = lazy(() => import("./pages/design-system/components/pages/DropdownsPage"));
 const DSCFileManager = lazy(() => import("./pages/design-system/components/pages/FileManagerPage"));
+const DSCCollection = lazy(() => import("./pages/design-system/components/pages/CollectionPage"));
 const DSPatterns = lazy(() => import("./pages/design-system/PatternsPage"));
 const DSDashboards = lazy(() => import("./pages/design-system/DashboardsPage"));
 const DSTemplates = lazy(() => import("./pages/design-system/TemplateElementsPage"));
@@ -105,19 +116,19 @@ const DocPage = lazy(() =>
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 
 // Portal da Transparência
-const PortalLayout = lazy(() => import("./pages/portal/PortalLayout"));
-const PortalHome = lazy(() => import("./pages/portal/PortalHome"));
-const PortalNoticia = lazy(() => import("./pages/portal/NoticiaPage"));
-const PortalGrupo = lazy(() => import("./pages/portal/GrupoPage"));
-const PortalMenuDinamico = lazy(() => import("./pages/portal/MenuDinamicoPage"));
-const PortalAdminLayout = lazy(() => import("./pages/portal/admin/PortalAdminLayout"));
-const PortalAdminDashboard = lazy(() => import("./pages/portal/admin/AdminDashboard"));
-const PortalNoticiasList = lazy(() => import("./pages/portal/admin/NoticiasList"));
-const PortalNoticiaForm = lazy(() => import("./pages/portal/admin/NoticiaForm"));
-const PortalMenusList = lazy(() => import("./pages/portal/admin/MenusList"));
-const PortalMenuForm = lazy(() => import("./pages/portal/admin/MenuForm"));
-const PortalGruposList = lazy(() => import("./pages/portal/admin/GruposList"));
-const PortalGrupoForm = lazy(() => import("./pages/portal/admin/GrupoForm"));
+const PortalLayout = lazy(() => import("./modules/portal/pages/PortalLayout"));
+const PortalHome = lazy(() => import("./modules/portal/pages/PortalHome"));
+const PortalNoticia = lazy(() => import("./modules/portal/pages/NoticiaPage"));
+const PortalGrupo = lazy(() => import("./modules/portal/pages/GrupoPage"));
+const PortalMenuDinamico = lazy(() => import("./modules/portal/pages/MenuDinamicoPage"));
+const PortalAdminLayout = lazy(() => import("./modules/portal/pages/admin/PortalAdminLayout"));
+const PortalAdminDashboard = lazy(() => import("./modules/portal/pages/admin/AdminDashboard"));
+const PortalNoticiasList = lazy(() => import("./modules/portal/pages/admin/NoticiasList"));
+const PortalNoticiaForm = lazy(() => import("./modules/portal/pages/admin/NoticiaForm"));
+const PortalMenusList = lazy(() => import("./modules/portal/pages/admin/MenusList"));
+const PortalMenuForm = lazy(() => import("./modules/portal/pages/admin/MenuForm"));
+const PortalGruposList = lazy(() => import("./modules/portal/pages/admin/GruposList"));
+const PortalGrupoForm = lazy(() => import("./modules/portal/pages/admin/GrupoForm"));
 
 const queryClient = new QueryClient();
 
@@ -189,7 +200,17 @@ function LegacySupplierRedirect() {
 function LegacyCustomerRedirect() {
   const { codCliente } = useParams();
   return (
-    <Navigate to={`/app/administration/customers/${codCliente ?? ""}`} replace />
+    <Navigate to={`/app/commercial/customers/${codCliente ?? ""}`} replace />
+  );
+}
+
+function LegacyCustomerEditRedirect() {
+  const { codCliente } = useParams();
+  return (
+    <Navigate
+      to={`/app/commercial/customers/${codCliente ?? ""}/edit`}
+      replace
+    />
   );
 }
 
@@ -269,6 +290,7 @@ function AppRoutes() {
           <Route path="list-groups" element={<LazyRoute><DSCListGroups /></LazyRoute>} />
           <Route path="dropdowns" element={<LazyRoute><DSCDropdowns /></LazyRoute>} />
           <Route path="file-manager" element={<LazyRoute><DSCFileManager /></LazyRoute>} />
+          <Route path="collection" element={<LazyRoute><DSCCollection /></LazyRoute>} />
         </Route>
         <Route path="patterns" element={<LazyRoute><DSPatterns /></LazyRoute>} />
         <Route path="dashboards" element={<LazyRoute><DSDashboards /></LazyRoute>} />
@@ -287,19 +309,92 @@ function AppRoutes() {
         <Route index element={<LazyRoute><HomePage /></LazyRoute>} />
         <Route path="profile" element={<LazyRoute><ProfilePage /></LazyRoute>} />
 
-        <Route path="administration" element={<ModuleIndexPage groupKey="administracao" />} />
-        <Route path="administration/customers" element={<AdministracaoClienteRoute />}>
+        <Route path="commercial" element={<ModuleIndexPage groupKey="comercial" />} />
+        <Route path="commercial/customers" element={<CommercialClienteRoute />}>
           <Route index element={<AdministracaoClientesPage />} />
+          <Route path=":codCliente/edit" element={<ClienteDetailPage />} />
           <Route path=":codCliente" element={<ClienteDetailPage />} />
         </Route>
+        <Route
+          path="commercial/cliente"
+          element={<Navigate to="/app/commercial/customers" replace />}
+        />
+        <Route
+          path="commercial/cliente/:codCliente/edit"
+          element={<LegacyCustomerEditRedirect />}
+        />
+        <Route
+          path="commercial/cliente/:codCliente"
+          element={<LegacyCustomerRedirect />}
+        />
+
+        <Route path="administration" element={<ModuleIndexPage groupKey="administracao" />} />
+        <Route
+          path="administration/dashboard"
+          element={
+            <PermissionRoute permission={ADMINISTRATION_PERMS.viewDashboard}>
+              <ComingSoonPage
+                groupKey="administracao"
+                groupPath="/app/administration"
+                titleKey="nav.administracao_dashboard"
+              />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="administration/reports"
+          element={
+            <PermissionRoute permission={ADMINISTRATION_PERMS.viewRelatorio}>
+              <ComingSoonPage
+                groupKey="administracao"
+                groupPath="/app/administration"
+                titleKey="nav.relatorios"
+              />
+            </PermissionRoute>
+          }
+        />
+        <Route
+          path="administration/customers"
+          element={<Navigate to="/app/commercial/customers" replace />}
+        />
+        <Route
+          path="administration/customers/:codCliente/edit"
+          element={<LegacyCustomerEditRedirect />}
+        />
+        <Route
+          path="administration/customers/:codCliente"
+          element={<LegacyCustomerRedirect />}
+        />
 
         <Route path="purchasing" element={<ModuleIndexPage groupKey="compras" />} />
-        <Route path="purchasing/suppliers" element={<ComprasFornecedorRoute />}>
+        <Route
+          path="purchasing/dashboard"
+          element={
+            <PermissionRoute permission={PURCHASING_PERMS.viewDashboard}>
+              <ComingSoonPage
+                groupKey="compras"
+                groupPath="/app/purchasing"
+                titleKey="nav.compras_dashboard"
+              />
+            </PermissionRoute>
+          }
+        />
+        <Route path="purchasing/suppliers" element={<PurchasingFornecedorRoute />}>
           <Route index element={<ComprasFornecedoresPage />} />
           <Route path=":codFornec" element={<FornecedorDetailPage />} />
         </Route>
 
         <Route path="production" element={<ModuleIndexPage groupKey="producao" />} />
+        <Route
+          path="production/dashboard"
+          element={
+            <ComingSoonPage
+              groupKey="producao"
+              groupPath="/app/production"
+              titleKey="nav.producao_dashboard"
+            />
+          }
+        />
         <Route path="production/orders" element={<LazyRoute><OrdemProducaoListPage /></LazyRoute>} />
 
         <Route path="access" element={<ModuleIndexPage groupKey="configurar" />} />
@@ -309,8 +404,16 @@ function AppRoutes() {
 
         {/* PT legacy redirects */}
         <Route path="administracao" element={<Navigate to="/app/administration" replace />} />
-        <Route path="administracao/clientes" element={<Navigate to="/app/administration/customers" replace />} />
+        <Route path="administracao/clientes" element={<Navigate to="/app/commercial/customers" replace />} />
+        <Route path="administracao/clientes/:codCliente/edit" element={<LegacyCustomerEditRedirect />} />
         <Route path="administracao/clientes/:codCliente" element={<LegacyCustomerRedirect />} />
+        <Route path="comercial" element={<Navigate to="/app/commercial" replace />} />
+        <Route path="comercial/clientes" element={<Navigate to="/app/commercial/customers" replace />} />
+        <Route path="comercial/clientes/:codCliente/edit" element={<LegacyCustomerEditRedirect />} />
+        <Route path="comercial/clientes/:codCliente" element={<LegacyCustomerRedirect />} />
+        <Route path="comercial/cliente" element={<Navigate to="/app/commercial/customers" replace />} />
+        <Route path="comercial/cliente/:codCliente/edit" element={<LegacyCustomerEditRedirect />} />
+        <Route path="comercial/cliente/:codCliente" element={<LegacyCustomerRedirect />} />
         <Route path="compras" element={<Navigate to="/app/purchasing" replace />} />
         <Route path="compras/fornecedores" element={<Navigate to="/app/purchasing/suppliers" replace />} />
         <Route path="compras/fornecedores/:codFornec" element={<LegacySupplierRedirect />} />
@@ -332,6 +435,7 @@ function AppRoutes() {
         <Route path="masters/states" element={<LazyRoute><StatesAdmin /></LazyRoute>} />
         <Route path="access-profiles" element={<LazyRoute><AccessAdmin /></LazyRoute>} />
         <Route path="system" element={<LazyRoute><SystemAdmin /></LazyRoute>} />
+        <Route path="file-manager" element={<LazyRoute><FileManagerSistemasAdmin /></LazyRoute>} />
         <Route path="activity" element={<LazyRoute><SettingsOverview /></LazyRoute>} />
         <Route path="integrations" element={<LazyRoute><SystemAdmin /></LazyRoute>} />
         <Route path="notifications" element={<LazyRoute><SystemAdmin /></LazyRoute>} />
@@ -350,6 +454,7 @@ function AppRoutes() {
         <Route path="atividade" element={<Navigate to="/settings/activity" replace />} />
         <Route path="integracoes" element={<Navigate to="/settings/integrations" replace />} />
         <Route path="notificacoes" element={<Navigate to="/settings/notifications" replace />} />
+        <Route path="gerenciador-arquivos" element={<Navigate to="/settings/file-manager" replace />} />
         </Route>
       </Route>
 

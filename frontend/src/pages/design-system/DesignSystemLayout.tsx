@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation, Link } from 'react-router-dom';
-import { Sparkles, Palette, Component, LayoutDashboard, Layers3, ArrowLeft, Blocks, Sun, Moon, Monitor, Plug } from 'lucide-react';
+import { Sparkles, Palette, Component, LayoutDashboard, Layers3, ArrowLeft, Blocks, Sun, Moon, Monitor, Plug, Shield } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
 
@@ -21,6 +21,7 @@ export default function DesignSystemLayout() {
     { id: 'light' as const, icon: Sun, label: 'Claro' },
     { id: 'dark' as const, icon: Moon, label: 'Escuro' },
     { id: 'system' as const, icon: Monitor, label: 'Sistema' },
+    { id: 'admin' as const, icon: Shield, label: 'Admin' },
   ];
 
   return (

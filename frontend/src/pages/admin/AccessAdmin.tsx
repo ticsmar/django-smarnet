@@ -44,9 +44,13 @@ const permissionActionLabels: Record<string, string> = {
 
 function productAreaLabel(appLabel: string): string {
   const labels: Record<string, string> = {
-    compras_infrastructure: 'Compras',
+    purchasing_infrastructure: 'Compras',
     branch_auth_infrastructure: 'Configurar',
-    administracao_infrastructure: 'Administração',
+    commercial_infrastructure: 'Comercial',
+    administration_infrastructure: 'Administração',
+    files_infrastructure: 'Arquivos',
+    production_infrastructure: 'Produção',
+    portal_infrastructure: 'Portal',
   };
   return labels[appLabel] ?? appLabel;
 }

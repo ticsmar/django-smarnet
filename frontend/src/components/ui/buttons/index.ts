@@ -10,4 +10,11 @@ export {
 export { Toolbar, type ToolbarProps, type ToolbarItem } from './Toolbar';
 export { SimplePager, type SimplePagerProps } from './SimplePager';
 // Re-export do primitivo para facilitar import único
-export { Button, buttonVariants, type ButtonProps } from '@/components/ui/button';
+export {
+  Button,
+  buttonVariants,
+  buttonColorClasses,
+  type ButtonProps,
+  type ButtonColor,
+  type ButtonTone,
+} from '@/components/ui/button';

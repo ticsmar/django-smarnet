@@ -1032,9 +1032,9 @@ const permissionActionLabels: Record<string, string> = {
 
 function productAreaLabel(appLabel: string): string {
   const labels: Record<string, string> = {
-    compras_infrastructure: 'Compras',
+    purchasing_infrastructure: 'Compras',
     branch_auth_infrastructure: 'Configurar',
-    administracao_infrastructure: 'Administração',
+    commercial_infrastructure: 'Administração',
   };
   return labels[appLabel] ?? appLabel;
 }

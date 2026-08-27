@@ -5,7 +5,11 @@ import { getCurrentUser } from '@/api/auth';
 import { ApiError } from '@/api/client';
 import type { User } from '@/types/auth';
 
-type Theme = 'light' | 'dark' | 'system';
+export type Theme = 'light' | 'dark' | 'system' | 'admin';
+
+export function isTheme(value: string | null | undefined): value is Theme {
+  return value === 'light' || value === 'dark' || value === 'system' || value === 'admin';
+}
 
 interface AppContextType {
   locale: Locale;
@@ -27,7 +31,7 @@ const DEFAULT_LOCALE: Locale = 'pt-BR';
 function readStoredTheme(): Theme {
   if (typeof window === 'undefined') return 'light';
   const v = window.localStorage.getItem(THEME_KEY);
-  return v === 'dark' || v === 'light' || v === 'system' ? v : 'light';
+  return isTheme(v) ? v : 'light';
 }
 
 function readStoredLocale(): Locale {
@@ -38,7 +42,13 @@ function readStoredLocale(): Locale {
 
 function applyTheme(theme: Theme) {
   const root = document.documentElement;
-  root.classList.remove('light', 'dark');
+  root.classList.remove('light', 'dark', 'admin');
+  if (theme === 'admin') {
+    // .dark ativa variantes Tailwind; .admin sobrescreve tokens para zinc/amber do /settings.
+    root.classList.add('dark', 'admin');
+    root.style.colorScheme = 'dark';
+    return;
+  }
   const resolved =
     theme === 'system'
       ? window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -121,7 +131,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const handler = (e: StorageEvent) => {
       if (e.key === THEME_KEY && e.newValue) {
         const v = e.newValue as Theme;
-        if (v === 'light' || v === 'dark' || v === 'system') setThemeState(v);
+        if (isTheme(v)) setThemeState(v);
       }
       if (e.key === LOCALE_KEY && isLocale(e.newValue)) {
         setLocaleState(e.newValue);

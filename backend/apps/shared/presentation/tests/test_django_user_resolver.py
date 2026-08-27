@@ -76,12 +76,12 @@ def test_get_permissions_for_username(mock_resolve: MagicMock) -> None:
 
     user = MagicMock()
     user.get_all_permissions.return_value = {
-        "compras_infrastructure.view_fornecedor",
-        "compras_infrastructure.add_forneccontato",
+        "purchasing_infrastructure.view_fornecedor",
+        "purchasing_infrastructure.add_forneccontato",
     }
     mock_resolve.return_value = user
 
     assert get_permissions_for_username("ops") == [
-        "compras_infrastructure.add_forneccontato",
-        "compras_infrastructure.view_fornecedor",
+        "purchasing_infrastructure.add_forneccontato",
+        "purchasing_infrastructure.view_fornecedor",
     ]

@@ -31,7 +31,14 @@ export default function FoundationsPage() {
         </div>
         <p className="text-xs text-muted-foreground mb-8 max-w-2xl">
           <code className="font-mono text-[11px]">surface-container-low</code> é o fundo do app shell
-          (<code className="font-mono text-[11px]">AppLayout</code>). Valores atuais: claro{' '}
+          (<code className="font-mono text-[11px]">AppLayout</code>). O shell usa{' '}
+          <code className="font-mono text-[11px]">h-svh overflow-hidden</code>; o{' '}
+          <code className="font-mono text-[11px]">main</code> rola. Fichas com{' '}
+          <code className="font-mono text-[11px]">Tabs fill</code> (só ≥{' '}
+          <code className="font-mono text-[11px]">lg</code>) dependem dessa altura limitada —
+          não usar <code className="font-mono text-[11px]">h-screen</code> /{' '}
+          <code className="font-mono text-[11px]">100vh</code> na página. Abaixo de{' '}
+          <code className="font-mono text-[11px]">lg</code> o <code className="font-mono text-[11px]">main</code> continua o scroller. Valores atuais: claro{' '}
           <code className="font-mono text-[11px]">20 12% 90%</code> · escuro{' '}
           <code className="font-mono text-[11px]">220 18% 12%</code>.
         </p>
@@ -63,6 +70,13 @@ export default function FoundationsPage() {
           <DSSwatch name="Destructive" token="destructive" fg="destructive-foreground" />
           <DSSwatch name="Info" token="info" fg="info-foreground" />
         </div>
+        <p className="text-xs text-muted-foreground mt-6 max-w-2xl">
+          A barra do catálogo inclui o tema <strong>Admin</strong> (zinc + amber da área{' '}
+          <code className="font-mono text-[11px]">/settings</code>). Ele só remapeia os tokens
+          semânticos — nas telas do ERP continue usando <code className="font-mono text-[11px]">bg-primary</code>,
+          não <code className="font-mono text-[11px]">bg-zinc-950</code> /{' '}
+          <code className="font-mono text-[11px]">bg-amber-500</code>.
+        </p>
       </DSSection>
 
       {/* TYPOGRAPHY */}

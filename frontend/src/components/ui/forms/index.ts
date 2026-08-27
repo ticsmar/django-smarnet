@@ -1,8 +1,13 @@
 export { FormFieldShell } from './FormField';
 export type { FormFieldShellProps, FormFieldStatus } from './FormField';
 
+export { fieldControlClassName, choiceControlClassName } from './fieldControl';
+
 export { FormInput } from './FormInput';
 export type { FormInputProps, FormInputSize } from './FormInput';
+
+export { SearchField } from './SearchField';
+export type { SearchFieldProps, SearchFieldSize } from './SearchField';
 
 export { FormTextarea } from './FormTextarea';
 export type { FormTextareaProps } from './FormTextarea';

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import {
   Folder,
   FileText,
@@ -30,8 +31,11 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
-import { ComponentDoc, DocSection, VariantSection, UsageNote } from '../_docs';
+import { ComponentDoc, DocSection, VariantSection, UsageNote, PropsTable } from '../_docs';
 import { FormFileUpload, FileListItem, FormAvatarUpload } from '@/components/ui/forms';
+import { FileManagerToolbar } from '@/components/ui/file-manager/FileManagerToolbar';
+import { FileManagerTree } from '@/components/ui/file-manager/FileManagerTree';
+import type { ArquivoNode } from '@/modules/files/types';
 
 /* ============================================================
  * File Manager — Design System
@@ -44,7 +48,7 @@ import { FormFileUpload, FileListItem, FormAvatarUpload } from '@/components/ui/
 
 /* --------------------- Sub-blocos de preview --------------------- */
 
-function StatTile({ label, value, sub, icon: Icon }: { label: string; value: string; sub: string; icon: any }) {
+function StatTile({ label, value, sub, icon: Icon }: { label: string; value: string; sub: string; icon: LucideIcon }) {
   return (
     <div className="bg-surface-container rounded-2xl border border-border/40 p-4">
       <div className="flex items-center justify-between">
@@ -102,7 +106,10 @@ function FileProgressList() {
       {files.map((f, i) => (
         <FileListItem
           key={i}
-          {...(f as any)}
+          name={f.name}
+          size={f.size}
+          type={f.type}
+          progress={f.progress}
           onRemove={() => setFiles((prev) => prev.filter((_, idx) => idx !== i))}
         />
       ))}
@@ -264,7 +271,15 @@ const managerCode = `// Página completa: estatísticas + pastas + recentes.
 
 /* ---------- Explorer variant (estilo Windows / IDE) ---------- */
 
-const treeItems = [
+type ExplorerTreeItem = {
+  label: string;
+  icon: LucideIcon;
+  depth: number;
+  expanded?: boolean;
+  active?: boolean;
+};
+
+const treeItems: ExplorerTreeItem[] = [
   { label: 'S24+ de Juliano', icon: Monitor, expanded: false, depth: 0 },
   { label: 'Este Computador', icon: Monitor, expanded: true, depth: 0 },
   { label: 'Disco Local (C:)', icon: HardDrive, expanded: true, depth: 1, active: true },
@@ -284,7 +299,7 @@ const treeItems = [
   { label: 'tmp', icon: Folder, depth: 2 },
   { label: 'Ubuntu', icon: Folder, depth: 2 },
   { label: 'Usuários', icon: Folder, depth: 2 },
-] as const;
+];
 
 const explorerRows = [
   { name: '$GetCurrent', date: '22/08/2023 01:10', type: 'Pasta de arquivos', size: '', isFolder: true },
@@ -307,7 +322,7 @@ const explorerRows = [
   { name: 'DumpStack.log', date: '10/04/2025 22:33', type: 'Documento de Texto', size: '12 KB', isFolder: false },
 ];
 
-function ToolbarBtn({ icon: Icon, label }: { icon: any; label?: string }) {
+function ToolbarBtn({ icon: Icon, label }: { icon: LucideIcon; label?: string }) {
   return (
     <button
       type="button"
@@ -321,7 +336,7 @@ function ToolbarBtn({ icon: Icon, label }: { icon: any; label?: string }) {
 
 type ViewMode = 'xl-icons' | 'lg-icons' | 'md-icons' | 'sm-icons' | 'list' | 'details' | 'tiles' | 'content';
 
-const viewModes: { id: ViewMode; label: string; icon: any }[] = [
+const viewModes: { id: ViewMode; label: string; icon: LucideIcon }[] = [
   { id: 'xl-icons', label: 'Ícones extra grandes', icon: Grid2x2 },
   { id: 'lg-icons', label: 'Ícones grandes', icon: Grid2x2 },
   { id: 'md-icons', label: 'Ícones médios', icon: LayoutGrid },
@@ -555,7 +570,7 @@ function ExplorerPreview() {
                   <button
                     className={cn(
                       'w-full flex items-center gap-1 pr-2 py-1 rounded-md transition-colors',
-                      (it as any).active
+                      it.active
                         ? 'bg-primary/10 text-primary font-semibold'
                         : 'text-foreground/85 hover:bg-surface-container',
                     )}
@@ -563,7 +578,7 @@ function ExplorerPreview() {
                   >
                     <span className="w-3 grid place-items-center text-muted-foreground">
                       {hasChevron ? (
-                        (it as any).expanded ? (
+                        it.expanded ? (
                           <ChevronDown size={12} />
                         ) : (
                           <ChevronRight size={12} />
@@ -624,8 +639,8 @@ const explorerCode = `// Layout Explorer: toolbar + tree + tabela detalhada.
 export default function FileManagerPage() {
   return (
     <ComponentDoc
-      summary="Conjunto de blocos para gerenciamento de arquivos: dropzone de upload, upload compacto, lista com progresso, upload de imagem e tela completa de gestão (pastas, estatísticas e arquivos recentes). Todos os elementos respeitam tokens semânticos e suportam tema claro/escuro."
-      importPath="@/components/ui/forms ; @/pages/design-system/components/pages/FileManagerPage"
+      summary="Gerenciador de Arquivos do Smarnet (toolbar + árvore do 3.01) e blocos de upload (dropzone, lista, avatar). Tokens semânticos; o produto usa sistema + filtro, não o explorer Windows."
+      importPath="import { FileManager } from '@/modules/files'"
     >
       <DocSection
         title="Upload de arquivos"
@@ -666,47 +681,123 @@ export default function FileManagerPage() {
       </DocSection>
 
       <DocSection
-        title="Gerenciador completo"
-        description="Tela canônica de file manager com estatísticas, pastas e arquivos recentes."
+        title="Gerenciador do 3.01 (produto)"
+        description="Toolbar + árvore + modais (Anexar, Nova Pasta, Mover, Histórico). Props sistema + filtro escopam SIAOS.PROP_ARQUIVO; disabled (desabilita 0/1) trava incluir/alterar/excluir. Não é o explorer estilo Windows."
       >
         <VariantSection
-          title="File Manager — visão geral"
-          description="Hierarquia de superfícies: cartões em surface-container, itens internos em surface-container-low."
-          preview={<FullManagerPreview />}
-          code={managerCode}
+          title="FileManager"
+          description="Raiz com rótulo do sistema e PK; pastas com descrição em itálico; arquivos com data/tamanho; Lixeira no rodapé. Texto accent se ACE_CODIGO."
+          preview={<ProductTreePreview />}
+          code={productCode}
         />
-
-        <UsageNote type="tip">
-          Use os tokens <code>bg-surface-container</code> e <code>bg-surface-container-low</code>{' '}
-          para criar elevação sem sombras pesadas. As cores de ícones por extensão (PDF →{' '}
-          <code>text-destructive</code>, XLSX → <code>text-status-success</code>, MP4 →{' '}
-          <code>text-secondary</code>) ajudam o usuário a escanear a lista.
-        </UsageNote>
-
-        <UsageNote type="info">
-          Todos os blocos respeitam o tema escuro automaticamente — não há cores fixas. Os botões
-          primários usam <code>bg-primary / text-primary-foreground</code> e os secundários
-          herdam contornos via <code>border-border</code>.
-        </UsageNote>
-      </DocSection>
-
-      <DocSection
-        title="Explorer (estilo desktop)"
-        description="Layout familiar de file explorer com toolbar de ações, árvore de navegação e tabela detalhada — adaptado aos tokens do design system."
-      >
-        <VariantSection
-          title="File Manager — Explorer"
-          description="Toolbar + tree sidebar + lista detalhada (Nome, Data de modificação, Tipo, Tamanho) com seleção e barra de status."
-          preview={<ExplorerPreview />}
-          code={explorerCode}
+        <PropsTable
+          rows={[
+            { name: 'sistema', type: 'number', required: true, description: 'PAR_SISTEMA / op_file (cadastro em /settings/file-manager).' },
+            { name: 'filtro', type: 'string', required: true, description: 'PAR_FILTRO — PK do registro host (varchar).' },
+            { name: 'disabled', type: 'boolean | 0 | 1', default: '0', description: '3.01 desabilita. 1/true bloqueia incluir, alterar e excluir; listar, baixar e histórico continuam.' },
+          ]}
         />
-
         <UsageNote type="tip">
-          Pastas usam <code>text-warning</code> com <code>fill="currentColor"</code> para o look
-          clássico; o item ativo da árvore e a linha selecionada usam{' '}
-          <code>bg-primary/10 + text-primary</code> — adapta-se automaticamente ao tema claro/escuro.
+          Host Cliente: <code>{'<FileManager sistema={SISTEMA_CLIENTE} filtro={String(cliente.codigo)} />'}</code>.
+          Tokens do DS; não clonar o visual PHP.
+        </UsageNote>
+        <UsageNote type="warning">
+          Não use <code>Tabs fill</code> no FileManager. A árvore tem altura própria;{' '}
+          <code>fill</code> é só da ficha host (ex. Cliente). Em visualizar, passe{' '}
+          <code>disabled</code> — listar/baixar/histórico continuam.
         </UsageNote>
       </DocSection>
     </ComponentDoc>
   );
 }
+
+const sampleNodes: ArquivoNode[] = [
+  {
+    par_codigo: 1,
+    par_codigo_pai: null,
+    tipo: 0,
+    nome: 'Cliente Entrada',
+    descricao: 'Documentos Enviados Pelo Cliente',
+    tamanho: null,
+    data: null,
+    ace_codigo: null,
+    pasta_fixa: false,
+    in_lixeira: false,
+  },
+  {
+    par_codigo: 2,
+    par_codigo_pai: 1,
+    tipo: 1,
+    nome: 'contrato.pdf',
+    descricao: 'Scan',
+    tamanho: 20480,
+    data: '2026-01-15T10:00:00',
+    ace_codigo: null,
+    pasta_fixa: false,
+    in_lixeira: false,
+  },
+  {
+    par_codigo: 3,
+    par_codigo_pai: null,
+    tipo: 0,
+    nome: 'Restrita',
+    descricao: null,
+    tamanho: null,
+    data: null,
+    ace_codigo: 12,
+    pasta_fixa: true,
+    in_lixeira: false,
+  },
+];
+
+function ProductTreePreview() {
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [expanded, setExpanded] = useState<Set<number>>(new Set([1]));
+  return (
+    <div className="overflow-hidden rounded-xl border border-border/40 bg-background">
+      <FileManagerToolbar
+        disableMutate={selected.size === 0}
+        onTrash={() => {}}
+        onAttach={() => {}}
+        onFolder={() => {}}
+        onMove={() => {}}
+        onHistory={() => {}}
+      />
+      <FileManagerTree
+        rootLabel="Cliente: 15114"
+        nodes={sampleNodes}
+        selected={selected}
+        activeId={2}
+        expanded={expanded}
+        onToggleExpand={(id) =>
+          setExpanded((current) => {
+            const next = new Set(current);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+          })
+        }
+        onToggleSelect={(id) =>
+          setSelected((current) => {
+            const next = new Set(current);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+          })
+        }
+        onActivate={() => {}}
+        onDownload={() => {}}
+      />
+    </div>
+  );
+}
+
+const productCode = `import { FileManager } from '@/modules/files';
+import { SISTEMA_CLIENTE } from '@/modules/files/sistemas';
+
+<FileManager
+  sistema={SISTEMA_CLIENTE}
+  filtro={String(cliente.codigo)}
+  disabled={!canEdit}
+/>`;
+

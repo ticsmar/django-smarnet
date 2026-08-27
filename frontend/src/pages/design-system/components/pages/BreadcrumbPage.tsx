@@ -190,6 +190,15 @@ usePageBreadcrumb([
           <code className="font-mono text-[11px]">/app/production</code> — não para a primeira tela
           filha.
         </UsageNote>
+        <UsageNote type="info">
+          O <code className="font-mono text-[11px]">AppLayout</code> limita a viewport (
+          <code className="font-mono text-[11px]">h-svh</code>). Listagens rolam no{' '}
+          <code className="font-mono text-[11px]">main</code>. Fichas com{' '}
+          <code className="font-mono text-[11px]">Tabs fill</code> ocupam o resto abaixo desta
+          faixa só a partir de <code className="font-mono text-[11px]">lg</code>; no estreito a
+          faixa pasta fica sticky e o <code className="font-mono text-[11px]">main</code> rola —
+          sem alterar os pads do layout.
+        </UsageNote>
       </DocSection>
     </ComponentDoc>
   );

@@ -1,7 +1,7 @@
 import { Link, Navigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { useT } from '@/hooks/useT';
-import { useVisibleErpGroups } from '@/config/erpNavigation';
+import { flattenNavLinks, useVisibleErpGroups } from '@/config/erpNavigation';
 import { usePageBreadcrumb } from '@/contexts/PageBreadcrumbContext';
 
 /**
@@ -16,7 +16,7 @@ export function ModuleIndexPage({ groupKey }: { groupKey: string }) {
 
   if (!group) return <Navigate to="/app" replace />;
 
-  const items = group.sections.flatMap((section) => section.items);
+  const items = flattenNavLinks(group.children);
 
   return (
     <div className="space-y-6">
@@ -44,8 +44,8 @@ export function ModuleIndexPage({ groupKey }: { groupKey: string }) {
             className="group rounded-2xl border border-border/50 bg-card p-5 shadow-sm transition-colors hover:border-primary/30 hover:bg-surface-container-low"
           >
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary/15">
-                <item.icon size={18} />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary/15">
+                <group.icon size={18} />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-display text-sm font-semibold text-foreground">

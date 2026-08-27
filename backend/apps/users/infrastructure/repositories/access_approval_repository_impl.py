@@ -38,7 +38,7 @@ from apps.users.infrastructure.repositories.pending_request_mapper import (
 _SMAR_DB_ALIAS = "smar"
 _DEFAULT_DB_ALIAS = "default"
 # SP_IN_USUARIO allocates from below 60000; chapas at or above that are reserved
-# by the 3.0 for other purposes.
+# by the 3.01 for other purposes.
 _CHAPA_CEILING = 60000
 _ALLOCATION_ATTEMPTS = 5
 

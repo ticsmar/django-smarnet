@@ -15,6 +15,8 @@ import {
   FormActions,
   FormInput,
   FormSelect,
+  FloatingLabelInput,
+  FloatingLabelSelect,
 } from '@/components/ui/forms';
 import { ActionButton } from '@/components/ui/buttons';
 import { ComponentDoc, DocSection, VariantSection, PropsTable, UsageNote } from '../_docs';
@@ -26,7 +28,7 @@ export default function FormPage() {
 
   return (
     <ComponentDoc
-      summary="Componentes especiais de formulário (DatePicker, FileUpload, ColorPicker, RichText) e helpers de layout (FormSection, FormGrid, FormRow, FormInline, FormActions). Use estes blocos para montar formulários completos e consistentes."
+      summary="Componentes especiais de formulário (DatePicker, FileUpload, ColorPicker, RichText) e helpers de layout (FormSection, FormGrid, FormRow, FormInline, FormActions). Inclui os três layouts de label: stacked, horizontal e floating label."
       importPath="@/components/ui/forms"
     >
       {/* ============== Layout helpers ============== */}
@@ -34,6 +36,91 @@ export default function FormPage() {
         title="Layout helpers"
         description="Estruturadores de formulário: seções com título, grids responsivos, linhas horizontais, campos inline e barra de ações."
       >
+        <VariantSection
+          title="Label layout"
+          description="Stacked (top-aligned, padrão), horizontal (FormRow) e floating label."
+          preview={
+            <div className="grid gap-8 lg:grid-cols-3">
+              <div className="space-y-3">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-accent">
+                  Stacked
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Top-aligned. Padrão de cadastro. <code className="font-mono">FormInput</code> com{' '}
+                  <code className="font-mono">label</code>.
+                </p>
+                <FormInput label="Razão social" placeholder="Nova Smar S/A" />
+                <FormInput label="CNPJ" placeholder="00.000.000/0000-00" />
+                <FormSelect
+                  label="UF"
+                  placeholder="SP"
+                  options={[
+                    { value: 'sp', label: 'SP' },
+                    { value: 'rj', label: 'RJ' },
+                  ]}
+                />
+              </div>
+              <div className="space-y-3">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-accent">
+                  Horizontal
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Compacto. Envolva o campo com <code className="font-mono">FormRow</code>.
+                </p>
+                <FormRow label="Razão social" labelWidth={96}>
+                  <FormInput placeholder="Nova Smar S/A" />
+                </FormRow>
+                <FormRow label="CNPJ" labelWidth={96}>
+                  <FormInput placeholder="00.000.000/0000-00" />
+                </FormRow>
+                <FormRow label="UF" labelWidth={96}>
+                  <FormSelect
+                    placeholder="SP"
+                    options={[
+                      { value: 'sp', label: 'SP' },
+                      { value: 'rj', label: 'RJ' },
+                    ]}
+                  />
+                </FormRow>
+              </div>
+              <div className="space-y-3">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-accent">
+                  Floating label
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Label dentro do campo. <code className="font-mono">FloatingLabelInput</code>.
+                </p>
+                <FloatingLabelInput label="Razão social" />
+                <FloatingLabelInput label="CNPJ" />
+                <FloatingLabelSelect
+                  label="UF"
+                  options={[
+                    { value: 'sp', label: 'SP' },
+                    { value: 'rj', label: 'RJ' },
+                  ]}
+                />
+              </div>
+            </div>
+          }
+          code={`{/* Stacked (top-aligned, padrão) */}
+<FormInput label="Razão social" placeholder="Nova Smar S/A" />
+
+{/* Horizontal */}
+<FormRow label="Razão social">
+  <FormInput placeholder="Nova Smar S/A" />
+</FormRow>
+
+{/* Floating label */}
+<FloatingLabelInput label="Razão social" />
+<FloatingLabelSelect label="UF" options={[{ value: 'sp', label: 'SP' }]} />`}
+        />
+
+        <UsageNote type="tip">
+          Use <strong>stacked</strong> em cadastros. Use <strong>horizontal</strong> (
+          <code className="font-mono">FormRow</code>) em telas densas. Use{' '}
+          <strong>floating label</strong> só em layouts compactos (login, filtros).
+        </UsageNote>
+
         <VariantSection
           title="FormSection + FormGrid + FormActions"
           preview={
@@ -68,7 +155,7 @@ export default function FormPage() {
         />
 
         <VariantSection
-          title="FormRow (label horizontal)"
+          title="FormRow (horizontal)"
           preview={
             <div className="max-w-2xl space-y-3">
               <FormRow label="Razão social"><FormInput placeholder="Nova Smar S/A" /></FormRow>
@@ -101,12 +188,12 @@ export default function FormPage() {
         <PropsTable
           title="FormSection / FormGrid / FormActions — props"
           rows={[
-            { name: 'FormSection.title', type: 'ReactNode', description: 'Título da seção (com linha divisória).' },
+            { name: 'FormSection.title', type: 'ReactNode', description: 'Título da seção (label DS: 10px, bold, uppercase, tracking-widest, accent).' },
             { name: 'FormSection.description', type: 'ReactNode', description: 'Subtítulo abaixo do título.' },
             { name: 'FormSection.actions', type: 'ReactNode', description: 'Slot à direita do título (botões).' },
             { name: 'FormGrid.cols', type: '1 | 2 | 3 | 4 | 6 | 12', default: '2', description: 'Quantidade de colunas responsivas.' },
             { name: 'FormGrid.gap', type: '"sm" | "md" | "lg"', default: '"md"', description: 'Espaçamento entre células.' },
-            { name: 'FormRow.label', type: 'ReactNode', description: 'Label à esquerda na linha horizontal.' },
+            { name: 'FormRow.label', type: 'ReactNode', description: 'Label no layout horizontal (à frente do campo).' },
             { name: 'FormRow.labelWidth', type: 'number', default: '128', description: 'Largura do label em px.' },
             { name: 'FormActions.align', type: '"start" | "end" | "between"', default: '"end"', description: 'Alinhamento dos botões.' },
           ]}

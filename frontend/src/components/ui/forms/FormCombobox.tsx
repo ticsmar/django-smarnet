@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Select, { Props as SelectProps, GroupBase } from 'react-select';
 import CreatableSelect from 'react-select/creatable';
+import { cn } from '@/lib/utils';
 import { FormFieldShell, FormFieldStatus } from './FormField';
 
 export interface FormComboboxOption {
@@ -14,15 +15,62 @@ export interface FormComboboxGroup {
 }
 
 const defaultStyles = {
-  control: (base: any, state: any) => ({
+  control: (base: any, state: any) => {
+    const readOnly = Boolean(state.selectProps.isReadOnly);
+    const disabled = state.isDisabled && !readOnly;
+    return {
+      ...base,
+      backgroundColor: disabled
+        ? "hsl(var(--muted) / 0.5)"
+        : readOnly || state.isDisabled
+          ? "hsl(var(--muted))"
+          : "hsl(var(--background))",
+      borderColor: disabled
+        ? "hsl(var(--muted-foreground) / 0.25)"
+        : state.isFocused
+          ? "hsl(var(--ring))"
+          : "hsl(var(--input))",
+      color: disabled ? "hsl(var(--muted-foreground))" : "hsl(var(--foreground))",
+      cursor: state.isDisabled || readOnly ? "not-allowed" : "default",
+      pointerEvents: state.isDisabled || readOnly ? "none" : "auto",
+      opacity: 1,
+      borderRadius: "0.5rem",
+      minHeight: "2.5rem",
+      height: "2.5rem",
+      boxSizing: "border-box" as const,
+      fontSize: "0.875rem",
+      boxShadow: state.isFocused && !state.isDisabled ? "0 0 0 2px hsl(var(--ring) / 0.3)" : "none",
+      "&:hover": {
+        borderColor: disabled
+          ? "hsl(var(--muted-foreground) / 0.25)"
+          : state.isFocused
+            ? "hsl(var(--ring))"
+            : "hsl(var(--input))",
+      },
+    };
+  },
+  valueContainer: (base: any) => ({
     ...base,
-    backgroundColor: 'hsl(var(--background))',
-    borderColor: state.isFocused ? 'hsl(var(--ring))' : 'hsl(var(--border))',
-    borderRadius: '0.5rem',
-    minHeight: '2.5rem',
-    fontSize: '0.875rem',
-    boxShadow: state.isFocused ? '0 0 0 2px hsl(var(--ring) / 0.3)' : 'none',
-    '&:hover': { borderColor: 'hsl(var(--ring))' },
+    height: '2.5rem',
+    padding: '0 0.75rem',
+  }),
+  indicatorsContainer: (base: any) => ({
+    ...base,
+    height: '2.5rem',
+  }),
+  dropdownIndicator: (base: any) => ({
+    ...base,
+    padding: '0 8px',
+  }),
+  clearIndicator: (base: any) => ({
+    ...base,
+    padding: '0 8px',
+  }),
+  input: (base: any) => ({
+    ...base,
+    margin: 0,
+    padding: 0,
+    color: 'hsl(var(--foreground))',
   }),
   menu: (base: any) => ({
     ...base,
@@ -62,9 +110,14 @@ const defaultStyles = {
       color: 'hsl(var(--secondary))',
     },
   }),
-  singleValue: (base: any) => ({ ...base, color: 'hsl(var(--foreground))' }),
+  singleValue: (base: any, state: any) => ({
+    ...base,
+    color:
+      state.isDisabled && !state.selectProps.isReadOnly
+        ? "hsl(var(--muted-foreground))"
+        : "hsl(var(--foreground))",
+  }),
   placeholder: (base: any) => ({ ...base, color: 'hsl(var(--muted-foreground))' }),
-  input: (base: any) => ({ ...base, color: 'hsl(var(--foreground))' }),
   groupHeading: (base: any) => ({
     ...base,
     color: 'hsl(var(--muted-foreground))',
@@ -93,6 +146,7 @@ export interface FormComboboxProps
   /** Texto exibido para criar nova opção */
   formatCreateLabel?: (input: string) => React.ReactNode;
   className?: string;
+  readOnly?: boolean;
 }
 
 /**
@@ -111,6 +165,8 @@ export function FormCombobox({
   options,
   creatable,
   className,
+  readOnly,
+  isDisabled,
   ...selectProps
 }: FormComboboxProps) {
   const reactId = React.useId();
@@ -131,12 +187,20 @@ export function FormCombobox({
       status={computedStatus}
       className={className}
     >
-      <Component
-        inputId={id}
-        options={options as any}
-        styles={defaultStyles}
-        {...selectProps}
-      />
+      <div
+        className={cn(
+          Boolean(isDisabled || readOnly) && "cursor-not-allowed",
+        )}
+      >
+        <Component
+          inputId={id}
+          options={options as any}
+          styles={defaultStyles}
+          isDisabled={Boolean(isDisabled || readOnly)}
+          isReadOnly={readOnly}
+          {...selectProps}
+        />
+      </div>
     </FormFieldShell>
   );
 }

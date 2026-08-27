@@ -214,7 +214,7 @@ CREATE OR REPLACE PACKAGE SIAOS.PCK_DQANET IS
   -- REMOVE ACENTOS DE UMA STRING                         --
   -- n_opcao = 0 SOMENTE ACENTOS                          --
   -- n_opcao = 1 CARACTERES EPECIAIS TAMBEM               --
-  -- n_opcao = 2 PONTUA��O TAMBEM                         --
+  -- n_opcao = 2 PONTUAï¿½ï¿½O TAMBEM                         --
   ----------------------------------------------------------
 
   FUNCTION SF_REMOVE_ACENTOS2 (c_texto IN VARCHAR2,
@@ -345,7 +345,7 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
      ELSE
         INSERT
           INTO PASTA_EMAIL (EML_DE, EML_PARA, EML_ASSUNTO, EML_CONTEUDO1, EML_CAIXA)
-        VALUES ('smarnet@smar.com.br', vc2_de ,'Erro endere�o de email: ' || vc2_para , 'E-mail: '||vc2_assunto||'</br></br>'||clb_conteudo ,'E');            
+        VALUES ('smarnet@smar.com.br', vc2_de ,'Erro endereï¿½o de email: ' || vc2_para , 'E-mail: '||vc2_assunto||'</br></br>'||clb_conteudo ,'E');            
      END IF;
      
    EXCEPTION WHEN OTHERS THEN
@@ -1303,8 +1303,8 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
                             TO_CHAR(TO_NUMBER(RH.RA_MAT)) FUN_CHAPA,
                             INITCAP(DECODE(TRIM(RH.RA_NSOCIAL), NULL, TRIM(RH.RA_NOMECMP), TRIM(RH.RA_NSOCIAL))) FUN_NOME,
                             SUBSTR(TRIM(RH.RA_ZZUNIDA),1,5) FUN_UNID,
-                            --'' FUN_LOCAL,--N�O PRECISA
-                            --'' TIPO_FUNCIONARIO,--N�O PRECISA,
+                            --'' FUN_LOCAL,--NÃ¯Â¿Â½O PRECISA
+                            --'' TIPO_FUNCIONARIO,--NÃ¯Â¿Â½O PRECISA,
                             TRIM((SELECT CARGO.RJ_DESC FROM PROTPROD.SRJ010 CARGO WHERE CARGO.RJ_FUNCAO = RH.RA_CODFUNC AND SUBSTR(RH.RA_FILIAL,1,2) = TRIM(CARGO.RJ_FILIAL))) FUN_CARGO,
                             DECODE(TRIM(RH.RA_DEMISSA),NULL,'Y','N') FUN_ATIVO,
                             INFO.FUN_ATIVO INFO_ATIVO,
@@ -2184,7 +2184,7 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
   ----------------------------------------------------------
   -- EX:
   -- SELECT T.COLUMN_VALUE NOME
-  -- FROM TABLE(pkg1.SF_SPLIT('JO�O;PEDRO;MARIA',';')) T
+  -- FROM TABLE(pkg1.SF_SPLIT('JOï¿½O;PEDRO;MARIA',';')) T
   ----------------------------------------------------------
 
 
@@ -2288,7 +2288,7 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
   -- REMOVE ACENTOS DE UMA STRING                         --
   -- n_opcao = 0 SOMENTE ACENTOS                          --
   -- n_opcao = 1 CARACTERES EPECIAIS TAMBEM               --
-  -- n_opcao = 2 PONTUA��O TAMBEM                         --
+  -- n_opcao = 2 PONTUAï¿½ï¿½O TAMBEM                         --
   ----------------------------------------------------------
 
   FUNCTION SF_REMOVE_ACENTOS2 (c_texto IN VARCHAR2,
@@ -2297,11 +2297,11 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
     c_saida     VARCHAR2(2000);
   BEGIN
 
-      c_saida := TRANSLATE(TRIM(c_texto),'��������������������������&;:','aaaaAAAAeeEEiIoooOOOuuUUcCE,.');
+      c_saida := TRANSLATE(TRIM(c_texto),'ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½&;:','aaaaAAAAeeEEiIoooOOOuuUUcCE,.');
       c_saida := REPLACE(c_saida,'''','');
 
 			IF n_opcao = 1 OR  n_opcao = 2 THEN
-         c_saida := TRANSLATE(c_saida,'"�`^~#$%|*()<>','                ');
+         c_saida := TRANSLATE(c_saida,'"ï¿½`^~#$%|*()<>','                ');
 		  END IF;
 			IF n_opcao = 2 THEN
          c_saida := TRANSLATE(c_saida,';:?!','    ');
@@ -2311,35 +2311,75 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
   END; -- Function REMOVE_ACENTO
   
   ----------------------------------------------------------
+  -- Login da sessÃ£o: CLIENT_IDENTIFIER (Smarnet/API_SMAR)
+  -- ou USER (PHP 3.01 / jobs).
+  ----------------------------------------------------------
+  FUNCTION SF_LOGIN_SESSAO
+     RETURN VARCHAR2 IS
+  BEGIN
+    RETURN UPPER(TRIM(NVL(SYS_CONTEXT('USERENV','CLIENT_IDENTIFIER'), USER)));
+  END SF_LOGIN_SESSAO;
+
+  ----------------------------------------------------------
   -- RETORNA USU_CHAPA DO USER ORACLE                     --
   ----------------------------------------------------------
   FUNCTION SF_USU_CHAPA_USER
      RETURN NUMBER IS
-     
+
      n_usu_chapa    SIAOS.USUARIO.USU_CHAPA%TYPE := NULL;
-     vc_userCon     VARCHAR2(100) := USER;
-     
+     vc_login       VARCHAR2(100) := SF_LOGIN_SESSAO;
+
   BEGIN
-    
-    SELECT U.USU_CHAPA
-      INTO n_usu_chapa
-      FROM SIAOS.USUARIO U
-     WHERE UPPER(U.USU_LOGINWEB) = UPPER(vc_userCon)
-       AND U.USU_STATUS = 0
-       AND U.USU_EMAIL IS NOT NULL;
 
-    RETURN(n_usu_chapa);
+    BEGIN
+      SELECT U.USU_CHAPA
+        INTO n_usu_chapa
+        FROM SIAOS.USUARIO U
+       WHERE UPPER(TRIM(U.USU_LOGINWEB)) = vc_login
+         AND U.USU_STATUS = 0
+         AND U.USU_EMAIL IS NOT NULL
+         AND ROWNUM = 1;
+    EXCEPTION WHEN NO_DATA_FOUND THEN
+      BEGIN
+        SELECT U.USU_CHAPA
+          INTO n_usu_chapa
+          FROM SIAOS.USUARIO U
+         WHERE UPPER(TRIM(U.USU_LOGINWEB)) = vc_login
+           AND U.USU_STATUS = 0
+           AND ROWNUM = 1;
+      EXCEPTION WHEN NO_DATA_FOUND THEN
+        BEGIN
+          SELECT U.USU_CHAPA
+            INTO n_usu_chapa
+            FROM SIAOS.USUARIO U
+           WHERE UPPER(TRIM(U.USU_LOGIN)) = vc_login
+             AND U.USU_STATUS = 0
+             AND ROWNUM = 1;
+        EXCEPTION WHEN NO_DATA_FOUND THEN
+          n_usu_chapa := NULL;
+        END;
+      END;
+    END;
 
-  EXCEPTION WHEN OTHERS THEN
-    
-    IF USER IN ('GERAL','SIAOS') THEN
-      n_usu_chapa := 2623;
-    ELSE
-      n_usu_chapa := 7;
+    IF n_usu_chapa IS NOT NULL THEN
+      RETURN n_usu_chapa;
     END IF;
-    
-    RETURN(n_usu_chapa);
-    
+
+    IF USER IN ('GERAL','SIAOS') THEN
+      RETURN 2623;
+    END IF;
+
+    IF SYS_CONTEXT('USERENV','CLIENT_IDENTIFIER') IS NOT NULL THEN
+      RETURN NULL;
+    END IF;
+
+    -- Conta tecnica do Smarnet: nunca inventar o operador PHP (chapa 7).
+    IF USER = 'API_SMAR' THEN
+      RETURN NULL;
+    END IF;
+
+    RETURN 7;
+
   END SF_USU_CHAPA_USER;
   
   ----------------------------------------------------------
@@ -2347,28 +2387,43 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
   ----------------------------------------------------------
   FUNCTION SF_PES_NUMERO_USER
      RETURN NUMBER IS
-     
+
      n_pes_numero    SIAOS.USUARIO.PES_NUMERO%TYPE := NULL;
-     
+     vc_login        VARCHAR2(100) := SF_LOGIN_SESSAO;
+
   BEGIN
-    
-    SELECT U.PES_NUMERO
-      INTO n_pes_numero
-      FROM SIAOS.USUARIO U
-     WHERE UPPER(U.USU_LOGIN) = USER
-       AND U.USU_STATUS = 0
-       AND U.USU_EMAIL IS NULL;
 
-    RETURN(n_pes_numero);
+    BEGIN
+      SELECT U.PES_NUMERO
+        INTO n_pes_numero
+        FROM SIAOS.USUARIO U
+       WHERE UPPER(TRIM(U.USU_LOGINWEB)) = vc_login
+         AND U.USU_STATUS = 0
+         AND ROWNUM = 1;
+    EXCEPTION WHEN NO_DATA_FOUND THEN
+      BEGIN
+        SELECT U.PES_NUMERO
+          INTO n_pes_numero
+          FROM SIAOS.USUARIO U
+         WHERE UPPER(TRIM(U.USU_LOGIN)) = vc_login
+           AND U.USU_STATUS = 0
+           AND U.USU_EMAIL IS NULL
+           AND ROWNUM = 1;
+      EXCEPTION WHEN NO_DATA_FOUND THEN
+        n_pes_numero := NULL;
+      END;
+    END;
 
-  EXCEPTION WHEN OTHERS THEN
-    
-    IF USER = 'SIAOS' THEN
-      n_pes_numero := 612;
+    IF n_pes_numero IS NOT NULL THEN
+      RETURN n_pes_numero;
     END IF;
-    
-    RETURN(n_pes_numero);
-    
+
+    IF USER = 'SIAOS' THEN
+      RETURN 612;
+    END IF;
+
+    RETURN n_pes_numero;
+
   END SF_PES_NUMERO_USER;
     
   ----------------------------------------------------------
@@ -2591,7 +2646,7 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
         END;
         
       ELSE
-        RAISE_APPLICATION_ERROR(-20010, 'Email "'||v_email||'" j� cadastrado!');
+        RAISE_APPLICATION_ERROR(-20010, 'Email "'||v_email||'" jï¿½ cadastrado!');
       END IF;
     
     END IF;

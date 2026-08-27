@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { FormFieldStatus } from './FormField';
+import { fieldControlClassName } from './fieldControl';
 
 export interface FloatingLabelSelectOption {
   value: string;
@@ -69,7 +70,12 @@ export const FloatingLabelSelect = React.forwardRef<
 
     return (
       <div className={cn('space-y-1', containerClassName)}>
-        <div className="relative">
+        <div
+          className={cn(
+            "relative",
+            (disabled || props.readOnly) && "cursor-not-allowed",
+          )}
+        >
           <select
             id={id}
             ref={ref}
@@ -91,7 +97,8 @@ export const FloatingLabelSelect = React.forwardRef<
             className={cn(
               'peer w-full h-12 px-3 pt-4 pb-1 rounded-md border bg-background text-foreground text-sm transition-all outline-none appearance-none',
               borderClass,
-              disabled && 'opacity-50 cursor-not-allowed bg-muted/30',
+              fieldControlClassName,
+              (disabled || props.readOnly) && "pointer-events-none",
               className,
             )}
             {...props}

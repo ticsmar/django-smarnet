@@ -5,25 +5,19 @@ Oracle CLIENT_IDENTIFIER on the technical smar connection.
 """
 
 from collections.abc import Callable
-from contextvars import ContextVar
 
 from django.http import HttpRequest, HttpResponse
 
-from apps.shared.presentation.auth.session_keys import (
-    SESSION_AUTHENTICATED,
-    SESSION_ORACLE_USERNAME,
-)
-from apps.users.infrastructure.oracle_session_context import (
+from apps.shared.infrastructure.oracle_session_context import (
     clear_smar_client_identifier,
     reset_oracle_username,
     set_oracle_username,
 )
-
-_use_smar: ContextVar[bool] = ContextVar("use_smar", default=False)
-
-
-def get_use_smar() -> bool:
-    return _use_smar.get()
+from apps.shared.infrastructure.smar_flag import reset_use_smar, set_use_smar
+from apps.shared.presentation.auth.session_keys import (
+    SESSION_AUTHENTICATED,
+    SESSION_ORACLE_USERNAME,
+)
 
 
 class SmarDatabaseMiddleware:
@@ -33,7 +27,7 @@ class SmarDatabaseMiddleware:
     def __call__(self, request: HttpRequest) -> HttpResponse:
         authenticated = bool(request.session.get(SESSION_AUTHENTICATED, False))
         username = request.session.get(SESSION_ORACLE_USERNAME)
-        token = _use_smar.set(authenticated)
+        token = set_use_smar(authenticated)
         if authenticated and isinstance(username, str) and username.strip():
             set_oracle_username(username.strip())
         else:
@@ -43,4 +37,4 @@ class SmarDatabaseMiddleware:
         finally:
             clear_smar_client_identifier()
             reset_oracle_username()
-            _use_smar.reset(token)
+            reset_use_smar(token)

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const orders = [
   { cod: '001', prod: 'Parafuso M8x30 Inox', qtd: 500, unit: '0,45', total: '225,00' },
@@ -570,19 +571,6 @@ const cellProps: PropDef[] = [
   { name: 'className', type: 'string', description: 'Tipograficamente, use text-right para valores monetários.' },
 ];
 
-const dataTableProps: PropDef[] = [
-  { name: 'data', type: 'T[]', required: true, description: 'Array de registros a ser renderizado.' },
-  { name: 'searchable', type: 'boolean', default: 'true', description: 'Habilita o campo de busca global no toolbar.' },
-  { name: 'sortable', type: 'boolean', default: 'true', description: 'Permite ordenação clicando no cabeçalho.' },
-  { name: 'pageSize', type: 'number', default: '10', description: 'Quantidade de registros por página.' },
-  { name: 'selectable', type: 'boolean', default: 'false', description: 'Adiciona coluna de checkbox para seleção em lote.' },
-  {
-    name: 'viewMode',
-    type: '"tabela" | "lista" | "cards"',
-    default: '"tabela"',
-    description: 'Layout ativo via ViewToggle; persistir com useViewMode(storageKey).',
-  },
-];
 
 /* ========================================================== */
 /* PÁGINA                                                     */
@@ -591,13 +579,74 @@ const dataTableProps: PropDef[] = [
 export default function TablePage() {
   return (
     <ComponentDoc
-      summary="Componentes de tabela — do wrapper shadcn (Table) às variações HTML estilizadas (Tables, GridJS e DataTables) usadas em telas industriais. Todas usam tokens semânticos e respondem automaticamente ao modo claro/escuro."
+      summary="O grid canônico do ERP é o Table do DS — o mesmo de Cadastros → Clientes. Borda rounded-xl, fundo background (mais claro que o main), thead muted e zebra. Não envolva o Table com outro card/borda."
       importPath="import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'"
     >
       {/* ============ Shadcn Table base ============ */}
-      <DocSection title="Table (shadcn)" description="Wrapper estilizado sobre os elementos HTML <table>. Cabeçalho, hover e zebra herdam tokens semânticos.">
+      <DocSection title="Table (shadcn)" description="Padrão de grid do ERP. Referência viva: Cadastros → Clientes.">
+        <UsageNote type="info">
+          Tela de exemplo:{" "}
+          <Link className="underline" to="/app/commercial/customers">
+            /app/commercial/customers
+          </Link>
+          . Listagem completa (toolbar + empty + pager):{" "}
+          <Link className="underline" to="/design-system/components/collection">
+            /design-system/components/collection
+          </Link>
+          .
+        </UsageNote>
         <VariantSection
-          title="Padrão com status"
+          title="Padrão do sistema (Clientes)"
+          description="Grid canônico. Tela real: /app/commercial/customers. Não reestilizar thead/linhas no módulo."
+          preview={
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Código</TableHead>
+                  <TableHead>Cliente</TableHead>
+                  <TableHead>Reduzido</TableHead>
+                  <TableHead>Cidade</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-mono text-muted-foreground">21187</TableCell>
+                  <TableCell className="font-medium">NARI INTERNATIONAL LTD</TableCell>
+                  <TableCell>NARI</TableCell>
+                  <TableCell className="text-muted-foreground">NORTHAMPTON</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-mono text-muted-foreground">17730</TableCell>
+                  <TableCell className="font-medium">1 GIGA COMPUTERS BRASIL LTDA - EPP</TableCell>
+                  <TableCell>1 GIGA</TableCell>
+                  <TableCell className="text-muted-foreground">SAO PAULO / SP</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-mono text-muted-foreground">19002</TableCell>
+                  <TableCell className="font-medium">NOVA SMAR S/A</TableCell>
+                  <TableCell>SMAR</TableCell>
+                  <TableCell className="text-muted-foreground">SERTAOZINHO / SP</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          }
+          code={`<Table>
+  <TableHeader>
+    <TableRow>
+      <TableHead>Código</TableHead>
+      <TableHead>Cliente</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell className="font-mono text-muted-foreground">21187</TableCell>
+      <TableCell className="font-medium">NARI INTERNATIONAL LTD</TableCell>
+    </TableRow>
+  </TableBody>
+</Table>`}
+        />
+        <VariantSection
+          title="Com status"
           description="Listagem de pedidos com badges semânticos para o status."
           preview={
             <Table>
@@ -717,8 +766,16 @@ export default function TablePage() {
       {/* ============ Tables (HTML estilizado) ============ */}
       <DocSection
         title="Tables — variações HTML"
-        description="Tabelas HTML estilizadas direto com utilitários, equivalentes ao template /app/templates/tables/tables. Usam zebra com bg-surface-container-low, hover muted e badges com tokens de status."
+        description="Somente para demos industriais do catálogo. Em telas ERP use o Table do DS (seção acima) — referência Clientes."
       >
+        <UsageNote type="warning">
+          Não copie estas tabelas HTML em cadastros. O padrão de grid é{" "}
+          <code className="font-mono text-[11px]">Table</code> em{" "}
+          <Link className="underline" to="/app/commercial/customers">
+            /app/commercial/customers
+          </Link>
+          .
+        </UsageNote>
         <VariantSection
           title="Padrão com ações por linha"
           description="Cabeçalho ordenável, status pill e ações ver/editar/excluir."
@@ -1062,7 +1119,16 @@ const [viewMode, setViewMode] = useViewMode('smarnet:view:materiais', 'tabela');
 {viewMode === 'cards' && <CardsView />}`}
         />
 
-        <PropsTable rows={dataTableProps} title="Props sugeridas para um wrapper <DataTable />" />
+        <UsageNote type="info">
+          Não há <code className="font-mono text-[11px]">DataTable</code> genérico. Monte a
+          listagem com{" "}
+          <code className="font-mono text-[11px]">CollectionToolbar</code>,{" "}
+          <code className="font-mono text-[11px]">SearchField</code>,{" "}
+          <code className="font-mono text-[11px]">EmptyState</code>,{" "}
+          <code className="font-mono text-[11px]">PaginationInfo</code> e{" "}
+          <code className="font-mono text-[11px]">Table</code> — ver{" "}
+          <code className="font-mono text-[11px]">/design-system/components/collection</code>.
+        </UsageNote>
       </DocSection>
 
       <UsageNote type="tip">

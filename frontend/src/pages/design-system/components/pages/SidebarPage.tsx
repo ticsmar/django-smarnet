@@ -307,8 +307,8 @@ export default function SidebarPage() {
         </UsageNote>
 
         <UsageNote type="info">
-          Grupos e itens do ERP vêm de <code className="font-mono text-[11px]">@/config/erpNavigation</code> (
-          <code className="font-mono text-[11px]">useVisibleErpGroups</code>), compartilhado entre sidebar, breadcrumbs e páginas índice.
+          O menu ERP vem de <code className="font-mono text-[11px]">@/config/erpNavigation</code> (
+          <code className="font-mono text-[11px]">useVisibleErpNav</code>): item (ícone) → link ou subitem → link. Ícone só no primeiro nível.
         </UsageNote>
 
         <UsageNote type="info">

@@ -33,6 +33,7 @@ export interface FormSelectProps {
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   disabled?: boolean;
+  readOnly?: boolean;
   options: FormSelectOption[];
   className?: string;
   triggerClassName?: string;
@@ -54,6 +55,7 @@ export function FormSelect({
   defaultValue,
   onValueChange,
   disabled,
+  readOnly,
   options,
   className,
   triggerClassName,
@@ -83,11 +85,23 @@ export function FormSelect({
       status={computedStatus}
       className={className}
     >
-      <Select value={value} defaultValue={defaultValue} onValueChange={onValueChange} disabled={disabled}>
+      <div className={cn((disabled || readOnly) && "!cursor-not-allowed")}>
+      <Select
+        value={value}
+        defaultValue={defaultValue}
+        onValueChange={readOnly ? undefined : onValueChange}
+        disabled={disabled || readOnly}
+      >
         <SelectTrigger
           id={id}
-          className={cn(triggerSize[size], stateBorder, triggerClassName)}
+          className={cn(
+            triggerSize[size],
+            stateBorder,
+            (disabled || readOnly) && "pointer-events-none",
+            triggerClassName,
+          )}
           aria-invalid={computedStatus === 'error' || undefined}
+          aria-readonly={readOnly || undefined}
         >
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
@@ -104,6 +118,7 @@ export function FormSelect({
           ))}
         </SelectContent>
       </Select>
+      </div>
     </FormFieldShell>
   );
 }

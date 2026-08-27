@@ -2,7 +2,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { BookOpen, ChevronDown, Menu, Palette, LayoutDashboard } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { useT } from '@/hooks/useT';
-import { useVisibleErpGroups } from '@/config/erpNavigation';
+import {
+  navChildIsActive,
+  navRootIsActive,
+  useVisibleErpNav,
+  type ErpNavChild,
+  type ErpNavFolder,
+  type ErpNavGroup,
+  type ErpNavLink,
+} from '@/config/erpNavigation';
 import { canAccessAdminDevArea } from '@/lib/adminDevAccess';
 import { SmarnetLogo, SmarnetMark } from '@/components/SmarnetLogo';
 import {
@@ -29,6 +37,168 @@ import { cn } from '@/lib/utils';
 
 const RAIL_ICON = 18;
 
+function NavLinkButton({
+  link,
+  isActive,
+  onGo,
+  t,
+}: {
+  link: ErpNavLink;
+  isActive: boolean;
+  onGo: (path: string) => void;
+  t: (key: string) => string;
+}) {
+  return (
+    <SidebarMenuSubItem>
+      <SidebarMenuSubButton asChild isActive={isActive} size="md">
+        <button type="button" onClick={() => onGo(link.path)}>
+          <span>{t(`nav.${link.key}`)}</span>
+        </button>
+      </SidebarMenuSubButton>
+    </SidebarMenuSubItem>
+  );
+}
+
+function NavFolderBlock({
+  folder,
+  isPathActive,
+  onGo,
+  t,
+}: {
+  folder: ErpNavFolder;
+  isPathActive: (path: string) => boolean;
+  onGo: (path: string) => void;
+  t: (key: string) => string;
+}) {
+  const folderActive = folder.children.some((link) => isPathActive(link.path));
+
+  return (
+    <Collapsible defaultOpen={folderActive} className="group/nav-folder">
+      <SidebarMenuSubItem>
+        <CollapsibleTrigger asChild>
+          <button
+            type="button"
+            className="flex h-7 w-full min-w-0 items-center rounded-md px-2 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/60 outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2"
+          >
+            <span className="flex-1 truncate text-left">{t(`nav.${folder.key}`)}</span>
+            <ChevronDown
+              size={12}
+              className="ml-auto shrink-0 transition-transform duration-200 group-data-[state=open]/nav-folder:rotate-180"
+            />
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub className="mx-0 translate-x-0 border-l border-sidebar-border px-2 py-0.5">
+            {folder.children.map((link) => (
+              <NavLinkButton
+                key={link.key}
+                link={link}
+                isActive={isPathActive(link.path)}
+                onGo={onGo}
+                t={t}
+              />
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuSubItem>
+    </Collapsible>
+  );
+}
+
+function NavChildList({
+  nodes,
+  isPathActive,
+  onGo,
+  t,
+}: {
+  nodes: ErpNavChild[];
+  isPathActive: (path: string) => boolean;
+  onGo: (path: string) => void;
+  t: (key: string) => string;
+}) {
+  return (
+    <SidebarMenuSub>
+      {nodes.map((child) =>
+        child.kind === 'folder' ? (
+          <NavFolderBlock
+            key={child.key}
+            folder={child}
+            isPathActive={isPathActive}
+            onGo={onGo}
+            t={t}
+          />
+        ) : (
+          <NavLinkButton
+            key={child.key}
+            link={child}
+            isActive={isPathActive(child.path)}
+            onGo={onGo}
+            t={t}
+          />
+        ),
+      )}
+    </SidebarMenuSub>
+  );
+}
+
+function GroupMenuItem({
+  group,
+  isPathActive,
+  onGo,
+  t,
+}: {
+  group: ErpNavGroup;
+  isPathActive: (path: string) => boolean;
+  onGo: (path: string) => void;
+  t: (key: string) => string;
+}) {
+  const childActive = group.children.some((child) => navChildIsActive(child, isPathActive));
+  const groupActive = navRootIsActive(group, isPathActive);
+  const groupLabel = t(`nav.${group.key}`);
+
+  if (group.children.length === 0) {
+    return (
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          tooltip={groupLabel}
+          className="rounded-xl"
+          isActive={isPathActive(group.path)}
+          onClick={() => onGo(group.path)}
+        >
+          <group.icon size={16} />
+          <span>{groupLabel}</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  }
+
+  return (
+    <Collapsible asChild defaultOpen={groupActive} className="group/collapsible">
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton
+            tooltip={groupLabel}
+            className="rounded-xl"
+            isActive={groupActive && !childActive}
+          >
+            <group.icon size={16} />
+            <span className="flex-1 truncate text-left text-[11px] font-bold uppercase tracking-wider">
+              {groupLabel}
+            </span>
+            <ChevronDown
+              size={14}
+              className="ml-auto shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180"
+            />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <NavChildList nodes={group.children} isPathActive={isPathActive} onGo={onGo} t={t} />
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  );
+}
+
 export function AppSidebar() {
   let sidebar: ReturnType<typeof useSidebar> | null = null;
   try {
@@ -46,8 +216,8 @@ export function AppSidebar() {
   const { user } = useApp();
   const t = useT();
   const currentPath = location.pathname;
-  const isActive = (path: string) => currentPath === path || currentPath.startsWith(`${path}/`);
-  const visibleErpGroups = useVisibleErpGroups();
+  const isPathActive = (path: string) => currentPath === path || currentPath.startsWith(`${path}/`);
+  const visibleErpNav = useVisibleErpNav();
   const showAdminDevLinks = canAccessAdminDevArea(user);
 
   const goTo = (path: string) => {
@@ -108,24 +278,18 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
 
-                {visibleErpGroups.map((group) => {
-                  const groupActive =
-                    currentPath === group.path ||
-                    currentPath.startsWith(`${group.path}/`) ||
-                    group.sections.some((s) => s.items.some((item) => isActive(item.path)));
-                  return (
-                    <SidebarMenuItem key={group.key}>
-                      <SidebarMenuButton
-                        onClick={() => expandAndGo(group.path)}
-                        isActive={groupActive}
-                        tooltip={t(`nav.${group.key}`)}
-                        className="sidebar-rail-btn"
-                      >
-                        <group.icon size={RAIL_ICON} strokeWidth={1.75} />
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
+                {visibleErpNav.map((entry) => (
+                  <SidebarMenuItem key={entry.key}>
+                    <SidebarMenuButton
+                      onClick={() => expandAndGo(entry.path)}
+                      isActive={navRootIsActive(entry, isPathActive)}
+                      tooltip={t(`nav.${entry.key}`)}
+                      className="sidebar-rail-btn"
+                    >
+                      <entry.icon size={RAIL_ICON} strokeWidth={1.75} />
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -145,70 +309,29 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
 
-                {visibleErpGroups.map((group) => {
-                  const groupActive =
-                    currentPath === group.path ||
-                    currentPath.startsWith(`${group.path}/`) ||
-                    group.sections.some((s) => s.items.some((item) => isActive(item.path)));
-                  const groupLabel = t(`nav.${group.key}`);
-
-                  return (
-                    <Collapsible
-                      key={group.key}
-                      asChild
-                      defaultOpen={groupActive}
-                      className="group/collapsible"
-                    >
-                      <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton
-                            tooltip={groupLabel}
-                            className="rounded-xl"
-                            isActive={groupActive && !group.sections.some((s) =>
-                              s.items.some((item) => isActive(item.path)),
-                            )}
-                          >
-                            <group.icon size={16} />
-                            <span className="flex-1 truncate text-left uppercase tracking-wider text-[11px] font-bold">
-                              {groupLabel}
-                            </span>
-                            <ChevronDown
-                              size={14}
-                              className="ml-auto shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180"
-                            />
-                          </SidebarMenuButton>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                          {group.sections.map((section, si) => (
-                            <div key={si}>
-                              {section.label ? (
-                                <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-sidebar-foreground/50">
-                                  {section.label}
-                                </p>
-                              ) : null}
-                              <SidebarMenuSub>
-                                {section.items.map((item) => (
-                                  <SidebarMenuSubItem key={item.key}>
-                                    <SidebarMenuSubButton
-                                      asChild
-                                      isActive={isActive(item.path)}
-                                      size="md"
-                                    >
-                                      <button type="button" onClick={() => goTo(item.path)}>
-                                        <item.icon size={16} />
-                                        <span>{t(`nav.${item.key}`)}</span>
-                                      </button>
-                                    </SidebarMenuSubButton>
-                                  </SidebarMenuSubItem>
-                                ))}
-                              </SidebarMenuSub>
-                            </div>
-                          ))}
-                        </CollapsibleContent>
-                      </SidebarMenuItem>
-                    </Collapsible>
-                  );
-                })}
+                {visibleErpNav.map((entry) =>
+                  entry.kind === 'link' ? (
+                    <SidebarMenuItem key={entry.key}>
+                      <SidebarMenuButton
+                        onClick={() => goTo(entry.path)}
+                        isActive={isPathActive(entry.path)}
+                        tooltip={t(`nav.${entry.key}`)}
+                        className="rounded-xl"
+                      >
+                        <entry.icon size={16} />
+                        <span>{t(`nav.${entry.key}`)}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ) : (
+                    <GroupMenuItem
+                      key={entry.key}
+                      group={entry}
+                      isPathActive={isPathActive}
+                      onGo={goTo}
+                      t={t}
+                    />
+                  ),
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

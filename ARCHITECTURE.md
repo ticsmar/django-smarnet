@@ -14,7 +14,7 @@ Modular Monolith.
 
 ## Project Layout
 
-Application code lives under `backend/`:
+Application code lives under `backend/`. **Package names and API prefixes are English**, matching frontend routes ([ADR 0003](docs/adr/0003-rotas-frontend-em-ingles.md)). Domain language (Cliente, Fornecedor) stays Portuguese.
 
 ```
 backend/
@@ -22,18 +22,26 @@ backend/
 ├── pyproject.toml
 ├── requirements/
 ├── config/              # Django settings, URLs, WSGI/ASGI
-│   └── settings/        # base, development, production, testing
+│   └── settings/        # Django settings modules — NOT a business app
 ├── apps/                # Django bounded contexts
-│   ├── shared/          # Shared kernel (cross-domain primitives)
-│   ├── users/           # Users bounded context
+│   ├── shared/          # Shared kernel (auth DRF, Oracle session, DB router)
+│   ├── users/           # Identity (users, people, companies, access requests)
 │   ├── branch_auth/     # Branch auth (devices / tokens)
-│   ├── compras/         # Purchasing (fornecedores) — tela migrada
-│   └── administracao/   # Administration (clientes) — tela migrada
+│   ├── commercial/      # Commercial (clientes) — tela migrada
+│   ├── purchasing/      # Purchasing (fornecedores) — tela migrada
+│   ├── administration/ # Administration dashboards/reports (no Cliente)
+│   ├── production/      # Production (OP)
+│   ├── portal/          # Public portal (news / groups / menus)
+│   └── files/           # File manager (sistemas nativos + PROP_ARQUIVO)
 ├── static/
 ├── media/
 ├── templates/
 └── scripts/             # Auditoria Oracle (não é deploy de package)
 ```
+
+`/settings` is a **frontend shell**, not `backend/apps/settings/` (that name collides with `config/settings/`). Settings screens call `users` and `files` APIs.
+
+Do not put business code in `config/`. If a bounded context is unclear, **ask which module** before creating folders (see `docs/developers/novas-telas.md`).
 
 Each app under `backend/apps/` keeps the hexagonal layout:
 
@@ -46,7 +54,7 @@ apps/users/
 └── tests/
 ```
 
-New domains are added as siblings under `backend/apps/` (e.g. `backend/apps/sales/`).
+New domains are added as siblings under `backend/apps/` (English folder name).
 
 ## Import Namespace
 
@@ -54,10 +62,27 @@ Python imports use the `apps.` prefix:
 
 - `apps.users.*`
 - `apps.branch_auth.*`
-- `apps.compras.*`
-- `apps.administracao.*`
+- `apps.commercial.*`
+- `apps.purchasing.*`
+- `apps.administration.*`
+- `apps.production.*`
+- `apps.portal.*`
+- `apps.files.*`
 - `apps.shared.*`
 - `config.*` (project configuration, not under `apps/`)
+
+| Context | API | UI | Perm app label |
+|---------|-----|----|----------------|
+| commercial | `/api/commercial/` | `/app/commercial/customers` | `commercial_infrastructure` |
+| purchasing | `/api/purchasing/` | `/app/purchasing/suppliers` | `purchasing_infrastructure` |
+| administration | `/api/administration/` | `/app/administration/*` | `administration_infrastructure` |
+| production | `/api/production/` | `/app/production/*` | `production_infrastructure` |
+| portal | `/api/portal/` | `/portal` | `portal_infrastructure` |
+| files | `/api/files/` | FileManager + `/settings/file-manager` | `files_infrastructure` |
+| users | `/api/users/`, `/api/admin/` | `/settings/*` | `users_infrastructure` |
+| branch_auth | `/api/branch-auth/` | `/app/devices` | `branch_auth_infrastructure` |
+
+Legacy API prefixes (`/api/administracao/`, `/api/compras/`, `/api/arquivos/`) remain as aliases.
 
 ## Domain Structure
 
@@ -72,7 +97,7 @@ tests/
 Example:
 
 ```
-backend/apps/sales/
+backend/apps/production/
 ├── domain/
 ├── application/
 ├── infrastructure/

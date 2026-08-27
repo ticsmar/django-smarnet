@@ -135,7 +135,7 @@ Fonte: `frontend/package.json`, `frontend/Dockerfile`, `docker-compose.dev.yml`.
 | next-themes | `^0.3.0` | Tema claro/escuro |
 | sonner | `^1.7.4` | Toasts |
 
-Padrão de componentes: **shadcn/ui** (código em `frontend/src/components/ui`), gerado/configurado via `frontend/components.json`.
+Padrão de componentes: **shadcn/ui** (código em `frontend/src/components/ui`), gerado/configurado via `frontend/components.json`. Catálogo in-app: `/design-system`. **Agentes:** usar só esses recursos — [`design-system.md`](./design-system.md).
 
 ### Dados, forms e UX
 
@@ -155,6 +155,8 @@ Padrão de componentes: **shadcn/ui** (código em `frontend/src/components/ui`),
 | flag-icons | `^7.5.0` | Bandeiras (ex. país) |
 | react-select | `^5.10.2` | Selects avançados |
 | i18n | JSON em `frontend/src/locales/` | pt-BR, en, es (sem lib i18next dedicada listada como core) |
+| react-markdown + remark-gfm | `^10.1` / `^4.0` | Hub `/docs` (Markdown) |
+| mermaid | `^11.17` | Diagramas Mermaid no hub `/docs` |
 
 ### Dev / teste frontend
 
@@ -183,18 +185,13 @@ Compose produção (`docker-compose.yml`): mapa host `3000:8080`, build arg `VIT
 
 ## Diagrama lógico
 
-```text
-┌─────────────┐     cookie session      ┌──────────────────┐
-│  Browser    │ ◄─────────────────────► │  Django + DRF    │
-│  React SPA  │     HTTPS/HTTP :8000    │  Gunicorn/runserver│
-└─────────────┘                         └────────┬─────────┘
-       │                                         │
-       │ Vite :3000/8080                         │ oracledb
-       │                                         ▼
-       │                                 ┌───────────────┐
-       │                                 │ Oracle DB     │
-       │                                 │ (+ packages/SP)│
-       └─────────────────────────────────┴───────────────┘
+```mermaid
+flowchart LR
+  browser["Browser / React SPA"]
+  api["Django + DRF"]
+  oracle[("Oracle DB + packages")]
+  browser -->|"cookie session"| api
+  api -->|"oracledb"| oracle
 ```
 
 ---

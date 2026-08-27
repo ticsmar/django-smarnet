@@ -27,6 +27,7 @@ export default function InputsPage() {
               <FormInput label="E-mail" type="email" placeholder="email@empresa.com" hint="Usado para login." />
               <FormInput label="Senha" type="password" placeholder="••••••••" required />
               <FormInput label="Desabilitado" disabled defaultValue="Não editável" />
+              <FormInput label="Somente leitura" readOnly defaultValue="Valor travado" />
             </div>
           }
           code={`<FormInput label="Nome" placeholder="João Silva" required />
@@ -36,6 +37,28 @@ export default function InputsPage() {
   placeholder="email@empresa.com"
   hint="Usado para login."
 />`}
+        />
+
+        <VariantSection
+          title="Ativo, somente leitura e desabilitado"
+          preview={
+            <div className="grid md:grid-cols-3 gap-4">
+              <FormInput label="Ativo" defaultValue="Editável" />
+              <FormInput
+                label="Somente leitura"
+                readOnly
+                defaultValue="Fundo um pouco mais escuro, borda e texto iguais ao ativo"
+              />
+              <FormInput
+                label="Desabilitado"
+                disabled
+                defaultValue="Borda e texto mais claros"
+              />
+            </div>
+          }
+          code={`<FormInput label="Ativo" defaultValue="Editável" />
+<FormInput label="Somente leitura" readOnly defaultValue="Valor travado" />
+<FormInput label="Desabilitado" disabled defaultValue="Não editável" />`}
         />
 
         <VariantSection
@@ -78,6 +101,20 @@ export default function InputsPage() {
           }
           code={`<FormInput label="Site" prefix="https://" placeholder="exemplo.com" />
 <FormInput label="Preço" prefix={<DollarSign size={14} />} suffix="USD" />`}
+        />
+
+        <VariantSection
+          title="Ativo, somente leitura e desabilitado"
+          preview={
+            <div className="grid md:grid-cols-3 gap-4">
+              <FormInput label="Ativo" defaultValue="Editável" />
+              <FormInput label="Somente leitura" readOnly defaultValue="Texto normal, fundo um pouco mais escuro" />
+              <FormInput label="Desabilitado" disabled defaultValue="Borda e fonte mais claras" />
+            </div>
+          }
+          code={`<FormInput label="Ativo" defaultValue="Editável" />
+<FormInput label="Somente leitura" readOnly defaultValue="Valor travado" />
+<FormInput label="Desabilitado" disabled defaultValue="Não editável" />`}
         />
 
         <VariantSection
@@ -133,6 +170,8 @@ export default function InputsPage() {
                 hint="Seja conciso."
               />
               <FormTextarea label="Sem limite" placeholder="..." rows={3} />
+              <FormTextarea label="Somente leitura" readOnly defaultValue="Observação travada.<BR>" rows={2} />
+              <FormTextarea label="Desabilitado" disabled defaultValue="Não editável" rows={2} />
             </div>
           }
           code={`const [value, setValue] = useState('');
@@ -227,6 +266,13 @@ export default function InputsPage() {
       <UsageNote type="tip">
         Use <strong>FormInput</strong> como padrão. <strong>FloatingLabelInput</strong> é indicado
         apenas em telas de autenticação / formulários compactos onde o efeito visual é desejado.
+      </UsageNote>
+      <UsageNote type="info">
+        <strong>readOnly</strong> vs <strong>disabled</strong>: somente leitura usa fundo um pouco
+        mais escuro, com borda e texto iguais ao ativo; desabilitado clareia borda e texto. Os
+        dois usam <code className="font-mono text-[11px]">cursor-not-allowed</code>. Em ficha
+        visualizar, prefira <code className="font-mono text-[11px]">readOnly</code> nos campos
+        que ainda devem parecer conteúdo (não fantasma).
       </UsageNote>
     </ComponentDoc>
   );

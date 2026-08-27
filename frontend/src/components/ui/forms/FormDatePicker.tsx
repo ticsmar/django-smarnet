@@ -82,7 +82,7 @@ export function FormDatePicker({
             variant="outline"
             disabled={disabled}
             className={cn(
-              'w-full justify-start text-left font-normal',
+              'w-full justify-start text-left font-normal disabled:cursor-not-allowed disabled:opacity-100 disabled:bg-muted/50 disabled:border-muted-foreground/25 disabled:text-muted-foreground',
               !value && 'text-muted-foreground',
               computedStatus === 'error' && 'border-destructive',
               triggerClassName,
@@ -156,7 +156,7 @@ export function FormDateRangePicker({
             variant="outline"
             disabled={disabled}
             className={cn(
-              'w-full justify-start text-left font-normal',
+              'w-full justify-start text-left font-normal disabled:cursor-not-allowed disabled:opacity-100 disabled:bg-muted/50 disabled:border-muted-foreground/25 disabled:text-muted-foreground',
               !value?.from && 'text-muted-foreground',
               computedStatus === 'error' && 'border-destructive',
               triggerClassName,

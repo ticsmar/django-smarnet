@@ -25,7 +25,7 @@ export const FormSwitch = React.forwardRef<
       <div
         className={cn(
           'flex items-center justify-between gap-4 p-3 rounded-xl bg-background border border-border/40',
-          props.disabled && 'opacity-60',
+          props.disabled && 'cursor-not-allowed',
           error && 'border-destructive',
           className,
         )}

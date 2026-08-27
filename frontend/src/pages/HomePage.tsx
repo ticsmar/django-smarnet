@@ -15,10 +15,10 @@ import {
 import { useApp } from "@/contexts/AppContext";
 import { useT } from "@/hooks/useT";
 import { canAccessAdminDevArea } from "@/lib/adminDevAccess";
-import { ADMINISTRACAO_PERMS } from "@/modules/administracao";
+import { COMMERCIAL_PERMS } from "@/modules/commercial";
 import { hasPermission } from "@/lib/userPermissions";
 import { useBranchManagerAccess } from "@/modules/device";
-import { COMPRAS_PERMS } from "@/modules/compras";
+import { PURCHASING_PERMS } from "@/modules/purchasing";
 
 type HubCard = {
   key: string;
@@ -34,7 +34,7 @@ export default function HomePage() {
 
   const cards: HubCard[] = [];
 
-  if (hasPermission(user, COMPRAS_PERMS.viewFornecedor)) {
+  if (hasPermission(user, PURCHASING_PERMS.viewFornecedor)) {
     cards.push({
       key: "compras",
       path: "/app/purchasing/suppliers",
@@ -56,10 +56,10 @@ export default function HomePage() {
     });
   }
 
-  if (hasPermission(user, ADMINISTRACAO_PERMS.viewCliente)) {
+  if (hasPermission(user, COMMERCIAL_PERMS.viewCliente)) {
     cards.push({
       key: "clientes",
-      path: "/app/administration/customers",
+      path: "/app/commercial/customers",
       icon: Building2,
     });
   }

@@ -231,8 +231,8 @@ def test_access_admin_can_list_product_permissions(
     mock_resolve.return_value = _admin_user()
     mock_build.return_value.execute.return_value = [
         AdminProductPermissionOutputDTO(
-            value="compras_infrastructure.view_fornecedor",
-            app_label="compras_infrastructure",
+            value="purchasing_infrastructure.view_fornecedor",
+            app_label="purchasing_infrastructure",
             model="fornecedor",
             codename="view_fornecedor",
             name="Can view fornecedor",
@@ -243,7 +243,7 @@ def test_access_admin_can_list_product_permissions(
     response = api_client.get("/api/admin/product-permissions/")
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json()[0]["value"] == "compras_infrastructure.view_fornecedor"
+    assert response.json()[0]["value"] == "purchasing_infrastructure.view_fornecedor"
 
 
 @patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
@@ -266,7 +266,7 @@ def test_access_admin_can_set_product_permissions(
         is_active=admin_user_dto.is_active,
         is_superuser=admin_user_dto.is_superuser,
         groups=admin_user_dto.groups,
-        product_permissions=["compras_infrastructure.view_fornecedor"],
+        product_permissions=["purchasing_infrastructure.view_fornecedor"],
         last_login=admin_user_dto.last_login,
         date_joined=admin_user_dto.date_joined,
     )
@@ -275,13 +275,13 @@ def test_access_admin_can_set_product_permissions(
 
     response = api_client.put(
         "/api/admin/users/1/product-permissions/",
-        {"permissions": ["compras_infrastructure.view_fornecedor"]},
+        {"permissions": ["purchasing_infrastructure.view_fornecedor"]},
         format="json",
     )
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["product_permissions"] == [
-        "compras_infrastructure.view_fornecedor"
+        "purchasing_infrastructure.view_fornecedor"
     ]
 
 

@@ -3,6 +3,8 @@ import type { ApiErrorBody } from "@/types/auth";
 const API_BASE_URL =
   import.meta.env.VITE_DJANGO_API_URL ?? "http://localhost:8000/api";
 
+export { API_BASE_URL };
+
 export const DJANGO_ADMIN_URL =
   (import.meta.env.VITE_DJANGO_ADMIN_URL as string | undefined) ??
   API_BASE_URL.replace(/\/api\/?$/, "") + "/admin/";
@@ -51,8 +53,14 @@ export async function apiRequest<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const headers = new Headers(options.headers);
+  const isFormData =
+    typeof FormData !== "undefined" && options.body instanceof FormData;
 
-  if (options.body !== undefined && !headers.has("Content-Type")) {
+  if (
+    options.body !== undefined &&
+    !headers.has("Content-Type") &&
+    !isFormData
+  ) {
     headers.set("Content-Type", "application/json");
   }
 
