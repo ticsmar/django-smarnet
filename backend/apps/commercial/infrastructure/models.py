@@ -37,7 +37,7 @@ class Cliente(models.Model):
     class Meta:
         managed = False
         db_table = '"SIAOS"."CLIENTE"'
-        permissions = [
+        permissions = (
             (
                 "change_clientelimite",
                 "Pode alterar limite de crédito do cliente",
@@ -46,7 +46,7 @@ class Cliente(models.Model):
                 "change_clienterisco",
                 "Pode alterar o status/bloqueio do cliente",
             ),
-        ]
+        )
 
 
 class Origem(models.Model):

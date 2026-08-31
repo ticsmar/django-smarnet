@@ -456,11 +456,15 @@ class GravaClienteFinanRequestSerializer(serializers.Serializer):
     cli_limite_crv = serializers.IntegerField(required=False, allow_null=True)
     cli_fome_zero = serializers.IntegerField(required=False, allow_null=True)
     cli_montador = serializers.IntegerField(required=False, allow_null=True)
-    cli_reccof = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    cli_reccof = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
     cli_reccsll = serializers.CharField(
         required=False, allow_blank=True, allow_null=True
     )
-    cli_recpis = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    cli_recpis = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
     mpg_codigo = serializers.IntegerField(required=False, allow_null=True)
     cli_mod_pagt = serializers.CharField(
         required=False, allow_blank=True, allow_null=True
@@ -541,7 +545,9 @@ class CobrancaSerializer(serializers.Serializer):
 
 
 class GravaCobrancaRequestSerializer(serializers.Serializer):
-    chavecobra = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    chavecobra = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True
+    )
     ativo = serializers.IntegerField(required=False, default=1)
     cli_codigo_ref = serializers.IntegerField()
     tipo_cadastro = serializers.ChoiceField(choices=("I", "A", "E"), default="I")

@@ -370,7 +370,7 @@ class ClienteQueryRepository(Protocol):
         """Resolve GERAL.ESTADO by EST_SIGLA (getCEP.php)."""
 
     def list_origens(self) -> list[ClienteOrigemRecord]:
-        """Return active SIAOS.ORIGEM rows (ORI_STATUS = 1) used to classify clientes."""
+        """Return active SIAOS.ORIGEM rows (ORI_STATUS = 1)."""
 
     def list_arclasses(self) -> list[ClienteArclassRecord]:
         """Return active SIAOS.ARCLASS rows (Segmento / CLIENTE.CLASSE)."""

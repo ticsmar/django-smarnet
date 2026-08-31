@@ -1,7 +1,9 @@
 """Get fornecedor by code use case."""
 
 from apps.purchasing.application.dtos.recebimento_dtos import FornecedorOutputDTO
-from apps.purchasing.application.mappers.recebimento_query_mapper import to_fornecedor_dto
+from apps.purchasing.application.mappers.recebimento_query_mapper import (
+    to_fornecedor_dto,
+)
 from apps.purchasing.domain.exceptions.recebimento_exceptions import (
     FornecedorNotFoundError,
 )

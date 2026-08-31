@@ -8,7 +8,6 @@ from apps.commercial.application.use_cases.list_cliente_lookups_use_case import 
     ListClienteCidadesUseCase,
     ListClienteGruposTributariosUseCase,
     ListClienteModelosPagtoUseCase,
-    ListClienteRiscosUseCase,
 )
 from apps.commercial.domain.repositories.cliente_query_repository import (
     ClienteArclassRecord,
@@ -54,9 +53,7 @@ class _FakeArsalespRepo:
             ClienteArsalespRecord(
                 salesp_key="00001", nome="Ana", emp_nome="NOVA SMAR S/A"
             ),
-            ClienteArsalespRecord(
-                salesp_key="00002", nome="Bruno", emp_nome="Filial"
-            ),
+            ClienteArsalespRecord(salesp_key="00002", nome="Bruno", emp_nome="Filial"),
         ]
 
 
@@ -100,9 +97,7 @@ class _FakeRiscoRepo:
 
 def test_arsalesps_maps_nome_and_emp_nome():
     items = ListClienteArsalespsUseCase(_FakeArsalespRepo()).execute()
-    assert [
-        (item.salesp_key, item.nome, item.emp_nome) for item in items
-    ] == [
+    assert [(item.salesp_key, item.nome, item.emp_nome) for item in items] == [
         ("00001", "Ana", "NOVA SMAR S/A"),
         ("00002", "Bruno", "Filial"),
     ]
@@ -152,9 +147,7 @@ class _FakeModelosRepo:
     def __init__(self) -> None:
         self.unrestricted = None
 
-    def list_modelos_pagto(
-        self, *, origem, mpg_codigo, risco_protheus, unrestricted
-    ):
+    def list_modelos_pagto(self, *, origem, mpg_codigo, risco_protheus, unrestricted):
         self.unrestricted = unrestricted
         return [
             ClienteModeloPagtRecord(

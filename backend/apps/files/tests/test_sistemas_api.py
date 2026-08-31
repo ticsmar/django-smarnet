@@ -23,7 +23,7 @@ def test_list_sistemas_api(mock_build: MagicMock, mock_resolve: MagicMock) -> No
         SistemaOutputDTO(codigo=7, nome="Cliente", descricao="", ativo=True)
     ]
     client = APIClient()
-    client.force_authenticate(user=OracleSessionUser(username="admin"))
+    client.force_authenticate(user=OracleSessionUser(username="admin"))  # type: ignore[arg-type]
     response = client.get("/api/files/sistemas/")
     assert response.status_code == 200
     assert response.data[0]["codigo"] == 7
@@ -37,7 +37,7 @@ def test_create_sistema_api(mock_build: MagicMock, mock_resolve: MagicMock) -> N
         codigo=13, nome="Novo", descricao="", ativo=True
     )
     client = APIClient()
-    client.force_authenticate(user=OracleSessionUser(username="admin"))
+    client.force_authenticate(user=OracleSessionUser(username="admin"))  # type: ignore[arg-type]
     response = client.post("/api/files/sistemas/", {"nome": "Novo"}, format="json")
     assert response.status_code == 201
     assert response.data["codigo"] == 13
@@ -51,7 +51,7 @@ def test_get_sistema_api(mock_build: MagicMock, mock_resolve: MagicMock) -> None
         codigo=7, nome="Cliente", descricao="", ativo=True
     )
     client = APIClient()
-    client.force_authenticate(user=OracleSessionUser(username="admin"))
+    client.force_authenticate(user=OracleSessionUser(username="admin"))  # type: ignore[arg-type]
     response = client.get("/api/files/sistemas/7/")
     assert response.status_code == 200
     assert response.data["codigo"] == 7
@@ -65,7 +65,7 @@ def test_update_sistema_api(mock_build: MagicMock, mock_resolve: MagicMock) -> N
         codigo=7, nome="Cliente ERP", descricao="", ativo=True
     )
     client = APIClient()
-    client.force_authenticate(user=OracleSessionUser(username="admin"))
+    client.force_authenticate(user=OracleSessionUser(username="admin"))  # type: ignore[arg-type]
     response = client.put(
         "/api/files/sistemas/7/",
         {"nome": "Cliente ERP", "descricao": "", "ativo": True},

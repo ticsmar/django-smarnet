@@ -4,8 +4,8 @@ from collections.abc import Callable, Sequence
 from typing import TypeVar
 
 from apps.commercial.application.dtos.cliente_dtos import (
-    ClienteAreaOsOutputDTO,
     ClienteArclassOutputDTO,
+    ClienteAreaOsOutputDTO,
     ClienteArlevelOutputDTO,
     ClienteArsalespOutputDTO,
     ClienteCidadeOutputDTO,
@@ -28,8 +28,8 @@ from apps.commercial.application.dtos.cliente_dtos import (
     PaginatedClientesOutputDTO,
 )
 from apps.commercial.domain.repositories.cliente_query_repository import (
-    ClienteAreaOsRecord,
     ClienteArclassRecord,
+    ClienteAreaOsRecord,
     ClienteArlevelRecord,
     ClienteArsalespRecord,
     ClienteCidadeRecord,

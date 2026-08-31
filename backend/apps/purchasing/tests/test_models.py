@@ -1,6 +1,11 @@
 """Tests for unmanaged compras Oracle models."""
 
-from apps.purchasing.infrastructure.models import FornecContato, Fornecedor, MsgErro, Pais
+from apps.purchasing.infrastructure.models import (
+    FornecContato,
+    Fornecedor,
+    MsgErro,
+    Pais,
+)
 
 
 def test_fornecedor_meta() -> None:

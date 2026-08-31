@@ -1,7 +1,7 @@
 """Shared Oracle cursor helpers for the file manager."""
 
 from datetime import datetime
-from typing import Protocol
+from typing import Protocol, cast
 
 import oracledb
 
@@ -22,8 +22,10 @@ class DjangoCursorWrapper(Protocol):
     def fetchall(self) -> list[tuple[object, ...]]: ...
 
 
-def raw_oracle_cursor(django_cursor: DjangoCursorWrapper) -> oracledb.Cursor:
-    return django_cursor.cursor.cursor
+def raw_oracle_cursor(django_cursor: object) -> oracledb.Cursor:
+    nested = getattr(django_cursor, "cursor", None)
+    raw = getattr(nested, "cursor", None)
+    return cast("oracledb.Cursor", raw)
 
 
 def as_optional_int(value: object | None) -> int | None:
@@ -52,15 +54,25 @@ def read_blob(value: object | None) -> bytes:
         return b""
     if isinstance(value, memoryview):
         return value.tobytes()
-    if isinstance(value, bytes):
-        return value
+    if isinstance(value, (bytes, bytearray)):
+        return bytes(value)
+    if isinstance(value, str):
+        return value.encode()
     read = getattr(value, "read", None)
-    if callable(read):
-        data = read()
-        if isinstance(data, bytes):
-            return data
-        return bytes(data)
-    return bytes(value)
+    if not callable(read):
+        msg = f"Unexpected blob type: {type(value)!r}"
+        raise TypeError(msg)
+    data = read()
+    if isinstance(data, memoryview):
+        data = data.tobytes()
+    elif isinstance(data, (bytes, bytearray)):
+        data = bytes(data)
+    elif isinstance(data, str):
+        data = data.encode()
+    else:
+        msg = f"Unexpected blob read type: {type(data)!r}"
+        raise TypeError(msg)
+    return data
 
 
 def wrap_database_error(exc: Exception) -> ArquivoDatabaseError:

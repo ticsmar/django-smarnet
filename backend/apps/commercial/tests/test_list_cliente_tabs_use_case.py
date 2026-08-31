@@ -29,7 +29,9 @@ def _actor(owner: int = 1, link: int = 1) -> ActorContextDTO:
     )
 
 
-def _cliente(*, codigo: int = 10, emp_codigo: int = 1, **extra: object) -> ClienteRecord:
+def _cliente(
+    *, codigo: int = 10, emp_codigo: int = 1, **extra: object
+) -> ClienteRecord:
     data: dict[str, object] = {
         "codigo": codigo,
         "origem": None,
@@ -75,7 +77,7 @@ def _cliente(*, codigo: int = 10, emp_codigo: int = 1, **extra: object) -> Clien
         "con_codigo_fin": None,
     }
     data.update(extra)
-    return ClienteRecord(**data)  # type: ignore[arg-type]
+    return ClienteRecord(**data)
 
 
 class _FakeTabRepo:
@@ -126,9 +128,7 @@ def test_list_contatos_marks_comercial_role() -> None:
 def test_list_contatos_not_found() -> None:
     repo = _FakeTabRepo(None)
     with pytest.raises(ClienteNotFoundError):
-        ListClienteContatosUseCase(repo).execute(
-            actor=_actor(), codigo=99, search=""
-        )
+        ListClienteContatosUseCase(repo).execute(actor=_actor(), codigo=99, search="")
 
 
 def test_list_cobrancas_maps_padrao() -> None:

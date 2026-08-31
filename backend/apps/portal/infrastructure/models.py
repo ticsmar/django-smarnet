@@ -9,7 +9,5 @@ class Noticia(models.Model):
     class Meta:
         managed = False
         default_permissions = ("view", "add", "change", "delete")
-        db_table = f'"portal_noticia"'
-        permissions = [
-                    
-        ]
+        db_table = '"portal_noticia"'
+        permissions = ()

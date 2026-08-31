@@ -45,9 +45,7 @@ class DjangoSistemaRepositoryImpl:
     def create(
         self, codigo: int, nome: str, descricao: str, ativo: bool
     ) -> SistemaRecord:
-        row = _qs().create(
-            codigo=codigo, nome=nome, descricao=descricao, ativo=ativo
-        )
+        row = _qs().create(codigo=codigo, nome=nome, descricao=descricao, ativo=ativo)
         return _to_record(row)
 
     def update(

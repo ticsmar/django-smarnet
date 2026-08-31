@@ -24,7 +24,7 @@ def _superuser() -> MagicMock:
 
 def _auth_client() -> APIClient:
     client = APIClient()
-    client.force_authenticate(user=OracleSessionUser(username="tester"))
+    client.force_authenticate(user=OracleSessionUser(username="tester"))  # type: ignore[arg-type]
     return client
 
 
@@ -50,9 +50,7 @@ _TREE = ArquivoTreeOutputDTO(
 
 
 @patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
-@patch(
-    "apps.files.presentation.views.arquivo_views.build_list_arquivo_tree_use_case"
-)
+@patch("apps.files.presentation.views.arquivo_views.build_list_arquivo_tree_use_case")
 def test_tree_api(mock_build: MagicMock, mock_resolve: MagicMock) -> None:
     mock_resolve.return_value = _superuser()
     mock_build.return_value.execute.return_value = _TREE
@@ -62,9 +60,7 @@ def test_tree_api(mock_build: MagicMock, mock_resolve: MagicMock) -> None:
     assert response.data["nodes"][0]["nome"] == "Entrada"
 
 
-@patch(
-    "apps.files.presentation.views.arquivo_views.resolve_usu_chapa", return_value=10
-)
+@patch("apps.files.presentation.views.arquivo_views.resolve_usu_chapa", return_value=10)
 @patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
 @patch("apps.files.presentation.views.arquivo_views.build_create_folder_use_case")
 def test_folder_api(
@@ -81,9 +77,7 @@ def test_folder_api(
     assert response.data["par_codigo"] == 88
 
 
-@patch(
-    "apps.files.presentation.views.arquivo_views.resolve_usu_chapa", return_value=10
-)
+@patch("apps.files.presentation.views.arquivo_views.resolve_usu_chapa", return_value=10)
 @patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
 @patch("apps.files.presentation.views.arquivo_views.build_upload_file_use_case")
 def test_upload_api(
@@ -101,9 +95,7 @@ def test_upload_api(
     assert response.data["par_codigo"] == 90
 
 
-@patch(
-    "apps.files.presentation.views.arquivo_views.resolve_usu_chapa", return_value=10
-)
+@patch("apps.files.presentation.views.arquivo_views.resolve_usu_chapa", return_value=10)
 @patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
 @patch("apps.files.presentation.views.arquivo_views.build_move_node_use_case")
 def test_move_api(
@@ -119,9 +111,7 @@ def test_move_api(
     mock_build.return_value.execute.assert_called_once()
 
 
-@patch(
-    "apps.files.presentation.views.arquivo_views.resolve_usu_chapa", return_value=10
-)
+@patch("apps.files.presentation.views.arquivo_views.resolve_usu_chapa", return_value=10)
 @patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")
 @patch("apps.files.presentation.views.arquivo_views.build_trash_nodes_use_case")
 def test_trash_api_pasta_fixa(
@@ -144,11 +134,11 @@ def test_download_api(mock_build: MagicMock, mock_resolve: MagicMock) -> None:
     mock_build.return_value.execute.return_value = DownloadFileOutputDTO(
         nome="a.pdf", content=b"pdf-bytes"
     )
-    response = _auth_client().get(
-        "/api/files/nodes/2/download/?sistema=7&filtro=15114"
-    )
+    response = _auth_client().get("/api/files/nodes/2/download/?sistema=7&filtro=15114")
     assert response.status_code == 200
-    assert b"pdf-bytes" in b"".join(response.streaming_content)
+    streaming = getattr(response, "streaming_content", None)
+    assert streaming is not None
+    assert b"pdf-bytes" in b"".join(streaming)
 
 
 @patch("apps.shared.presentation.auth.permissions.resolve_django_user_from_request")

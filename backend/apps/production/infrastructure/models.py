@@ -9,7 +9,5 @@ class OrdemProducao(models.Model):
     class Meta:
         managed = False
         default_permissions = ("view", "add", "change", "delete")
-        db_table = f'"production_ordemproducao"'
-        permissions = [
-                    
-        ]
+        db_table = '"production_ordemproducao"'
+        permissions = ()

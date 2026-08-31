@@ -9,14 +9,23 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.development")
 django.setup()
 
-from django.db import connections  # noqa: E402, TID251
+from typing import Protocol, cast
+
+from django.db import connections  # noqa: E402
 
 
-def _run(cursor, label: str, sql: str) -> None:
+class _Cursor(Protocol):
+    def execute(self, *args: object, **kwargs: object) -> object: ...
+
+    def fetchall(self) -> object: ...
+
+
+def _run(cursor: object, label: str, sql: str) -> None:
     print(f"=== {label} ===")
     try:
-        cursor.execute(sql)
-        rows = cursor.fetchall()
+        typed = cast(_Cursor, cursor)
+        typed.execute(sql)
+        rows = typed.fetchall()
         print(rows if rows else "(empty)")
     except Exception as exc:
         print(f"ERROR: {exc}")
@@ -80,9 +89,7 @@ def run() -> None:
         )
         print("=== compile trigger (esperado: sem privilégio) ===")
         try:
-            cursor.execute(
-                "ALTER TRIGGER SIAOS.TG_B_IU_EMBARQUE COMPILE"
-            )
+            cursor.execute("ALTER TRIGGER SIAOS.TG_B_IU_EMBARQUE COMPILE")
             print("OK")
         except Exception as exc:
             print(f"ERROR: {exc}")

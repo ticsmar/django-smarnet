@@ -95,8 +95,10 @@ from apps.shared.presentation.auth.permissions import (
 if TYPE_CHECKING:
     from rest_framework.request import Request
 
+    from apps.commercial.application.dtos.cliente_dtos import ActorContextDTO
 
-def _actor(request: Request):
+
+def _actor(request: Request) -> ActorContextDTO:
     return _actor_from_request(request)
 
 

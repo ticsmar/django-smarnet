@@ -124,7 +124,7 @@ def _params(**overrides: object) -> GravaClienteDadosGeraisParams:
         "idioma_msg": "P",
     }
     data.update(overrides)
-    return GravaClienteDadosGeraisParams(**data)  # type: ignore[arg-type]
+    return GravaClienteDadosGeraisParams(**data)
 
 
 def _mock_raw_cursor(mock_connections: MagicMock) -> tuple[MagicMock, MagicMock]:
@@ -236,7 +236,9 @@ def test_grava_update_preserves_sp_only_columns(
     n_erro.getvalue.return_value = 0
     raw.var.side_effect = [n_cod, n_erro]
 
-    OracleClienteRepositoryImpl().grava_dados_gerais(_params(codigo=42, tipo_cadastro="A"))
+    OracleClienteRepositoryImpl().grava_dados_gerais(
+        _params(codigo=42, tipo_cadastro="A")
+    )
 
     django_cursor.execute.assert_called()
     binds = raw.callproc.call_args.kwargs["keyword_parameters"]
@@ -277,8 +279,7 @@ def test_grava_maps_cobranca_no_data_found(
     _django, raw = _mock_raw_cursor(mock_connections)
     raw.var.side_effect = [MagicMock(), MagicMock()]
     raw.callproc.side_effect = DatabaseError(
-        "ORA-01403: no data found ORA-06512: at "
-        '"SIAOS.TG_B_IU_COBRANCA", line 90'
+        'ORA-01403: no data found ORA-06512: at "SIAOS.TG_B_IU_COBRANCA", line 90'
     )
 
     with pytest.raises(ClienteDatabaseError, match="SF_USU_CHAPA_USER"):

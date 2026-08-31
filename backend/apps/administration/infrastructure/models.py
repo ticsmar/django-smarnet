@@ -10,7 +10,7 @@ class Painel(models.Model):
         managed = False
         default_permissions = ()
         db_table = '"administration_painel"'
-        permissions = [
-                    ("view_dashboard", "Pode ver o dashboard de administração"),
-                    ("view_relatorio", "Pode ver relatórios de administração")
-        ]
+        permissions = (
+            ("view_dashboard", "Pode ver o dashboard de administração"),
+            ("view_relatorio", "Pode ver relatórios de administração"),
+        )

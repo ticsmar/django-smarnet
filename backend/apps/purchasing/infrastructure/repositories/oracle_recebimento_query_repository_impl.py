@@ -13,7 +13,12 @@ from apps.purchasing.domain.repositories.recebimento_query_repository import (
     PaginatedMsgErrosResult,
     PaisRecord,
 )
-from apps.purchasing.infrastructure.models import FornecContato, Fornecedor, MsgErro, Pais
+from apps.purchasing.infrastructure.models import (
+    FornecContato,
+    Fornecedor,
+    MsgErro,
+    Pais,
+)
 
 _DB_ALIAS = "smar"
 
