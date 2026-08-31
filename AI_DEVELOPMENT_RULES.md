@@ -78,6 +78,13 @@ InvoiceEntity
 - Circular imports
 - Duplicate business rules
 
+## Frontend / UI
+
+- Use the Design System: `docs/developers/design-system.md`, `/design-system`, `frontend/src/components/ui/`
+- Forms: `FormSection`, `FormGrid`, `FormInput`, `FormCombobox` from `@/components/ui/forms`
+- Semantic tokens only (no hex, no `bg-blue-500`, no Oracle `CRS_CORES` interpolation)
+- Reusable new UI belongs in `components/ui` + a `/design-system` page, not inside a module clone
+
 ## Quality Tooling
 
 Human rules above are enforced by CI tooling. Run locally from `backend/` before pushing:
@@ -107,7 +114,7 @@ Configuration lives in `backend/pyproject.toml` (Ruff, MyPy, Pytest/coverage) an
 
 ### Adding a New Domain
 
-When creating a domain (e.g. `backend/apps/sales/`):
+When creating a domain (e.g. `backend/apps/production/`): if the context is unclear, **ask which module** before creating folders (see `docs/developers/novas-telas.md`). Package name in English; domain terms in Portuguese.
 
 1. Create the folder structure under `backend/apps/{domain}/`: `domain/`, `application/`, `infrastructure/`, `presentation/`, `tests/`.
 2. Decide **tela migrada** vs **aplicação nativa** (`docs/developers/novas-telas.md`).

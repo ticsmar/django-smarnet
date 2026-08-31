@@ -40,8 +40,10 @@ select = [
 "apps/branch_auth/presentation/**/*.py" = ["ANN", "E501", "RUF005", "RUF012"]
 "apps/branch_auth/tests/*.py" = ["E501"]
 "apps/users/tests/*.py" = ["E501"]
-"apps/compras/tests/*.py" = ["E501"]
-"apps/administracao/tests/*.py" = ["E501"]
+"apps/purchasing/tests/*.py" = ["E501"]
+"apps/commercial/tests/*.py" = ["E501"]
+"apps/files/tests/*.py" = ["E501"]
+"apps/files/infrastructure/models.py" = ["RUF012"]
 "manage.py" = ["TID251"]
 
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
@@ -92,7 +94,7 @@ disable_error_code = [
     "misc",
 ]
 [[tool.mypy.overrides]]
-module = "apps.compras.*"
+module = "apps.purchasing.*"
 disallow_untyped_defs = false
 disable_error_code = [
     "no-untyped-def",
@@ -102,11 +104,11 @@ disable_error_code = [
     "misc",
 ]
 [[tool.mypy.overrides]]
-module = "apps.compras.tests.*"
+module = "apps.purchasing.tests.*"
 disallow_untyped_defs = false
 disable_error_code = ["arg-type", "no-untyped-def"]
 [[tool.mypy.overrides]]
-module = "apps.administracao.*"
+module = "apps.commercial.*"
 disallow_untyped_defs = false
 disable_error_code = [
     "no-untyped-def",
@@ -116,9 +118,28 @@ disable_error_code = [
     "misc",
 ]
 [[tool.mypy.overrides]]
-module = "apps.administracao.tests.*"
+module = "apps.commercial.tests.*"
 disallow_untyped_defs = false
 disable_error_code = ["arg-type", "no-untyped-def"]
+[[tool.mypy.overrides]]
+module = "apps.files.*"
+disallow_untyped_defs = false
+disable_error_code = [
+    "no-untyped-def",
+    "no-untyped-call",
+    "type-arg",
+    "assignment",
+    "misc",
+]
+[[tool.mypy.overrides]]
+module = "apps.administration.*"
+disallow_untyped_defs = false
+[[tool.mypy.overrides]]
+module = "apps.production.*"
+disallow_untyped_defs = false
+[[tool.mypy.overrides]]
+module = "apps.portal.*"
+disallow_untyped_defs = false
 [[tool.mypy.overrides]]
 module = "environ"
 ignore_missing_imports = true

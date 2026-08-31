@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Table,
   TableBody,
@@ -157,7 +158,7 @@ export function DeviceTokensPage() {
 
   return (
     <>
-      <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm">
+      <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-3">
             <div className="rounded-xl bg-primary/10 p-2.5 text-primary">
@@ -176,25 +177,27 @@ export function DeviceTokensPage() {
         </div>
 
         {error && (
-          <Alert color="destructive" tone="soft" className="mt-4">
+          <Alert color="destructive" tone="soft">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
         {loading ? (
-          <p className="mt-8 text-sm text-muted-foreground">
-            {t("devices.loading")}
-          </p>
+          <EmptyState
+            variant="loading"
+            title={t("devices.loading")}
+          />
         ) : tokens.length === 0 ? (
-          <div className="mt-8 rounded-xl border border-dashed border-border px-6 py-12 text-center">
-            <p className="text-sm text-muted-foreground">{t("devices.empty")}</p>
-            <Button className="mt-4" onClick={openCreateModal}>
-              {t("devices.create_first")}
-            </Button>
-          </div>
+          <EmptyState
+            title={t("devices.empty")}
+            action={
+              <Button onClick={openCreateModal}>
+                {t("devices.create_first")}
+              </Button>
+            }
+          />
         ) : (
-          <div className="mt-6 overflow-x-auto rounded-xl border border-border/50">
-            <Table>
+          <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("devices.col.label")}</TableHead>
@@ -257,7 +260,6 @@ export function DeviceTokensPage() {
                 ))}
               </TableBody>
             </Table>
-          </div>
         )}
       </div>
 

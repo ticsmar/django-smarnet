@@ -9,6 +9,10 @@ export interface PaginationInfoProps {
   onPageChange: (page: number) => void;
   /** Rótulo do tipo de registro. Default: 'registros' */
   recordLabel?: string;
+  showingLabel?: string;
+  ofLabel?: string;
+  prevLabel?: string;
+  nextLabel?: string;
   className?: string;
 }
 
@@ -22,6 +26,10 @@ export function PaginationInfo({
   total,
   onPageChange,
   recordLabel = 'registros',
+  showingLabel = 'Exibindo',
+  ofLabel = 'de',
+  prevLabel = 'Anterior',
+  nextLabel = 'Próxima',
   className,
 }: PaginationInfoProps) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -29,13 +37,13 @@ export function PaginationInfo({
   const end = Math.min(total, page * pageSize);
 
   return (
-    <div className={cn('flex items-center justify-between', className)}>
+    <div className={cn('flex items-center justify-between gap-3', className)}>
       <p className="text-sm text-muted-foreground">
-        Exibindo{' '}
+        {showingLabel}{' '}
         <span className="font-semibold text-foreground">
           {start}-{end}
         </span>{' '}
-        de <span className="font-semibold text-foreground">{total}</span>{' '}
+        {ofLabel} <span className="font-semibold text-foreground">{total}</span>{' '}
         {recordLabel}
       </p>
       <div className="flex items-center gap-1">
@@ -46,7 +54,7 @@ export function PaginationInfo({
           onClick={() => onPageChange(Math.max(1, page - 1))}
           disabled={page <= 1}
         >
-          <ChevronLeft size={14} /> Anterior
+          <ChevronLeft size={14} /> {prevLabel}
         </Button>
         <Button
           variant="outline"
@@ -55,7 +63,7 @@ export function PaginationInfo({
           onClick={() => onPageChange(Math.min(totalPages, page + 1))}
           disabled={page >= totalPages}
         >
-          Próxima <ChevronRight size={14} />
+          {nextLabel} <ChevronRight size={14} />
         </Button>
       </div>
     </div>

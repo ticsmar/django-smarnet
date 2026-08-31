@@ -9,6 +9,7 @@ import {
   Folder,
   Monitor,
   Moon,
+  Shield,
   Sun,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -22,6 +23,8 @@ import {
   resolveDocLink,
   type DocTreeNode,
 } from "@/lib/systemDocs";
+import { MermaidDiagram } from "./MermaidDiagram";
+import { mermaidSourceFromPreChildren } from "./mermaidFromMarkdown";
 
 function TreeItem({
   node,
@@ -153,11 +156,17 @@ function MarkdownView({ slug, content }: { slug: string; content: string }) {
             </code>
           );
         },
-        pre: ({ children }) => (
-          <pre className="mb-4 overflow-x-auto rounded-xl border border-border/50 bg-surface-container-low p-4 text-[12px]">
-            {children}
-          </pre>
-        ),
+        pre: ({ children }) => {
+          const mermaidSource = mermaidSourceFromPreChildren(children);
+          if (mermaidSource !== null) {
+            return <MermaidDiagram chart={mermaidSource} />;
+          }
+          return (
+            <pre className="mb-4 overflow-x-auto rounded-xl border border-border/50 bg-surface-container-low p-4 text-[12px]">
+              {children}
+            </pre>
+          );
+        },
         table: ({ children }) => (
           <div className="mb-6 overflow-x-auto rounded-xl border border-border/50">
             <table className="w-full text-sm">{children}</table>
@@ -219,7 +228,7 @@ export function DocPage() {
   }
 
   return (
-    <article className="max-w-3xl">
+    <article className="max-w-4xl">
       <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-accent">
         Documentação do Sistema
         {doc.slug ? ` · ${doc.slug}` : ""}
@@ -251,6 +260,7 @@ export default function DocsLayout() {
     { id: "light" as const, icon: Sun, label: "Claro" },
     { id: "dark" as const, icon: Moon, label: "Escuro" },
     { id: "system" as const, icon: Monitor, label: "Sistema" },
+    { id: "admin" as const, icon: Shield, label: "Admin" },
   ];
 
   return (

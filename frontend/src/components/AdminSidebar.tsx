@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Shield, Users, Building2, KeyRound, ServerCog, Activity,
   Database, Bell, FileText, ArrowLeftCircle, LayoutDashboard,
-  UserRound, Globe2, Map, UserPlus,
+  UserRound, Globe2, Map, UserPlus, FolderOpen,
 } from 'lucide-react';
 import {
   Sidebar,
@@ -50,6 +50,7 @@ const adminGroups = [
       { key: 'integracoes', label: 'Integrações', icon: Database, path: '/settings/integrations' },
       { key: 'notificacoes', label: 'Notificações', icon: Bell, path: '/settings/notifications' },
       { key: 'logs', label: 'Logs & Auditoria', icon: FileText, path: '/settings/logs' },
+      { key: 'file-manager', label: 'Gerenciador de Arquivos', icon: FolderOpen, path: '/settings/file-manager' },
     ],
   },
 ];

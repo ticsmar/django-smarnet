@@ -68,7 +68,7 @@ class OracleUserImportRepositoryImpl:
 
 
 class LegacyEmailNotificationAdapter:
-    """Queues the credentials e-mail on the 3.0 queue (PCK_DQANET.SP_IN_EMAIL)."""
+    """Queues the credentials e-mail on the 3.01 queue (PCK_DQANET.SP_IN_EMAIL)."""
 
     def send_temporary_password(
         self, *, email: str, name: str, username: str, password: str

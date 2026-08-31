@@ -24,8 +24,12 @@ backend/
 ├── apps/
 │   ├── users/
 │   ├── branch_auth/
-│   ├── compras/
-│   ├── administracao/
+│   ├── commercial/
+│   ├── purchasing/
+│   ├── administration/
+│   ├── production/
+│   ├── portal/
+│   ├── files/
 │   └── shared/
 ├── static/
 ├── media/
@@ -33,7 +37,7 @@ backend/
 └── scripts/
 ```
 
-Each app under `apps/` uses hexagonal layers (`domain/`, `application/`, `infrastructure/`, `presentation/`, `tests/`). Django registers `*.infrastructure` and `*.presentation` in `INSTALLED_APPS`.
+Each app under `apps/` uses hexagonal layers (`domain/`, `application/`, `infrastructure/`, `presentation/`, `tests/`). Django registers `*.infrastructure` and `*.presentation` in `INSTALLED_APPS`. Contexts: users, branch_auth, commercial, purchasing, administration, production, portal, files. `/settings` is a UI shell, not an app.
 
 ## Setup
 

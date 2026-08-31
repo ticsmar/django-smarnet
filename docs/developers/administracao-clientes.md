@@ -1,44 +1,47 @@
-# Administração — Clientes
+# Comercial — Clientes
 
-Bounded context Django em `backend/apps/administracao` (app label de permissões: `administracao_infrastructure`). Tabelas Oracle **não gerenciadas** pelo ORM de migração Django.
+Bounded context Django em `backend/apps/commercial` (app label de permissões: `commercial_infrastructure`). **Não** fica em `administration` — aquele módulo só tem dashboard/relatórios. Tabelas Oracle **não gerenciadas** pelo ORM de migração Django.
 
 Fontes legado para consulta (nesta ordem):
 
 1. Este arquivo + glossário em [`CONTEXT.md`](../../CONTEXT.md)
-2. Scripts: [`siaos.cliente.sql`](../_scripts/tables/siaos.cliente.sql), [`integracao.cliente_risco.sql`](../_scripts/tables/integracao.cliente_risco.sql), [`PCK_CLIENTE.pck`](../_scripts/packages/PCK_CLIENTE.pck)
+2. Scripts: [`siaos.cliente.sql`](../_scripts/tables/siaos.cliente.sql), [`siaos.embarque.sql`](../_scripts/tables/siaos.embarque.sql), [`siaos.cobranca.sql`](../_scripts/tables/siaos.cobranca.sql), [`siaos.arclass.sql`](../_scripts/tables/siaos.arclass.sql), [`siaos.arlevel.sql`](../_scripts/tables/siaos.arlevel.sql), [`siaos.arsalesp.sql`](../_scripts/tables/siaos.arsalesp.sql), [`integracao.cliente_risco.sql`](../_scripts/tables/integracao.cliente_risco.sql), [`PCK_CLIENTE.pck`](../_scripts/packages/PCK_CLIENTE.pck), [`PCK_DQANET.pck`](../_scripts/packages/PCK_DQANET.pck) (`SF_PES_NUMERO_USER` / `SF_USU_CHAPA_USER`), [`TG_B_IU_EMBARQUE.trg`](../_scripts/triggers/TG_B_IU_EMBARQUE.trg), [`TG_B_IU_COBRANCA.trg`](../_scripts/triggers/TG_B_IU_COBRANCA.trg), [`TG_B_IU_CLIENTE.trg`](../_scripts/triggers/TG_B_IU_CLIENTE.trg)
 3. Grants: [`docs/admins/grants-oracle-clientes.md`](../admins/grants-oracle-clientes.md)
-4. Identidade Oracle: [ADR 0004](../adr/0004-oracle-client-identifier.md)
+4. Identidade Oracle: [ADR 0004](../adr/0004-oracle-client-identifier.md), playbook [refatoracao-smarnet-novo.md](./refatoracao-smarnet-novo.md)
 
 ## Domínio
 
 - **Cliente** (`SIAOS.CLIENTE`): PK `CODIGO`; nome (`CLIENTE`), reduzido, documento (`CGC`), endereço, `EMP_CODIGO` (empresa dona / pool), `TIPO` (`J`/`F`/`I`), `BLOQUEADO` (código SIAOS do status), etc.
-- **Status / risco** (`INTEGRACAO.CLIENTE_RISCO`): catálogo canônico das notas (A, B, C, D, N…). `SIAOS.CLIENTE.BLOQUEADO` = `CRS_CODIGO` (PK do catálogo).
+- **Segmento** (`SIAOS.CLIENTE.CLASSE`): catálogo `SIAOS.ARCLASS` (`CLASS_KEY` CHAR(5); só `CLASS_ATIVO = 1` no combo). Grava via `SP_ATUALIZA_DADOS_GERAIS` (`c_segmento`).
+- **Vendedor Área** (`SIAOS.CLIENTE.TERRITORIO`): catálogo `SIAOS.ARLEVEL` (`TERR_KEY` CHAR(2); só `ARL_ATIVO = 1` no combo). Grava via `SP_ATUALIZA_DADOS_GERAIS` (`c_area`).
+- **Vendedor** (`SIAOS.CLIENTE.VENDEDOR`): catálogo `SIAOS.ARSALESP` (`SALESP_KEY` CHAR(5); só `ASP_STATUS = 1` no combo). Nome = `USUARIO.USU_NOME` se houver, senão `SALESPERSON`. Combo agrupado por `GERAL.EMPRESA.EMP_NOME` (fallback `NOVA SMAR S/A`). Grava via `SP_ATUALIZA_DADOS_GERAIS` (`c_vendedor`).
+- **Status / risco** (`INTEGRACAO.CLIENTE_RISCO`): catálogo canônico das notas (A, B, C, D, N…). `SIAOS.CLIENTE.BLOQUEADO` = `CRS_COD_SIAOS` (código de bloqueio SIAOS; `CRS_CODIGO` é só a PK do catálogo).
 - Escopo de dono: fábricas `5/7/15/116` veem/editam a própria empresa; demais operam o **pool empresa 1** (ver `empresa_ownership` no domínio).
-- Cadastro v1: listagem + detalhe + **Dados Gerais** (procedure `SIAOS.PCK_CLIENTE.SP_ATUALIZA_DADOS_GERAIS`). Sem soft-delete/inativar no v1.
+- Cadastro: listagem + detalhe com **7 abas** tipo pasta (`Tabs variant="folder"`) — Dados Cadastrais, Dados Financeiros, Contatos, Cobrança, Embarque, Observação, Gerenciador de Arquivos (`FileManager` sistema=7). Persistência via `SIAOS.PCK_CLIENTE` (`SP_ATUALIZA_*`); arquivos em `SIAOS.PROP_ARQUIVO`. Sem soft-delete/inativar. Layout das abas segue a sequência e as subdivisões do Smarnet 3.01.
 
 ## Status (nota de risco)
 
 **Fonte canônica:** `INTEGRACAO.CLIENTE_RISCO` — não usar `for_ativo` de fornecedor.
 
-Join típico: `NVL(NULLIF(SIAOS.CLIENTE.BLOQUEADO, 0), 1) = INTEGRACAO.CLIENTE_RISCO.CRS_CODIGO`
-(`NULL` e `0` viram `1`, nota A). A letra **nunca fica vazia** na listagem (fallback `A`).
+Join típico: `NVL(SIAOS.CLIENTE.BLOQUEADO, 0) = INTEGRACAO.CLIENTE_RISCO.CRS_COD_SIAOS`
+(`NULL` vira `0`, nota A). A letra **nunca fica vazia** na listagem (fallback `A`).
 
-Clientes com `BLOQUEADO = 7` (nota E−, cadastro duplicado/inválido) **não entram**
+Clientes com `BLOQUEADO = 2` (nota E−, cadastro duplicado/inválido) **não entram**
 na listagem nem no lookup por documento. O **detalhe por código** e o wizard de
 CNPJ **abrem** esse cadastro (para não criar outro duplicado).
 
-`CRS_COD_SIAOS` é código paralelo legado SIAOS (não é a FK usada em `CLIENTE.BLOQUEADO`).
+`CRS_CODIGO` é a PK do catálogo (não é a FK usada em `CLIENTE.BLOQUEADO`).
 
-| `CRS_CODIGO` (= `BLOQUEADO`) | `CRS_COD_SIAOS` | Letra | Protheus | Restrição | Descrição |
-|-----------------------------:|----------------:|:-----:|:--------:|----------:|-----------|
-| 1 | 0 | A | A | 0 | Sem restrições |
-| 2 | 6 | B | B | 0 | Sem crédito (pagamento à vista) |
-| 3 | 1 | C | C | 0 | Pendência financeira (pagamento antecipado) |
-| 4 | 3 | D | D | 1 | Pendência financeira (bloqueia OS; suspende OS em andamento) |
-| 5 | 4 | D- | D | 2 | Pendência financeira (bloqueia OS e proposta; suspende OS em andamento) |
-| 6 | 5 | E | E | 2 | Bloqueio judicial (proposta bloqueada) |
-| 7 | 2 | E- | E | 2 | Cadastro duplicado/inválido |
-| 8 | 7 | N | B | 0 | Cliente novo — avaliar crédito (restringe formas de pagamento) |
+| `CRS_COD_SIAOS` (= `BLOQUEADO`) | `CRS_CODIGO` | Letra | Protheus | Restrição | Descrição |
+|-------------------------------:|-------------:|:-----:|:--------:|----------:|-----------|
+| 0 | 1 | A | A | 0 | Sem restrições |
+| 6 | 2 | B | B | 0 | Sem crédito (pagamento à vista) |
+| 1 | 3 | C | C | 0 | Pendência financeira (pagamento antecipado) |
+| 3 | 4 | D | D | 1 | Pendência financeira (bloqueia OS; suspende OS em andamento) |
+| 4 | 5 | D- | D | 2 | Pendência financeira (bloqueia OS e proposta; suspende OS em andamento) |
+| 5 | 6 | E | E | 2 | Bloqueio judicial (proposta bloqueada) |
+| 2 | 7 | E- | E | 2 | Cadastro duplicado/inválido |
+| 7 | 8 | N | B | 0 | Cliente novo — avaliar crédito (restringe formas de pagamento) |
 
 `CRS_RESTRICAO`: `0` sem restrição de abertura; `1` restringe OS; `2` restringe proposta.
 
@@ -52,21 +55,28 @@ Na UI v1 o badge **não interpola** `CRS_CORES`. Usa `StatusBadge` semântico (`
 
 Texto **livre do financeiro** explicando o motivo do bloqueio/status daquele cliente. Não vem do catálogo `CLIENTE_RISCO`; é preenchido caso a caso na operação financeira. Exibir junto da nota quando preenchido.
 
-Coluna auxiliar relacionada: `FLAGSUSPEN` (suspenso). Preferir `CLIENTE_RISCO` (via `CRS_CODIGO`) para label/cor da nota + `MENSAGEM_BLOQUEIO` para o motivo.
+Coluna auxiliar relacionada: `FLAGSUSPEN` (suspenso). Preferir `CLIENTE_RISCO` (via `CRS_COD_SIAOS`) para label/cor da nota + `MENSAGEM_BLOQUEIO` para o motivo.
 
 ## Permissões
 
 | Codename | Uso |
 |----------|-----|
-| `administracao_infrastructure.view_cliente` | Listar / detalhar / catálogos / lookup documento |
-| `administracao_infrastructure.add_cliente` | Criar (Dados Gerais / from-funcionário) |
-| `administracao_infrastructure.change_cliente` | Atualizar Dados Gerais |
+| `commercial_infrastructure.view_cliente` | Listar / detalhar / catálogos / lookup documento / log |
+| `commercial_infrastructure.add_cliente` | Criar (Dados Gerais / from-funcionário) |
+| `commercial_infrastructure.change_cliente` | Atualizar Dados Gerais, Financeiro (`SP_ATUALIZA_DADOS_FINAN`) e observações (`SP_ATUALIZA_OBS`) |
+| `commercial_infrastructure.change_clientelimite` | Limite especial; listar modelos de pagamento sem filtro de risco |
+| `commercial_infrastructure.change_clienterisco` | Alterar status/bloqueio (letra A–E). No 3.01 era ACE 370 (`cad_bloqueio.php`); o número **não** entra no código ([ADR 0007](../adr/0007-ace-codigo-django-vs-acesso-func.md), [acesso-atividade.md](./acesso-atividade.md)) |
+| `commercial_infrastructure.view_dashboard` | Dashboard de Administração (`/app/administration/dashboard`) |
+| `commercial_infrastructure.view_relatorio` | Relatórios de Administração (`/app/administration/reports`) |
+| `commercial_infrastructure.view/add/change_clientecontato` | Aba Contatos (`SP_ATUALIZA_CONTATO` / `SP_UPDATE_CONTATO_CLIENTE`) |
+| `commercial_infrastructure.view/add/change_clientecobranca` | Aba Cobrança (`SP_ATUALIZA_COBRANCA2` + `CLIENTE.COBRANCA` padrão) |
+| `commercial_infrastructure.view/add/change_clienteembarque` | Aba Embarque (`SP_ATUALIZA_EMBARQUE2` + `CLIENTE.ENTREGA` padrão) |
 
-Espelho no frontend: `frontend/src/modules/administracao/permissions.ts` e `frontend/src/config/productPermissions.ts`.
+Espelho no frontend: `frontend/src/modules/commercial/permissions.ts` e `frontend/src/config/productPermissions.ts`.
 
-Consulta CNPJ (ReceitaWS): `RECEITAWS_TOKEN` no `.env` do backend (Bearer do 3.0 `getCNPJ.php`). Sem token, a API pública da ReceitaWS aceita poucas consultas por minuto. ViaCEP não exige chave.
+Consulta CNPJ (ReceitaWS): `RECEITAWS_TOKEN` no `.env` do backend (Bearer do 3.01 `getCNPJ.php`). Sem token, a API pública da ReceitaWS aceita poucas consultas por minuto. ViaCEP não exige chave.
 
-## API (`/api/administracao/`)
+## API (`/api/commercial/`)
 
 | Rota | Métodos |
 |------|---------|
@@ -78,14 +88,39 @@ Consulta CNPJ (ReceitaWS): `RECEITAWS_TOKEN` no `.env` do backend (Bearer do 3.0
 | `/clientes/from-funcionario/` | `POST` (`cpf`) — `INTEGRACAO.SP_FUNC2CLIENTE` (Copiar p/ Novo). |
 | `/catalogos/paises/` | `GET` |
 | `/catalogos/estados/` | `GET` (`pai_codigo`) |
-| `/catalogos/origens/` | `GET` |
+| `/catalogos/origens/` | `GET` — `SIAOS.ORIGEM` (`ORI_STATUS = 1`) |
+| `/catalogos/arclasses/` | `GET` — `SIAOS.ARCLASS` (Segmento; `CLASS_ATIVO = 1`) |
+| `/catalogos/arlevels/` | `GET` — `SIAOS.ARLEVEL` (Vendedor Área; `ARL_ATIVO = 1`) |
+| `/catalogos/arsalesps/` | `GET` — `SIAOS.ARSALESP` (Vendedor; `ASP_STATUS = 1`; nome via `USUARIO`, grupo `GERAL.EMPRESA.EMP_NOME`) |
+| `/catalogos/cidades/` | `GET` (`pai_codigo`, `est_codigo`) — `PROTPROD.CC2010` |
+| `/catalogos/grupos-tributarios/` | `GET` (`est_codigo`, `cli_tipo`) — `PROTPROD.SF7010` (default 25→`077`, 27→`070`) |
+| `/catalogos/areas-os/` | `GET` (`tipo` C\|E, `mun_ibge`, `est_codigo`, `pai_codigo`, `current`) — `SIAOS.AREA_OS` |
+| `/catalogos/modelos-pagto/` | `GET` (`origem`, `mpg_codigo`, `risco_protheus`) — sem filtro de risco se `change_clientelimite` |
+| `/catalogos/riscos-cliente/` | `GET` — `INTEGRACAO.CLIENTE_RISCO` (`codigo` = `CRS_COD_SIAOS` = `BLOQUEADO`, letra, descrição, restrição) |
+| `/clientes/<codigo>/bloqueio/` | `PUT` (`bloqueado` = `CRS_COD_SIAOS`, `mensagem_bloqueio`) — exige `change_clienterisco`; DML via 2 (`BLOQUEADO`, `MENSAGEM_BLOQUEIO`) |
+| `/clientes/<codigo>/financeiro/` | `PUT` — `SP_ATUALIZA_DADOS_FINAN` + overlay Python das colunas que o package de gerais grava. Ocultar a aba se `GERAL.EMPRESA.EMP_TIPO = C` (`show_financeiro=false`) |
+| `/clientes/<codigo>/contatos/` | `GET`, `POST` |
+| `/clientes/<codigo>/contatos/padrao/` | `PUT` |
+| `/clientes/<codigo>/cobrancas/` | `GET`, `POST` — ref. `cli_codigo_ref` + ativo (não endereço livre) |
+| `/clientes/<codigo>/cobrancas/padrao/` | `PUT` (`chave`) |
+| `/clientes/<codigo>/embarques/` | `GET`, `POST` |
+| `/clientes/<codigo>/embarques/padrao/` | `PUT` (`chave`) |
+| `/clientes/<codigo>/logs/` | `GET` — `SIAOS.LOG_CLIENTE` + `USUARIO` |
+| `/clientes/<codigo>/observa/` | `PUT` — `SP_ATUALIZA_OBS` |
+
+`PUT` de Dados Gerais também persiste `CLI_TIPO`, `AOS_CODIGO_COM/TEC`, `CLASSE` (`c_segmento` / `SIAOS.ARCLASS.CLASS_KEY`), `TERRITORIO` (`c_area` / `SIAOS.ARLEVEL.TERR_KEY`), `VENDEDOR` (`c_vendedor` / `SIAOS.ARSALESP.SALESP_KEY`) e `CLI_GRUPO_TRIB` (UPDATE fora do package — o 3.01 faz o mesmo). `CLIENTE.ESTADO` grava **`EST_SIGLA`**, não o nome. Aba **Gerenciador de Arquivos**: `<FileManager sistema={SISTEMA_CLIENTE} filtro={String(codigo)} disabled={!canEdit} />` — repositório `SIAOS.PROP_ARQUIVO` (`PAR_SISTEMA=7`, `PAR_FILTRO=cli_codigo`, `desabilita` via `disabled`). Ver [arquivos.md](./arquivos.md). Não portar o `OBSERVA = 'OBSERVA'` do PHP pós-package.
 
 ## Frontend
 
-- Paths: `/app/administration/customers`, `/app/administration/customers/:codCliente`
-- Módulo: `frontend/src/modules/administracao/` (layout padrão = Fornecedores)
+- Paths: `/app/commercial/customers`, `/app/commercial/customers/:codCliente` (view), `/app/commercial/customers/:codCliente/edit` (Dados Cadastrais em página; o modal fica só no **Novo**). Menu: Comercial → Cadastros. Abas no detalhe: Dados Cadastrais, Dados Financeiros (se `show_financeiro`), Contatos, Cobrança, Embarque, Observação, Gerenciador de Arquivos (`FileManager` sistema=7).
+- **Visualizar vs editar:** em `/:codCliente` (sem `/edit`) **todas** as abas abrem com campos `readOnly`/`disabled` (não só Dados Cadastrais). `FileManager` recebe `disabled`. Contatos/cobrança/embarque não mostram adicionar/alterar. Em `/:codCliente/edit` os campos seguem a perm de cada aba.
+- **Layout da ficha:** cabeçalho `bg-card`. `Tabs variant="folder" fill` — aba ativa e `TabsContent` = `bg-card`; faixa das abas transparente (fundo do `main`); inativas `bg-muted-foreground/30`. Página `flex flex-col gap-5 lg:min-h-0 lg:flex-1`. **≥ `lg`:** o painel preenche o restante do `main`; scroll no `TabsContent` se preciso. **&lt; `lg`:** faixa numa linha (swipe) e sticky; a ficha cresce; rola o `main`. Ver [design-system.md](./design-system.md) §4.1–4.2.
+- **Listagem (UX):** casca canônica do ERP — `CollectionHeader` (**Novo** à direita, se `add_cliente`) + `CollectionToolbar` (busca + `ViewToggle`; **sem filtro** nesta tela) + `Table`/`lista`/`cards`, **sem** card `bg-card` na página. Demais listagens devem copiar esta tela. Ver [padrao-cadastro-listagem.md](./padrao-cadastro-listagem.md) §5 e [design-system.md](./design-system.md) §3.
+- Módulo: `frontend/src/modules/commercial/` (layout padrão = Fornecedores)
 - Rotas: [`app-routes.md`](./app-routes.md)
-- Listagem v1: `StatusBadge` com `CRS_COD_LETRA` à frente do nome (`title` = `CRS_DESC_LONGA`), join `BLOQUEADO = CRS_CODIGO`.
+- Listagem v1: `StatusBadge` com `CRS_COD_LETRA` à frente do nome (`title` = `CRS_DESC_LONGA`), join `BLOQUEADO = CRS_COD_SIAOS`.
+- Detalhe: no header, à direita (ao lado de Editar), chip de status (`StatusBadge`): **só** `CRS_DESC` (descrição curta) no botão; `title` = `CRS_DESC_LONGA`. Clique abre o dialog de status (`cad_bloqueio.php`). **Gravar** exige `change_clienterisco`. Cores semânticas via letra/`CRS_RESTRICAO` — não interpolar `CRS_CORES`. Persistência: `BLOQUEADO = CRS_COD_SIAOS` (não `CRS_CODIGO`).
+- Aba Observação / log: `SIAOS.LOG_CLIENTE.LCL_TEXTO` traz HTML do 3.01 (`<BR>`). Na UI o HTML é **renderizado** (sanitizado, tags de formatação), não mostrado como texto. `USU_CHAPA` do log vem de `PCK_DQANET.SF_USU_CHAPA_USER` (não chapa `7` com `API_SMAR`). Ver [refatoracao-smarnet-novo.md](./refatoracao-smarnet-novo.md).
 - Completude: `SIAOS.PCK_CLIENTE.SF_CHECA_CADASTRO(CODIGO)` — `0` ok; `1` badge `!` “Cadastro Incompleto!!”; `2` badge `!` “CNPJ Inválido !”.
 - Novo PJ: busca **primeiro** em `SIAOS.CLIENTE` (CNPJ sem máscara, alfanumérico, `LPAD`/`TRANSLATE` como o PHP; sem `SF_VALIDA_CONS_CLIENTE`). Se achar, devolve o código e a UI abre o detalhe. Se não achar, consulta ReceitaWS + ViaCEP e inicia o cadastro com os dados copiados quando `status=OK`.
 - Novo Funcionário: `cadastro_novo.php?acao=func` — busca CPF em `SIAOS.CLIENTE`; se já existir, mostra o código e abre o detalhe. Se não, lê `PROTPROD.SRA010` (`D_E_L_E_T_ = ' '`) e libera **Copiar p/ Novo** (`SP_FUNC2CLIENTE`).

@@ -24,7 +24,7 @@ Na tela **Acessos**, o fluxo é o inverso: primeiro escolha a aba **Grupos** ou 
 |-------|--------|
 | `access_admins` | Administra usuários/acessos |
 | `branch_managers` | Gerencia tokens em Produção → Devices |
-| (permissões Django de `compras_infrastructure.*`) | Libera telas/APIs de Compras |
+| (permissões Django de `purchasing_infrastructure.*`) | Libera telas/APIs de Compras |
 
 Permissões de app (ex. `view_fornecedor`) vêm do modelo de permissões Django ligado aos grupos/usuário — não apenas do nome do grupo ERP.
 
@@ -33,9 +33,9 @@ Permissões de app (ex. `view_fornecedor`) vêm do modelo de permissões Django 
 - Self-register público está **desligado** por padrão (`ALLOW_PUBLIC_REGISTER=False`).
 - Crie via admin API/UI. Pode marcar troca de senha obrigatória no primeiro acesso (`must_change_password`).
 
-## Go-live e o Smarnet 3.0
+## Go-live e o Smarnet 3.01
 
-Quando o cadastro em `/settings` entrar em produção, as telas PHP de Pessoa, Empresa e Usuário no 3.0 devem ser **desligadas** (menu/fluxo). Não operar as duas UIs depois disso. O Django `/admin/` permanece só para ajuste técnico de `auth.User`.
+Quando o cadastro em `/settings` entrar em produção, as telas PHP de Pessoa, Empresa e Usuário no 3.01 devem ser **desligadas** (menu/fluxo). Não operar as duas UIs depois disso. O Django `/admin/` permanece só para ajuste técnico de `auth.User`.
 
 Os demais módulos seguem a mesma regra: o legado sai quando o novo entra. Detalhe: [ADR 0006](../adr/0006-desativacao-legado-por-modulo.md).
 

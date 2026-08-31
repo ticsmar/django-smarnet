@@ -58,7 +58,7 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = [
-    "apps.users.infrastructure.db_router.SmarDatabaseRouter",
+    "apps.shared.infrastructure.db_router.SmarDatabaseRouter",
 ]
 
 INSTALLED_APPS = [
@@ -76,10 +76,18 @@ INSTALLED_APPS = [
     "apps.users.presentation",
     "apps.branch_auth.infrastructure",
     "apps.branch_auth.presentation",
-    "apps.compras.infrastructure",
-    "apps.compras.presentation",
-    "apps.administracao.infrastructure",
-    "apps.administracao.presentation",
+    "apps.purchasing.infrastructure",
+    "apps.purchasing.presentation",
+    "apps.commercial.infrastructure",
+    "apps.commercial.presentation",
+    "apps.files.infrastructure",
+    "apps.files.presentation",
+    "apps.administration.infrastructure",
+    "apps.administration.presentation",
+    "apps.production.infrastructure",
+    "apps.production.presentation",
+    "apps.portal.infrastructure",
+    "apps.portal.presentation",
 ]
 
 MIDDLEWARE = [

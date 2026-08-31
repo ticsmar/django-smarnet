@@ -92,75 +92,215 @@ forbidden_modules =
     apps.branch_auth.application
     apps.branch_auth.presentation
 
-[importlinter:contract:compras-layers]
-name = compras layer dependencies
+[importlinter:contract:purchasing-layers]
+name = purchasing layer dependencies
 type = layers
 layers =
-    apps.compras.presentation
-    apps.compras.application
-    apps.compras.domain
+    apps.purchasing.presentation
+    apps.purchasing.application
+    apps.purchasing.domain
 
-[importlinter:contract:compras-domain-isolation]
-name = compras domain layer isolation
+[importlinter:contract:purchasing-domain-isolation]
+name = purchasing domain layer isolation
 type = forbidden
 source_modules =
-    apps.compras.domain
+    apps.purchasing.domain
 forbidden_modules =
-    apps.compras.application
-    apps.compras.infrastructure
-    apps.compras.presentation
+    apps.purchasing.application
+    apps.purchasing.infrastructure
+    apps.purchasing.presentation
 
-[importlinter:contract:compras-app-no-presentation]
-name = compras application cannot import presentation
+[importlinter:contract:purchasing-app-no-presentation]
+name = purchasing application cannot import presentation
 type = forbidden
 source_modules =
-    apps.compras.application
+    apps.purchasing.application
 forbidden_modules =
-    apps.compras.presentation
+    apps.purchasing.presentation
 
-[importlinter:contract:compras-infra-boundary]
-name = compras infrastructure boundary
+[importlinter:contract:purchasing-infra-boundary]
+name = purchasing infrastructure boundary
 type = forbidden
 source_modules =
-    apps.compras.infrastructure
+    apps.purchasing.infrastructure
 forbidden_modules =
-    apps.compras.application
-    apps.compras.presentation
+    apps.purchasing.application
+    apps.purchasing.presentation
 
-[importlinter:contract:administracao-layers]
-name = administracao layer dependencies
+[importlinter:contract:commercial-layers]
+name = commercial layer dependencies
 type = layers
 layers =
-    apps.administracao.presentation
-    apps.administracao.application
-    apps.administracao.domain
+    apps.commercial.presentation
+    apps.commercial.application
+    apps.commercial.domain
 
-[importlinter:contract:administracao-domain-isolation]
-name = administracao domain layer isolation
+[importlinter:contract:commercial-domain-isolation]
+name = commercial domain layer isolation
 type = forbidden
 source_modules =
-    apps.administracao.domain
+    apps.commercial.domain
 forbidden_modules =
-    apps.administracao.application
-    apps.administracao.infrastructure
-    apps.administracao.presentation
+    apps.commercial.application
+    apps.commercial.infrastructure
+    apps.commercial.presentation
 
-[importlinter:contract:administracao-app-no-presentation]
-name = administracao application cannot import presentation
+[importlinter:contract:commercial-app-no-presentation]
+name = commercial application cannot import presentation
 type = forbidden
 source_modules =
-    apps.administracao.application
+    apps.commercial.application
 forbidden_modules =
-    apps.administracao.presentation
+    apps.commercial.presentation
 
-[importlinter:contract:administracao-infra-boundary]
-name = administracao infrastructure boundary
+[importlinter:contract:commercial-infra-boundary]
+name = commercial infrastructure boundary
 type = forbidden
 source_modules =
-    apps.administracao.infrastructure
+    apps.commercial.infrastructure
 forbidden_modules =
-    apps.administracao.application
-    apps.administracao.presentation
+    apps.commercial.application
+    apps.commercial.presentation
+
+[importlinter:contract:files-layers]
+name = files layer dependencies
+type = layers
+layers =
+    apps.files.presentation
+    apps.files.application
+    apps.files.domain
+
+[importlinter:contract:files-domain-isolation]
+name = files domain layer isolation
+type = forbidden
+source_modules =
+    apps.files.domain
+forbidden_modules =
+    apps.files.application
+    apps.files.infrastructure
+    apps.files.presentation
+
+[importlinter:contract:files-app-no-presentation]
+name = files application cannot import presentation
+type = forbidden
+source_modules =
+    apps.files.application
+forbidden_modules =
+    apps.files.presentation
+
+[importlinter:contract:files-infra-boundary]
+name = files infrastructure boundary
+type = forbidden
+source_modules =
+    apps.files.infrastructure
+forbidden_modules =
+    apps.files.application
+    apps.files.presentation
+
+[importlinter:contract:administration-layers]
+name = administration layer dependencies
+type = layers
+layers =
+    apps.administration.presentation
+    apps.administration.application
+    apps.administration.domain
+
+[importlinter:contract:administration-domain-isolation]
+name = administration domain layer isolation
+type = forbidden
+source_modules =
+    apps.administration.domain
+forbidden_modules =
+    apps.administration.application
+    apps.administration.infrastructure
+    apps.administration.presentation
+
+[importlinter:contract:administration-app-no-presentation]
+name = administration application cannot import presentation
+type = forbidden
+source_modules =
+    apps.administration.application
+forbidden_modules =
+    apps.administration.presentation
+
+[importlinter:contract:administration-infra-boundary]
+name = administration infrastructure boundary
+type = forbidden
+source_modules =
+    apps.administration.infrastructure
+forbidden_modules =
+    apps.administration.application
+    apps.administration.presentation
+
+[importlinter:contract:production-layers]
+name = production layer dependencies
+type = layers
+layers =
+    apps.production.presentation
+    apps.production.application
+    apps.production.domain
+
+[importlinter:contract:production-domain-isolation]
+name = production domain layer isolation
+type = forbidden
+source_modules =
+    apps.production.domain
+forbidden_modules =
+    apps.production.application
+    apps.production.infrastructure
+    apps.production.presentation
+
+[importlinter:contract:production-app-no-presentation]
+name = production application cannot import presentation
+type = forbidden
+source_modules =
+    apps.production.application
+forbidden_modules =
+    apps.production.presentation
+
+[importlinter:contract:production-infra-boundary]
+name = production infrastructure boundary
+type = forbidden
+source_modules =
+    apps.production.infrastructure
+forbidden_modules =
+    apps.production.application
+    apps.production.presentation
+
+[importlinter:contract:portal-layers]
+name = portal layer dependencies
+type = layers
+layers =
+    apps.portal.presentation
+    apps.portal.application
+    apps.portal.domain
+
+[importlinter:contract:portal-domain-isolation]
+name = portal domain layer isolation
+type = forbidden
+source_modules =
+    apps.portal.domain
+forbidden_modules =
+    apps.portal.application
+    apps.portal.infrastructure
+    apps.portal.presentation
+
+[importlinter:contract:portal-app-no-presentation]
+name = portal application cannot import presentation
+type = forbidden
+source_modules =
+    apps.portal.application
+forbidden_modules =
+    apps.portal.presentation
+
+[importlinter:contract:portal-infra-boundary]
+name = portal infrastructure boundary
+type = forbidden
+source_modules =
+    apps.portal.infrastructure
+forbidden_modules =
+    apps.portal.application
+    apps.portal.presentation
 
 [importlinter:contract:domain-independence]
 name = Domains are independent
@@ -168,13 +308,14 @@ type = independence
 modules =
     apps.branch_auth
     apps.users
-    apps.compras
-    apps.administracao
+    apps.purchasing
+    apps.commercial
+    apps.files
+    apps.administration
+    apps.production
+    apps.portal
 ignore_imports =
-    apps.administracao.infrastructure.actor_context -> apps.users.infrastructure.models
-    apps.administracao.infrastructure.actor_context -> apps.users.infrastructure.oracle_session_context
-    apps.administracao.infrastructure.repositories.oracle_cliente_repository_impl -> apps.users.infrastructure.oracle_session_context
-    apps.administracao.infrastructure.repositories.oracle_cliente_query_repository_impl -> apps.users.infrastructure.oracle_session_context
+    apps.shared.infrastructure.identity -> apps.users.infrastructure.models
 
 [importlinter:contract:domain-no-django-oracle]
 name = Domain cannot import Django or Oracle drivers
@@ -183,8 +324,12 @@ source_modules =
     apps.shared.domain
     apps.users.domain
     apps.branch_auth.domain
-    apps.compras.domain
-    apps.administracao.domain
+    apps.purchasing.domain
+    apps.commercial.domain
+    apps.files.domain
+    apps.administration.domain
+    apps.production.domain
+    apps.portal.domain
 forbidden_modules =
     django
     oracledb

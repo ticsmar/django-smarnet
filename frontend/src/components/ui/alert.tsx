@@ -7,11 +7,11 @@ import { type BadgeColor as AlertColor, type BadgeTone as AlertTone, badgeColorC
 /**
  * Alert primitivo expandido.
  * - API legada: `variant` ('default' | 'destructive')
- * - API recomendada: `color` (10 cores semânticas) + `tone` ('solid' | 'soft' | 'outline')
+ * - API recomendada: `color` (10 cores semânticas) + `tone` ('solid' | 'light' | 'outline')
  *
  * Tons:
  * - solid: fundo sólido, texto contraste
- * - soft: fundo suave + texto colorido (default — mais legível em ERP)
+ * - light (alias: soft): fundo suave + texto colorido (default — mais legível em ERP)
  * - outline: borda colorida, fundo transparente
  */
 const alertVariants = cva(
@@ -84,7 +84,7 @@ export interface AlertProps
     VariantProps<typeof alertVariants> {
   /** Cor semântica do design system. Quando definido, sobrepõe `variant`. */
   color?: AlertColor;
-  /** Tom da cor: solid | soft | outline. Default: 'soft'. */
+  /** Tom da cor: solid | light | outline (`soft` é alias de light). Default: 'soft'. */
   tone?: AlertTone;
 }
 

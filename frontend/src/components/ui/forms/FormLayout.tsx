@@ -12,15 +12,21 @@ export interface FormSectionProps {
   children: React.ReactNode;
 }
 
-/** Seção visual com título + linha divisória, usada em cadastros longos. */
+/** Seção visual com título do Design System, usada em cadastros longos. */
 export function FormSection({ title, description, actions, className, children }: FormSectionProps) {
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={cn(className)}>
       {(title || actions) && (
-        <div className="flex items-end justify-between gap-3 pb-2 border-b border-border/30">
+        <div className="mb-4 flex items-end justify-between gap-3">
           <div>
-            {title && <h4 className="text-sm font-bold text-foreground">{title}</h4>}
-            {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
+            {title && (
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-accent">
+                {title}
+              </h4>
+            )}
+            {description && (
+              <p className="mt-0.5 text-xs text-muted-foreground">{description}</p>
+            )}
           </div>
           {actions}
         </div>
@@ -58,7 +64,7 @@ export function FormGrid({ cols = 2, gap = 'md', className, children }: FormGrid
 /* ------------------------------- FormRow ------------------------------- */
 
 export interface FormRowProps {
-  /** Largura do label (em px ou utilitário tailwind) — só usada em variant="horizontal" */
+  /** Largura do label (px) no layout horizontal. */
   labelWidth?: number;
   label?: React.ReactNode;
   htmlFor?: string;
@@ -67,7 +73,7 @@ export interface FormRowProps {
 }
 
 /**
- * Linha de formulário horizontal: label à esquerda, controle à direita.
+ * Horizontal form row: label à frente do controle (right-aligned).
  * Útil para formulários compactos com muitos campos.
  */
 export function FormRow({ label, htmlFor, labelWidth = 128, className, children }: FormRowProps) {

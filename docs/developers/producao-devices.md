@@ -1,6 +1,6 @@
 # Produção e devices
 
-O menu **Produção** (`/app/production`) é um grupo de navegação ERP. **Ordem de Produção** (`/app/production/orders`) é tela **simulada** (aplicação nativa ainda sem persistência): visível a usuários autenticados, **sem** permissão Django `producao_infrastructure` (app inexistente). O item funcional de devices fica em **Devices** (`/app/devices`), sob o grupo **Acessos** (`/app/access`). Tokens vivem em `backend/apps/branch_auth`.
+O menu **Produção** (`/app/production`) é um grupo de navegação ERP. **Dashboard** (`/app/production/dashboard`) é placeholder (em desenvolvimento), visível a usuários autenticados. **Ordem de Produção** (`/app/production/orders`) é tela **simulada** (aplicação nativa ainda sem persistência): visível a usuários autenticados, **sem** permissão Django `producao_infrastructure` (app inexistente). O item funcional de devices fica em **Devices** (`/app/devices`), sob o grupo **Acessos** (`/app/access`). Tokens vivem em `backend/apps/branch_auth`.
 
 ## Modelo
 
@@ -26,7 +26,7 @@ Verificação: token inválido/revogado, UUID incompatível ou máquina revogada
 
 ## Frontend
 
-`frontend/src/modules/device/` — `DeviceTokensPage`:
+`frontend/src/modules/device/` — `DeviceTokensPage` (casca de listagem como Clientes: cabeçalho solto, **sem** card de página):
 
 - Tabela: label, prefixo, status, criação, máquina (UUID truncado ou “sem vínculo”), revogar se ativo.
 - Dialog de criação: label opcional → exibe token cru uma vez + copiar.

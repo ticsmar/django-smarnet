@@ -98,6 +98,7 @@ export const componentGroups = [
     label: 'Dados',
     icon: Database,
     items: [
+      { to: '/design-system/components/collection', label: 'Collection (padrão Clientes)' },
       { to: '/design-system/components/table', label: 'Table' },
       { to: '/design-system/components/carousel', label: 'Carousel' },
       { to: '/design-system/components/scroll-area', label: 'Scroll Area' },

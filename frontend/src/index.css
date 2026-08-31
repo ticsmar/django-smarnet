@@ -148,6 +148,76 @@
     --sidebar-border: 220 15% 15%;
     --sidebar-ring: 185 60% 40%;
   }
+
+  /*
+   * Tema Admin — paleta do /settings (AdminLayout / admin-shell):
+   * superfícies zinc e acento amber. Usado no catálogo do Design System.
+   */
+  .admin {
+    --background: 240 10% 4%;
+    --foreground: 240 5% 84%;
+
+    --surface: 240 10% 4%;
+    --surface-container-low: 240 6% 10%;
+    --surface-container: 240 5% 13%;
+    --surface-container-high: 240 4% 16%;
+    --surface-container-highest: 240 4% 20%;
+
+    --card: 240 6% 10%;
+    --card-foreground: 240 5% 84%;
+
+    --popover: 240 6% 10%;
+    --popover-foreground: 240 5% 84%;
+
+    --primary: 38 92% 50%;
+    --primary-foreground: 240 6% 10%;
+    --primary-container: 38 80% 36%;
+
+    --secondary: 240 4% 26%;
+    --secondary-foreground: 240 5% 84%;
+
+    --tertiary: 43 96% 56%;
+    --tertiary-foreground: 240 6% 10%;
+
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 64%;
+
+    --accent: 43 96% 56%;
+    --accent-foreground: 240 6% 10%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 60% 45%;
+    --success-foreground: 240 10% 4%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 240 6% 10%;
+    --alert: 48 90% 55%;
+    --alert-foreground: 240 10% 4%;
+    --info: 217 91% 60%;
+    --info-foreground: 240 10% 4%;
+
+    --status-success: 142 60% 45%;
+    --status-warning: 38 92% 50%;
+    --status-error: 0 72% 51%;
+    --status-info: 217 91% 60%;
+    --status-pending: 48 90% 55%;
+    --status-operational: 142 60% 45%;
+
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 38 92% 50%;
+
+    --sidebar-background: 240 6% 10%;
+    --sidebar-foreground: 240 5% 84%;
+    --sidebar-primary: 38 92% 50%;
+    --sidebar-primary-foreground: 240 6% 10%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 43 96% 64%;
+    --sidebar-group-hover: 240 4% 22%;
+    --sidebar-border: 240 4% 16%;
+    --sidebar-ring: 38 92% 50%;
+  }
 }
 
 @layer base {

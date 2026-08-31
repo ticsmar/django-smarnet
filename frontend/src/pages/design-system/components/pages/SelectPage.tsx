@@ -98,6 +98,8 @@ export default function SelectPage() {
               <FormSelect label="Medium" size="md" placeholder="..." options={setores} />
               <FormSelect label="Large" size="lg" placeholder="..." options={setores} />
               <FormSelect label="Com erro" placeholder="..." options={setores} error="Campo obrigatório" />
+              <FormSelect label="Somente leitura" readOnly defaultValue="prod" options={setores} />
+              <FormSelect label="Desabilitado" disabled defaultValue="prod" options={setores} />
             </div>
           }
           code={`<FormSelect label="Small" size="sm" options={...} />
@@ -114,7 +116,8 @@ export default function SelectPage() {
             { name: 'onValueChange', type: '(value: string) => void', description: 'Callback ao selecionar.' },
             { name: 'size', type: '"sm" | "md" | "lg"', default: '"md"', description: 'Altura do trigger.' },
             { name: 'required / error / success / hint / status / description', type: '— igual FormInput —', description: 'Mesmas props de validação e label.' },
-            { name: 'disabled', type: 'boolean', description: 'Desabilita o select.' },
+            { name: 'disabled', type: 'boolean', description: 'Desabilita o select (fundo mais claro, cursor not-allowed no wrapper).' },
+            { name: 'readOnly', type: 'boolean', description: 'Somente leitura: fundo muted, borda/texto iguais ao ativo, cursor not-allowed no wrapper.' },
           ]}
         />
       </DocSection>
@@ -232,6 +235,13 @@ export default function SelectPage() {
       <UsageNote type="info">
         Use <strong>FormSelect</strong> para listas curtas (até ~10 opções). Use{' '}
         <strong>FormCombobox</strong> quando precisar de busca, multi-seleção ou criação dinâmica.
+      </UsageNote>
+      <UsageNote type="tip">
+        Em visualizar de ficha, use <code className="font-mono text-[11px]">readOnly</code> (não{' '}
+        <code className="font-mono text-[11px]">disabled</code>) quando o valor ainda precisa ser
+        lido visualmente. O cursor <code className="font-mono text-[11px]">not-allowed</code> está
+        no wrapper: o Chrome ignora cursor em{' '}
+        <code className="font-mono text-[11px]">&lt;button disabled&gt;</code>.
       </UsageNote>
     </ComponentDoc>
   );

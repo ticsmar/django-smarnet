@@ -1,7 +1,7 @@
 import { Bell, Mail, User } from 'lucide-react';
 import { StatusBadge, CounterBadge, TrendBadge, Badge } from '@/components/ui/badges';
 import { Button } from '@/components/ui/button';
-import { ComponentDoc, DocSection, VariantSection, PropsTable } from '../_docs';
+import { ComponentDoc, DocSection, VariantSection, PropsTable, UsageNote } from '../_docs';
 
 export default function BadgesPage() {
   return (
@@ -35,8 +35,15 @@ export default function BadgesPage() {
             { name: 'tone', type: '"solid" | "soft" | "outline"', default: '"soft"', description: 'Tom visual.' },
             { name: 'showDot', type: 'boolean', default: 'true', description: 'Mostra dot antes do label.' },
             { name: 'pulse', type: 'boolean', default: 'false', description: 'Anima o dot (ao vivo).' },
+            { name: 'title', type: 'string', description: 'Tooltip nativo. Em status de cliente: CRS_DESC_LONGA; o label visível é só CRS_DESC.' },
           ]}
         />
+        <UsageNote type="tip">
+          Chip de status na ficha de cliente: texto visível = descrição curta (
+          <code className="font-mono text-[11px]">CRS_DESC</code>); descrição longa só no{' '}
+          <code className="font-mono text-[11px]">title</code>. Não interpolar{' '}
+          <code className="font-mono text-[11px]">CRS_CORES</code> — use token semântico pela letra.
+        </UsageNote>
       </DocSection>
 
       <DocSection title="CounterBadge" description="Contador de notificações com modo dot e overlay.">

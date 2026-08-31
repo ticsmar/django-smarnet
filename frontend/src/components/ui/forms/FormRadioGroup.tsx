@@ -29,6 +29,7 @@ export interface FormRadioGroupProps {
   className?: string;
   name?: string;
   disabled?: boolean;
+  readOnly?: boolean;
 }
 
 export function FormRadioGroup({
@@ -48,6 +49,7 @@ export function FormRadioGroup({
   className,
   name,
   disabled,
+  readOnly,
 }: FormRadioGroupProps) {
   const computedStatus: FormFieldStatus = status ?? (error ? 'error' : success ? 'success' : 'default');
   const baseId = React.useId();
@@ -68,9 +70,9 @@ export function FormRadioGroup({
       <RadioGroup
         value={value}
         defaultValue={defaultValue}
-        onValueChange={onValueChange}
+        onValueChange={readOnly ? undefined : onValueChange}
         name={name}
-        disabled={disabled}
+        disabled={disabled || readOnly}
         className={cn(
           variant === 'inline' && 'flex flex-wrap gap-x-5 gap-y-2',
           variant === 'stacked' && 'space-y-2',
@@ -91,7 +93,12 @@ export function FormRadioGroup({
                 )}
               >
                 <div className="flex items-center gap-2 w-full">
-                  <RadioGroupItem value={opt.value} disabled={opt.disabled} className="sr-only" />
+                  <RadioGroupItem
+                    value={opt.value}
+                    disabled={opt.disabled}
+                    aria-readonly={readOnly || undefined}
+                    className="sr-only"
+                  />
                   <span className="text-sm font-semibold text-foreground">{opt.label}</span>
                 </div>
                 {opt.description && (
@@ -102,7 +109,13 @@ export function FormRadioGroup({
           }
           return (
             <div key={opt.value} className="flex items-start gap-2.5">
-              <RadioGroupItem value={opt.value} id={itemId} disabled={opt.disabled} className="mt-0.5" />
+              <RadioGroupItem
+                value={opt.value}
+                id={itemId}
+                disabled={opt.disabled}
+                aria-readonly={readOnly || undefined}
+                className="mt-0.5"
+              />
               <div className="flex-1 min-w-0">
                 <Label htmlFor={itemId} className="text-sm cursor-pointer leading-tight">
                   {opt.label}

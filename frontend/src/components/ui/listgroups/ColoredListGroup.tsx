@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { LucideIcon, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { type ColorTone, resolveColorTone } from '@/components/ui/color-tone';
 
 /**
  * Cores semânticas suportadas pelo ColoredListGroup.
@@ -21,10 +22,10 @@ export type ListGroupColor =
 /**
  * Tom visual da lista:
  * - solid: itens com fundo sólido na cor (alto destaque)
- * - soft: itens com fundo /5 na cor (default — destaque moderado)
+ * - light (alias: soft): itens com fundo /5 na cor (default — destaque moderado)
  * - outline: borda colorida + fundo do card (destaque sutil)
  */
-export type ListGroupTone = 'solid' | 'soft' | 'outline';
+export type ListGroupTone = ColorTone;
 
 const SOLID_BG: Record<ListGroupColor, string> = {
   primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
@@ -124,18 +125,19 @@ export function ColoredListGroup({
   showChevron = false,
   className,
 }: ColoredListGroupProps) {
+  const resolved = resolveColorTone(tone, 'soft');
   const itemBg =
-    tone === 'solid' ? SOLID_BG[color] : tone === 'soft' ? SOFT_BG[color] : OUTLINE_BG[color];
+    resolved === 'solid' ? SOLID_BG[color] : resolved === 'soft' ? SOFT_BG[color] : OUTLINE_BG[color];
 
   const containerBorder = CONTAINER_BORDER[color];
 
   // Em solid, ícones e divisores precisam de contraste contra fundo cheio
   const dividerClass =
-    tone === 'solid'
+    resolved === 'solid'
       ? 'border-b border-white/15 last:border-b-0'
       : 'border-b border-border/60 last:border-b-0';
 
-  const iconClass = tone === 'solid' ? 'opacity-90' : ICON_COLOR[color];
+  const iconClass = resolved === 'solid' ? 'opacity-90' : ICON_COLOR[color];
 
   return (
     <div
@@ -168,7 +170,7 @@ export function ColoredListGroup({
                   <div
                     className={cn(
                       'text-xs truncate',
-                      tone === 'solid' ? 'opacity-80' : 'text-muted-foreground',
+                      resolved === 'solid' ? 'opacity-80' : 'text-muted-foreground',
                     )}
                   >
                     {item.description}
@@ -182,7 +184,7 @@ export function ColoredListGroup({
               {showChevron && (
                 <ChevronRight
                   size={14}
-                  className={tone === 'solid' ? 'opacity-80' : 'text-muted-foreground'}
+                  className={resolved === 'solid' ? 'opacity-80' : 'text-muted-foreground'}
                 />
               )}
             </div>

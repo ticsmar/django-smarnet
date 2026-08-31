@@ -1,3 +1,6 @@
+-- BACKUP Toad (NAO COMPILAR). SF_USU_CHAPA_USER ainda usa USU_LOGINWEB = USER.
+-- Compilar: PCK_DQANET.pck (SF_LOGIN_SESSAO / CLIENT_IDENTIFIER).
+
 CREATE OR REPLACE PACKAGE SIAOS.PCK_DQANET IS
 
   -- AUTHOR  : JULIANO
@@ -214,7 +217,7 @@ CREATE OR REPLACE PACKAGE SIAOS.PCK_DQANET IS
   -- REMOVE ACENTOS DE UMA STRING                         --
   -- n_opcao = 0 SOMENTE ACENTOS                          --
   -- n_opcao = 1 CARACTERES EPECIAIS TAMBEM               --
-  -- n_opcao = 2 PONTUAÔøΩÔøΩO TAMBEM                         --
+  -- n_opcao = 2 PONTUA√Ø¬ø¬Ω√Ø¬ø¬ΩO TAMBEM                         --
   ----------------------------------------------------------
 
   FUNCTION SF_REMOVE_ACENTOS2 (c_texto IN VARCHAR2,
@@ -345,7 +348,7 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
      ELSE
         INSERT
           INTO PASTA_EMAIL (EML_DE, EML_PARA, EML_ASSUNTO, EML_CONTEUDO1, EML_CAIXA)
-        VALUES ('smarnet@smar.com.br', vc2_de ,'Erro endereÔøΩo de email: ' || vc2_para , 'E-mail: '||vc2_assunto||'</br></br>'||clb_conteudo ,'E');            
+        VALUES ('smarnet@smar.com.br', vc2_de ,'Erro endere√Ø¬ø¬Ωo de email: ' || vc2_para , 'E-mail: '||vc2_assunto||'</br></br>'||clb_conteudo ,'E');            
      END IF;
      
    EXCEPTION WHEN OTHERS THEN
@@ -1303,8 +1306,8 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
                             TO_CHAR(TO_NUMBER(RH.RA_MAT)) FUN_CHAPA,
                             INITCAP(DECODE(TRIM(RH.RA_NSOCIAL), NULL, TRIM(RH.RA_NOMECMP), TRIM(RH.RA_NSOCIAL))) FUN_NOME,
                             SUBSTR(TRIM(RH.RA_ZZUNIDA),1,5) FUN_UNID,
-                            --'' FUN_LOCAL,--NÔøΩO PRECISA
-                            --'' TIPO_FUNCIONARIO,--NÔøΩO PRECISA,
+                            --'' FUN_LOCAL,--N√Ø¬ø¬ΩO PRECISA
+                            --'' TIPO_FUNCIONARIO,--N√Ø¬ø¬ΩO PRECISA,
                             TRIM((SELECT CARGO.RJ_DESC FROM PROTPROD.SRJ010 CARGO WHERE CARGO.RJ_FUNCAO = RH.RA_CODFUNC AND SUBSTR(RH.RA_FILIAL,1,2) = TRIM(CARGO.RJ_FILIAL))) FUN_CARGO,
                             DECODE(TRIM(RH.RA_DEMISSA),NULL,'Y','N') FUN_ATIVO,
                             INFO.FUN_ATIVO INFO_ATIVO,
@@ -2184,7 +2187,7 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
   ----------------------------------------------------------
   -- EX:
   -- SELECT T.COLUMN_VALUE NOME
-  -- FROM TABLE(pkg1.SF_SPLIT('JOÔøΩO;PEDRO;MARIA',';')) T
+  -- FROM TABLE(pkg1.SF_SPLIT('JO√Ø¬ø¬ΩO;PEDRO;MARIA',';')) T
   ----------------------------------------------------------
 
 
@@ -2288,7 +2291,7 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
   -- REMOVE ACENTOS DE UMA STRING                         --
   -- n_opcao = 0 SOMENTE ACENTOS                          --
   -- n_opcao = 1 CARACTERES EPECIAIS TAMBEM               --
-  -- n_opcao = 2 PONTUA«√O TAMBEM                         --
+  -- n_opcao = 2 PONTUA√á√ÉO TAMBEM                         --
   ----------------------------------------------------------
 
   FUNCTION SF_REMOVE_ACENTOS2 (c_texto IN VARCHAR2,
@@ -2297,11 +2300,11 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
     c_saida     VARCHAR2(2000);
   BEGIN
 
-      c_saida := TRANSLATE(TRIM(c_texto),'‚‡„·¡¬¿√ÈÍ… ÌÕÛÙı”‘’¸˙‹⁄Á«&;:','aaaaAAAAeeEEiIoooOOOuuUUcCE,.');
+      c_saida := TRANSLATE(TRIM(c_texto),'√¢√†√£√°√Å√Ç√Ä√É√©√™√â√ä√≠√ç√≥√¥√µ√ì√î√ï√º√∫√ú√ö√ß√á&;:','aaaaAAAAeeEEiIoooOOOuuUUcCE,.');
       c_saida := REPLACE(c_saida,'''','');
 
 			IF n_opcao = 1 OR  n_opcao = 2 THEN
-         c_saida := TRANSLATE(c_saida,'"¥`^~#$%|*()<>','                ');
+         c_saida := TRANSLATE(c_saida,'"¬¥`^~#$%|*()<>','                ');
 		  END IF;
 			IF n_opcao = 2 THEN
          c_saida := TRANSLATE(c_saida,';:?!','    ');
@@ -2591,7 +2594,7 @@ CREATE OR REPLACE PACKAGE BODY SIAOS.PCK_DQANET IS
         END;
         
       ELSE
-        RAISE_APPLICATION_ERROR(-20010, 'Email "'||v_email||'" j· cadastrado!');
+        RAISE_APPLICATION_ERROR(-20010, 'Email "'||v_email||'" j√° cadastrado!');
       END IF;
     
     END IF;

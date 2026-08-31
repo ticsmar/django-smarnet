@@ -2,7 +2,7 @@
 
 O ERP precisava de documentação de produto/domínio/operação além do Design System (UI) e dos READMEs técnicos. Decidimos manter a fonte em Markdown sob `docs/`, com pastas `developers/`, `admins/` e `operators/`, mais `CONTEXT.md` e `AGENTS.md` na raiz para humanos e agentes de IA. O Design System permanece separado em `/design-system`. Conteúdo em português por agora (inglês quando maduro). Arquivos longos já existentes na raiz não são movidos — apenas linkados e resumidos em `docs/developers/`.
 
-Hub in-app em `/docs` (superusuário em ambiente de desenvolvimento): renderiza estes Markdowns com menu em árvore, layout alinhado ao Design System.
+Hub in-app em `/docs` (superusuário em ambiente de desenvolvimento): renderiza estes Markdowns com menu em árvore, layout alinhado ao Design System. Blocos `mermaid` viram fluxogramas/gráficos.
 
 ## Status
 
@@ -17,4 +17,4 @@ accepted
 
 ## Consequences
 
-Agentes devem seguir `AGENTS.md`. Novos manuais entram na pasta do público certo. Não duplicar o corpo de `ARCHITECTURE.md` etc. dentro de `docs/`. A UI em `/docs` já renderiza estes Markdowns e hoje é restrita a superusuário em ambiente de desenvolvimento.
+Agentes devem seguir `AGENTS.md`. Novos manuais entram na pasta do público certo. Não duplicar o corpo de `ARCHITECTURE.md` etc. dentro de `docs/`. A UI em `/docs` já renderiza estes Markdowns (incluindo diagramas Mermaid) e hoje é restrita a superusuário em ambiente de desenvolvimento.

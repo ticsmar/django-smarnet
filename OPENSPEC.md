@@ -29,7 +29,9 @@ Never:
 
 Application workflows belong in Use Cases. Domain invariants (ownership, status rules) may live in Domain Services. Views stay thin.
 
-For each feature, decide **tela migrada** vs **aplicação nativa** (`docs/developers/novas-telas.md`). Migrated screens wrap Oracle packages (`callproc`); do not reimplement package logic in Python. Native apps must not invent a cosmetic `PCK_*`. When a migrated module goes live, the equivalent PHP 3.0 screen is deactivated (ADR 0006) — do not design permanent dual-UI.
+For each feature, decide **tela migrada** vs **aplicação nativa** (`docs/developers/novas-telas.md`). Migrated screens wrap Oracle packages (`callproc`); do not reimplement package logic in Python. Native apps must not invent a cosmetic `PCK_*`. When a migrated module goes live, the equivalent PHP 3.01 screen is deactivated (ADR 0006) — do not design permanent dual-UI.
+
+Frontend UI must use the Design System (`docs/developers/design-system.md`): `@/components/ui` and `/design-system`. Do not invent local form sections, hex colors, or a second component library inside a module.
 
 When multiple implementations are possible:
 

@@ -20,6 +20,7 @@ export default function CheckboxRadioPage() {
               <FormCheckbox label="Receber notificações" defaultChecked />
               <FormCheckbox label="Aceito os termos" description="Veja a política de privacidade." />
               <FormCheckbox label="Desabilitado" disabled />
+              <FormCheckbox label="Somente leitura" readOnly defaultChecked />
               <FormCheckbox label="Com erro" error="Você deve aceitar para continuar" />
             </div>
           }
@@ -75,7 +76,7 @@ export default function CheckboxRadioPage() {
         <VariantSection
           title="Stacked (default)"
           preview={
-            <div className="max-w-md">
+            <div className="max-w-md space-y-6">
               <FormRadioGroup
                 label="Forma de pagamento"
                 value={pgto}
@@ -84,6 +85,24 @@ export default function CheckboxRadioPage() {
                   { value: 'pix', label: 'PIX', description: 'Aprovação instantânea.' },
                   { value: 'boleto', label: 'Boleto', description: 'Compensação em até 3 dias úteis.' },
                   { value: 'cartao', label: 'Cartão', description: 'Parcelado em até 12x.' },
+                ]}
+              />
+              <FormRadioGroup
+                label="Somente leitura"
+                readOnly
+                defaultValue="pix"
+                options={[
+                  { value: "pix", label: "PIX" },
+                  { value: "boleto", label: "Boleto" },
+                ]}
+              />
+              <FormRadioGroup
+                label="Desabilitado"
+                disabled
+                defaultValue="pix"
+                options={[
+                  { value: "pix", label: "PIX" },
+                  { value: "boleto", label: "Boleto" },
                 ]}
               />
             </div>

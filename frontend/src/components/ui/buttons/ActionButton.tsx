@@ -22,7 +22,7 @@ export interface ActionButtonProps extends Omit<ButtonProps, 'children'> {
  * Botão composto com suporte a ícones e estado de loading.
  * Encapsula o padrão `<Button><Icon /> texto</Button>`.
  *
- * Aceita TODAS as variantes de cor do design system:
+ * Aceita `color` + `tone` (solid | light | outline) e as variantes legadas:
  * primary, secondary, tertiary, accent, destructive, success,
  * warning, alert, info, outline, outline-primary, outline-destructive,
  * ghost, link.

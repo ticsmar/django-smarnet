@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Globe, Moon, Sun, Monitor, Lock } from 'lucide-react';
+import { Globe, Moon, Sun, Monitor, Shield, Lock } from 'lucide-react';
 import { useApp } from '@/contexts/AppContext';
 import { t, Locale, localeNames } from '@/lib/i18n';
 import { LoginModal } from '@/components/LoginModal';
@@ -13,7 +13,8 @@ export function LandingNav() {
   const [langOpen, setLangOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
 
-  const themeIcons = { light: Sun, dark: Moon, system: Monitor };
+  const themeIcons = { light: Sun, dark: Moon, system: Monitor, admin: Shield };
+  const themeLabels = { light: 'Light', dark: 'Dark', system: 'System', admin: 'Admin' };
 
   return (
     <>
@@ -49,12 +50,12 @@ export function LandingNav() {
               </button>
               {themeOpen && (
                 <div className="absolute right-0 top-full mt-2 bg-background border border-border rounded-xl shadow-ambient-lg py-2 min-w-[140px]">
-                  {(['light', 'dark', 'system'] as const).map((th) => {
+                  {(['light', 'dark', 'system', 'admin'] as const).map((th) => {
                     const Icon = themeIcons[th];
                     return (
                       <button key={th} onClick={() => { setTheme(th); setThemeOpen(false); }}
                         className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-surface-container-low transition-colors ${theme === th ? 'text-secondary font-semibold' : 'text-foreground'}`}>
-                        <Icon size={14} /> {th.charAt(0).toUpperCase() + th.slice(1)}
+                        <Icon size={14} /> {themeLabels[th]}
                       </button>
                     );
                   })}

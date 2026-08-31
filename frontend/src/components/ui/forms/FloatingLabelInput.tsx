@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { FormFieldStatus } from './FormField';
+import { fieldControlClassName } from './fieldControl';
 
 export interface FloatingLabelInputProps extends Omit<React.ComponentProps<'input'>, 'size'> {
   label: string;
@@ -60,7 +61,7 @@ export const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLab
             className={cn(
               'peer w-full h-12 px-3 pt-4 pb-1 rounded-md border bg-background text-foreground text-sm transition-all outline-none',
               borderClass,
-              disabled && 'opacity-50 cursor-not-allowed bg-muted/30',
+              fieldControlClassName,
               className,
             )}
             {...props}

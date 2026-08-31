@@ -8,6 +8,8 @@ const tabsProps: PropDef[] = [
   { name: 'defaultValue', type: 'string', description: 'Valor da aba ativa por padrão (não controlado).' },
   { name: 'value', type: 'string', description: 'Valor da aba ativa (modo controlado).' },
   { name: 'onValueChange', type: '(value: string) => void', description: 'Callback ao trocar de aba.' },
+  { name: 'variant', type: '"default" | "folder"', default: '"default"', description: 'Estilo: pill (padrão) ou pasta (aba ativa fundida ao painel).' },
+  { name: 'fill', type: 'boolean', default: 'false', description: 'Só folder, e só ≥ lg: o painel preenche a altura restante do pai (flex). Abaixo de lg a ficha cresce e o main rola. O pai (desktop) precisa de altura (lg:flex-1 lg:min-h-0 ou h-*).' },
   { name: 'orientation', type: '"horizontal" | "vertical"', default: '"horizontal"', description: 'Orientação do TabsList.' },
 ];
 
@@ -31,7 +33,7 @@ export default function TabsPage() {
 
   return (
     <ComponentDoc
-      summary="Componente de abas para organizar conteúdo em painéis alternáveis. Suporta navegação por teclado, modo controlado e orientação vertical."
+      summary="Componente de abas para organizar conteúdo em painéis alternáveis. Suporta variante pill (padrão) e pasta (folder), navegação por teclado, modo controlado e orientação vertical."
       importPath="import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'"
     >
       <DocSection title="Tabs">
@@ -75,6 +77,96 @@ export default function TabsPage() {
   <TabsContent value="analytics">...</TabsContent>
   <TabsContent value="settings">...</TabsContent>
 </Tabs>`}
+        />
+
+        <VariantSection
+          title="Pasta (folder)"
+          description="Aba ativa e painel usam bg-card (mesmo fundo de cabeçalho de ficha). A faixa das abas é transparente, igual ao main. Inativas ficam um pouco mais escuras (muted-foreground/30). Cantos superiores arredondados. Em viewport &lt; lg a faixa fica numa linha (swipe); em lg+ pode quebrar linha (flex-wrap)."
+          preview={
+            <Tabs variant="folder" defaultValue="tab1" className="w-full max-w-lg">
+              <TabsList>
+                <TabsTrigger value="tab1">Dados gerais</TabsTrigger>
+                <TabsTrigger value="tab2">Financeiro</TabsTrigger>
+                <TabsTrigger value="tab3">Contatos</TabsTrigger>
+                <TabsTrigger value="tab4">Cobrança</TabsTrigger>
+                <TabsTrigger value="tab5">Embarque</TabsTrigger>
+                <TabsTrigger value="tab6">Log</TabsTrigger>
+                <TabsTrigger value="tab7">Arquivos</TabsTrigger>
+              </TabsList>
+              <TabsContent value="tab1">
+                <p className="font-display text-sm font-bold text-foreground">Conteúdo da Aba 1</p>
+                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                  Painel ligado à aba ativa. Use em cadastros e fichas onde o conteúdo deve parecer um único cartão.
+                </p>
+              </TabsContent>
+              <TabsContent value="tab2">
+                <p className="font-display text-sm font-bold text-foreground">Conteúdo da Aba 2</p>
+                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                  A faixa cinza permanece nas abas inativas; a ativa herda o fundo do cartão.
+                </p>
+              </TabsContent>
+              <TabsContent value="tab3">
+                <p className="font-display text-sm font-bold text-foreground">Conteúdo da Aba 3</p>
+                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                  Contorno com border-border, cantos rounded-xl e shadow-ambient — alinhado ao restante do sistema.
+                </p>
+              </TabsContent>
+              <TabsContent value="tab4">
+                <p className="text-sm text-muted-foreground">Cobrança</p>
+              </TabsContent>
+              <TabsContent value="tab5">
+                <p className="text-sm text-muted-foreground">Embarque</p>
+              </TabsContent>
+              <TabsContent value="tab6">
+                <p className="text-sm text-muted-foreground">Log</p>
+              </TabsContent>
+              <TabsContent value="tab7">
+                <p className="text-sm text-muted-foreground">Arquivos</p>
+              </TabsContent>
+            </Tabs>
+          }
+          code={`<Tabs variant="folder" defaultValue="tab1">
+  <TabsList>
+    <TabsTrigger value="tab1">Aba 1</TabsTrigger>
+    <TabsTrigger value="tab2">Aba 2</TabsTrigger>
+    <TabsTrigger value="tab3">Aba 3</TabsTrigger>
+  </TabsList>
+  <TabsContent value="tab1">...</TabsContent>
+  <TabsContent value="tab2">...</TabsContent>
+  <TabsContent value="tab3">...</TabsContent>
+</Tabs>`}
+        />
+
+        <VariantSection
+          title="Fill (folder)"
+          description="A partir de lg, o painel preenche a altura do container pai. Envolva em um box com altura definida. Scroll só aparece se o conteúdo passar dessa área. Abaixo de lg o fill não prende o scroll (o main da ficha rola). Uso: fichas de cadastro (ex.: clientes)."
+          preview={
+            <div className="flex h-64 w-full max-w-lg flex-col">
+              <Tabs variant="folder" fill defaultValue="tab1" className="min-h-0 flex-1">
+                <TabsList>
+                  <TabsTrigger value="tab1">Dados gerais</TabsTrigger>
+                  <TabsTrigger value="tab2">Log</TabsTrigger>
+                </TabsList>
+                <TabsContent value="tab1">
+                  <p className="font-display text-sm font-bold text-foreground">Painel preenchido</p>
+                  <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                    O cartão estica até o fundo do retângulo (h-64). Sem barra se o texto couber.
+                  </p>
+                </TabsContent>
+                <TabsContent value="tab2">
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    Conteúdo curto também ocupa a altura restante do painel.
+                  </p>
+                </TabsContent>
+              </Tabs>
+            </div>
+          }
+          code={`<div className="flex h-64 flex-col">
+  <Tabs variant="folder" fill className="min-h-0 flex-1">
+    <TabsList>...</TabsList>
+    <TabsContent value="tab1">...</TabsContent>
+  </Tabs>
+</div>`}
         />
 
         <VariantSection
@@ -294,7 +386,11 @@ export default function TabsPage() {
         <PropsTable rows={tabsContentProps} title="TabsContent" />
 
         <UsageNote type="tip">
-          Use <code className="font-mono text-[11px]">className="w-full"</code> no <code className="font-mono text-[11px]">TabsList</code> e <code className="font-mono text-[11px]">className="flex-1"</code> nos triggers para tabs full-width.
+          Use <code className="font-mono text-[11px]">variant="folder"</code> só no <code className="font-mono text-[11px]">Tabs</code> raiz — lista, trigger e conteúdo herdam o estilo. <code className="font-mono text-[11px]">fill</code> só vale com folder e **só ≥ lg**; exige pai com altura (<code className="font-mono text-[11px]">lg:flex-1 lg:min-h-0</code> ou <code className="font-mono text-[11px]">h-*</code>). Abaixo de lg a faixa é uma linha com swipe e sticky; o scroll fica no <code className="font-mono text-[11px]">main</code>. O preview Fill acima usa um box <code className="font-mono text-[11px]">h-64</code> de propósito; o preview Pasta (folder) não usa fill. Para a variante pill, use <code className="font-mono text-[11px]">className="w-full"</code> no <code className="font-mono text-[11px]">TabsList</code> e <code className="font-mono text-[11px]">className="flex-1"</code> nos triggers para tabs full-width.
+        </UsageNote>
+
+        <UsageNote type="warning">
+          No app autenticado o <code className="font-mono text-[11px]">AppLayout</code> já limita a viewport (<code className="font-mono text-[11px]">h-svh overflow-hidden</code>) e o <code className="font-mono text-[11px]">main</code> rola. Fichas com <code className="font-mono text-[11px]">fill</code> devem ser coluna <code className="font-mono text-[11px]">flex flex-col lg:flex-1 lg:min-h-0</code> com header <code className="font-mono text-[11px]">shrink-0</code> — no estreito não use <code className="font-mono text-[11px]">min-h-0 flex-1</code> na página, senão o painel volta a clipar. Não envolva o <code className="font-mono text-[11px]">Outlet</code> inteiro em clip — listagens precisam crescer e rolar no main. Não use fill no FileManager nem em todo preview deste catálogo.
         </UsageNote>
 
         <UsageNote type="info">

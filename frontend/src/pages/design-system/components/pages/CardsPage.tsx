@@ -48,12 +48,12 @@ export default function CardsPage() {
           title="Tons"
           preview={
             <div className="grid sm:grid-cols-3 gap-4">
-              <AccentCard accent="primary" tone="soft" title="Soft" description="Borda + fundo /5" />
+              <AccentCard accent="primary" tone="light" title="Light" description="Borda + fundo /5" />
               <AccentCard accent="success" tone="solid" title="Solid" description="Fundo cheio na cor" />
               <AccentCard accent="warning" tone="outline" title="Outline" description="Apenas borda lateral" />
             </div>
           }
-          code={`<AccentCard accent="primary" tone="soft" title="Soft" description="..." />
+          code={`<AccentCard accent="primary" tone="light" title="Light" description="..." />
 <AccentCard accent="success" tone="solid" title="Solid" description="..." />
 <AccentCard accent="warning" tone="outline" title="Outline" description="..." />`}
         />
@@ -74,7 +74,7 @@ export default function CardsPage() {
             { name: 'title', type: 'string', required: true, description: 'Título.' },
             { name: 'description', type: 'string', description: 'Subtítulo.' },
             { name: 'accent', type: 'AccentColor', default: '"secondary"', description: '10 cores semânticas.' },
-            { name: 'tone', type: '"solid" | "soft" | "outline"', default: '"soft"', description: 'Tom da borda/fundo.' },
+            { name: 'tone', type: '"solid" | "light" | "outline"', default: '"soft"', description: 'Tom da borda/fundo. soft é alias de light.' },
             { name: 'children', type: 'ReactNode', description: 'Conteúdo do CardContent.' },
             { name: 'footer', type: 'ReactNode', description: 'CardFooter opcional.' },
           ]}

@@ -85,17 +85,22 @@ export function BannerAlert({
         {children}
         {actions && actions.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-3">
-            {actions.map((action, i) => (
-              <Button
-                key={i}
-                size="sm"
-                variant={action.variant ?? 'outline'}
-                onClick={action.onClick}
-                className="h-7 text-xs"
-              >
-                {action.label}
-              </Button>
-            ))}
+            {actions.map((action, i) => {
+              const matchColor = !action.variant && tone !== 'solid';
+              return (
+                <Button
+                  key={i}
+                  size="sm"
+                  variant={action.variant ?? (matchColor ? undefined : 'outline')}
+                  color={matchColor ? color : undefined}
+                  tone={matchColor ? 'outline' : undefined}
+                  onClick={action.onClick}
+                  className="h-7 text-xs"
+                >
+                  {action.label}
+                </Button>
+              );
+            })}
           </div>
         )}
       </div>

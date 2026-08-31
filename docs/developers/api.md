@@ -9,8 +9,9 @@
 | `/api/users/` | Login, sessão, senha |
 | `/api/admin/` | Gestão de usuários/grupos (access admin) |
 | `/api/branch-auth/` | Tokens de device |
-| `/api/compras/` | Fornecedores, contatos, países |
-| `/api/administracao/` | Clientes, catálogos (países, estados, origens) |
+| `/api/purchasing/` | Fornecedores, contatos, países |
+| `/api/commercial/` | Clientes, catálogos (países, estados, origens) |
+| `/api/files/` | Gerenciador de Arquivos (sistemas, árvore, upload, log) |
 | `/admin/` | Django Admin |
 
 ## Spectacular
@@ -29,5 +30,6 @@ Base URL: `VITE_DJANGO_API_URL` ou fallback `http://localhost:8000/api` (`fronte
 
 - Usuários: [auth.md](./auth.md)
 - Administração — Clientes: [administracao-clientes.md](./administracao-clientes.md)
+- Gerenciador de Arquivos: [arquivos.md](./arquivos.md)
 - Compras: [compras.md](./compras.md)
 - Devices: [producao-devices.md](./producao-devices.md)

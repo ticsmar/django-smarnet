@@ -1,1 +1,1 @@
-export { ADMINISTRACAO_PERMS } from "@/modules/administracao/permissions";
+export { COMMERCIAL_PERMS } from "@/modules/commercial/permissions";

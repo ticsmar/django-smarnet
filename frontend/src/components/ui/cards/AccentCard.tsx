@@ -8,6 +8,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { type ColorTone, resolveColorTone } from '@/components/ui/color-tone';
 
 /**
  * Cores semânticas suportadas pelo AccentCard.
@@ -28,10 +29,10 @@ export type AccentColor =
 /**
  * Tom visual do acento:
  * - solid: borda lateral espessa + fundo sólido na cor (alto destaque)
- * - soft: borda lateral + fundo suave /5 na cor (destaque moderado — default)
+ * - light (alias: soft): borda lateral + fundo suave /5 na cor (destaque moderado — default)
  * - outline: apenas borda lateral colorida, fundo do card padrão (destaque sutil)
  */
-export type AccentTone = 'solid' | 'soft' | 'outline';
+export type AccentTone = ColorTone;
 
 const BORDER_BY_COLOR: Record<AccentColor, string> = {
   primary: 'border-l-primary',
@@ -93,22 +94,23 @@ export function AccentCard({
   footer,
   className,
 }: AccentCardProps) {
+  const resolved = resolveColorTone(tone, 'soft');
   const toneClasses =
-    tone === 'solid'
+    resolved === 'solid'
       ? cn('border-l-4', SOLID_BG_BY_COLOR[accent])
-      : tone === 'soft'
+      : resolved === 'soft'
         ? cn('border-l-4', BORDER_BY_COLOR[accent], SOFT_BG_BY_COLOR[accent])
         : cn('border-l-4', BORDER_BY_COLOR[accent]);
 
   // Em solid, o texto usa cor de contraste; descrição precisa ficar legível.
-  const descClass = tone === 'solid' ? 'opacity-90' : undefined;
+  const descClass = resolved === 'solid' ? 'opacity-90' : undefined;
 
   return (
     <Card className={cn(toneClasses, className)}>
       <CardHeader>
         <CardTitle className="text-base">{title}</CardTitle>
         {description && (
-          <CardDescription className={cn(tone === 'solid' && 'text-current', descClass)}>
+          <CardDescription className={cn(resolved === 'solid' && 'text-current', descClass)}>
             {description}
           </CardDescription>
         )}

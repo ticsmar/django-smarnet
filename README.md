@@ -1,6 +1,6 @@
 # Smarnet ERP (Django)
 
-Ambiente novo (Django + React) para **aplicações nativas** e telas migradas do **Smarnet 3.0** (PHP em produção, mesmo Oracle). Ainda não substitui o 3.0 por completo: no go-live de cada módulo, a tela PHP equivalente é desativada ([ADR 0006](docs/adr/0006-desativacao-legado-por-modulo.md)).
+**Smarnet Novo** (Django + React) para **aplicações nativas** e telas migradas do **Smarnet 3.01** (PHP em produção, mesmo Oracle). Ainda não substitui o 3.01 por completo: no go-live de cada módulo, a tela PHP equivalente é desativada ([ADR 0006](docs/adr/0006-desativacao-legado-por-modulo.md)).
 
 ## Stack
 
@@ -42,7 +42,7 @@ cd backend
 python manage.py runserver
 ```
 
-API prefixes: `/api/users/`, `/api/admin/`, `/api/branch-auth/`, `/api/compras/`, `/api/administracao/`. New users are created by access admins via `POST /api/admin/users/` (self-registration is disabled by default).
+API prefixes: `/api/users/`, `/api/admin/`, `/api/branch-auth/`, `/api/purchasing/`, `/api/commercial/`. New users are created by access admins via `POST /api/admin/users/` (self-registration is disabled by default).
 
 OpenAPI schema: `/api/schema/` — Swagger UI: `/api/docs/`.
 

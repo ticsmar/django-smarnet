@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from apps.users.infrastructure.oracle_session_context import (
+from apps.shared.infrastructure.oracle_session_context import (
     clear_smar_client_identifier,
     ensure_smar_client_identifier,
     get_oracle_username,
@@ -38,7 +38,7 @@ def test_ensure_skips_when_no_username(monkeypatch: pytest.MonkeyPatch) -> None:
             raise AssertionError("should not open smar without username")
 
     monkeypatch.setattr(
-        "apps.users.infrastructure.oracle_session_context.connections",
+        "apps.shared.infrastructure.oracle_session_context.connections",
         FakeConnections(),
     )
     ensure_smar_client_identifier()
@@ -54,7 +54,7 @@ def test_ensure_sets_client_identifier(monkeypatch: pytest.MonkeyPatch) -> None:
     connection.cursor.return_value.__enter__.return_value = cursor
 
     monkeypatch.setattr(
-        "apps.users.infrastructure.oracle_session_context.connections",
+        "apps.shared.infrastructure.oracle_session_context.connections",
         {"smar": connection},
     )
     set_oracle_username("juliano")
@@ -62,6 +62,8 @@ def test_ensure_sets_client_identifier(monkeypatch: pytest.MonkeyPatch) -> None:
 
     connection.ensure_connection.assert_called_once()
     assert raw.client_identifier == "juliano"
+    sqls = [str(call.args[0]) for call in cursor.execute.call_args_list]
+    assert any("SET_IDENTIFIER" in sql for sql in sqls)
     # Second call is a no-op.
     ensure_smar_client_identifier()
     assert connection.ensure_connection.call_count == 1
@@ -76,7 +78,7 @@ def test_clear_closes_smar_connection(monkeypatch: pytest.MonkeyPatch) -> None:
     connection.cursor.return_value.__enter__.return_value = cursor
 
     monkeypatch.setattr(
-        "apps.users.infrastructure.oracle_session_context.connections",
+        "apps.shared.infrastructure.oracle_session_context.connections",
         {"smar": connection},
     )
     set_oracle_username("juliano")

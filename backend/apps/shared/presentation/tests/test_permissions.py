@@ -14,7 +14,7 @@ from apps.shared.presentation.auth.permissions import (
 )
 from apps.shared.presentation.auth.session_user import OracleSessionUser
 
-_VIEW_FORNECEDOR_PERM = "compras_infrastructure.view_fornecedor"
+_VIEW_FORNECEDOR_PERM = "purchasing_infrastructure.view_fornecedor"
 
 
 class _ViewWithPermissions(APIView):

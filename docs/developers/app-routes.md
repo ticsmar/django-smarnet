@@ -10,13 +10,19 @@ Código: `frontend/src/App.tsx`, navegação em `frontend/src/config/erpNavigati
 |------|----------|--------|
 | `/app` | Dashboard / hub | Índice autenticado |
 | `/app/profile` | Perfil | |
+| `/app/commercial` | Comercial | Índice do módulo |
+| `/app/commercial/customers` | Clientes | Listagem (menu Comercial → Cadastros) |
+| `/app/commercial/customers/:codCliente` | Detalhe cliente | Visualizar + abas |
+| `/app/commercial/customers/:codCliente/edit` | Editar cliente | Formulário Dados Cadastrais em página |
 | `/app/administration` | Administração | Índice do módulo |
-| `/app/administration/customers` | Clientes | Listagem + Dados Gerais |
-| `/app/administration/customers/:codCliente` | Detalhe cliente | |
+| `/app/administration/dashboard` | Dashboard | Placeholder; perm `view_dashboard` |
+| `/app/administration/reports` | Relatórios | Placeholder; perm `view_relatorio` |
 | `/app/purchasing` | Compras | Índice do módulo |
+| `/app/purchasing/dashboard` | Dashboard | Placeholder; perm `purchasing_infrastructure.view_dashboard` |
 | `/app/purchasing/suppliers` | Fornecedores | |
 | `/app/purchasing/suppliers/:codFornec` | Detalhe fornecedor | |
 | `/app/production` | Produção | Índice do módulo |
+| `/app/production/dashboard` | Dashboard | Placeholder; autenticado |
 | `/app/production/orders` | Ordem de Produção | Simulado; autenticado, sem perm Django |
 | `/app/access` | Acessos | Índice (admin de acesso / gerente de filial) |
 | `/app/devices` | Devices | Tokens de filial (`branch_managers`) |
@@ -26,8 +32,13 @@ Código: `frontend/src/App.tsx`, navegação em `frontend/src/config/erpNavigati
 | Legado | Canônico |
 |-------|----------|
 | `/app/administracao` | `/app/administration` |
-| `/app/administracao/clientes` | `/app/administration/customers` |
-| `/app/administracao/clientes/:id` | `/app/administration/customers/:id` |
+| `/app/administracao/clientes` | `/app/commercial/customers` |
+| `/app/administracao/clientes/:id` | `/app/commercial/customers/:id` |
+| `/app/administracao/clientes/:id/edit` | `/app/commercial/customers/:id/edit` |
+| `/app/administration/customers` | `/app/commercial/customers` |
+| `/app/comercial` | `/app/commercial` |
+| `/app/comercial/clientes` | `/app/commercial/customers` |
+| `/app/comercial/cliente` | `/app/commercial/customers` |
 | `/app/compras` | `/app/purchasing` |
 | `/app/compras/fornecedores` | `/app/purchasing/suppliers` |
 | `/app/compras/fornecedores/:id` | `/app/purchasing/suppliers/:id` |

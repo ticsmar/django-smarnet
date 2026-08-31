@@ -17,16 +17,23 @@ Resumos abaixo; o conteúdo completo fica nos arquivos da raiz para evitar dupli
 
 ## Design System
 
-Catálogo de UI no app para superusuário em ambiente de desenvolvimento: `/design-system`. Não substitui esta pasta.
+Catálogo in-app `/design-system` (superusuário em dev) + código em `frontend/src/components/ui/`.
+
+**Agentes: ler [design-system.md](./design-system.md) antes de qualquer UI.** Reusar `FormSection`, `FormGrid`, `FormInput`, `FormCombobox` e tokens; não clonar componentes no módulo. Ficha com abas: `folder` + `fill` opt-in só ≥ `lg` (§4.2); no estreito swipe + sticky e scroll no `main`; catálogo `/design-system/components/tabs` e `/design-system/patterns`.
 
 ## Por área
 
 - [Stack e infraestrutura](./stack-e-infraestrutura.md) — plataformas, libs, versões, Docker/Oracle
-- [Padrão de cadastro e listagem](./padrao-cadastro-listagem.md) — **obrigatório** para novos CRUDs (telas, API, acessos)
-- [Novas telas (legado vs nativo)](./novas-telas.md) — tela migrada do 3.0 vs aplicação nativa; persistência, origem e desativação do legado no go-live
+- [Design System](./design-system.md) — **obrigatório** para UI: catálogo `/design-system`, `@/components/ui`, tokens. Ficha: §4.1–4.2 (`folder` + `fill` opt-in só ≥ `lg`; no estreito swipe + sticky); demo `/design-system/components/tabs` e `/design-system/patterns`
+- [Diagramas Mermaid](../README.md#diagramas-mermaid) — fluxogramas nos Markdowns; render no hub `/docs`
+- [Padrão de cadastro e listagem](./padrao-cadastro-listagem.md) — **obrigatório** para novos CRUDs (telas, API, acessos). Casca visual da listagem = Clientes (`/app/commercial/customers`), sem card de página.
+- [Novas telas (legado vs nativo)](./novas-telas.md) — tela migrada do 3.01 vs aplicação nativa; persistência, origem e desativação do legado no go-live
+- [Refatoração 3.01 → Smarnet Novo](./refatoracao-smarnet-novo.md) — playbook: `USER`/`CLIENT_IDENTIFIER`, `PCK_DQANET` (chapa certa), padrões de backend e frontend
 - [Autenticação e usuários](./auth.md)
-- [Compras](./compras.md)
-- [Administração — Clientes](./administracao-clientes.md)
+- [Compras](./compras.md) (`apps.purchasing`)
+- [Comercial — Clientes](./administracao-clientes.md) (`apps.commercial`; Administração é outro módulo)
+- [ACE de atividade vs ACE na linha](./acesso-atividade.md) — extra Django vs `ACESSO_FUNC` ([ADR 0007](../adr/0007-ace-codigo-django-vs-acesso-func.md))
+- [Gerenciador de Arquivos](./arquivos.md) — componente compartilhado (`sistema` + `filtro`); Settings + aba Cliente
 - [Produção e devices](./producao-devices.md)
 - [Admin e settings](./admin-settings.md) — rotas `/settings/*` (paths EN) + API admin
 - [Rotas do app (`/app/*`)](./app-routes.md) — paths EN canônicos + redirects legados
@@ -34,4 +41,5 @@ Catálogo de UI no app para superusuário em ambiente de desenvolvimento: `/desi
 - [ADR 0004 — CLIENT_IDENTIFIER Oracle](../adr/0004-oracle-client-identifier.md)
 - [ADR 0005 — escrita Oracle: reuso, DML Python ou package próprio](../adr/0005-escrita-oracle-reuso-ou-python.md)
 - [ADR 0006 — desativação do legado por módulo no go-live](../adr/0006-desativacao-legado-por-modulo.md)
+- [ADR 0007 — ACE no código = Django; ACE na coluna = ACESSO_FUNC](../adr/0007-ace-codigo-django-vs-acesso-func.md)
 - [API / OpenAPI](./api.md)

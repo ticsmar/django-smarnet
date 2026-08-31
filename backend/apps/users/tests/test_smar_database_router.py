@@ -4,7 +4,7 @@ import pytest
 from django.contrib.auth.models import User
 from django.db import models
 
-from apps.users.infrastructure.db_router import SmarDatabaseRouter
+from apps.shared.infrastructure.db_router import SmarDatabaseRouter
 
 
 class SampleModel(models.Model):
@@ -21,7 +21,7 @@ def test_router_uses_default_when_unauthenticated() -> None:
 
 def test_router_uses_smar_when_authenticated(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "apps.users.infrastructure.db_router.get_use_smar",
+        "apps.shared.infrastructure.db_router.get_use_smar",
         lambda: True,
     )
     router = SmarDatabaseRouter()
@@ -34,7 +34,7 @@ def test_router_keeps_auth_models_on_default_when_authenticated(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setattr(
-        "apps.users.infrastructure.db_router.get_use_smar",
+        "apps.shared.infrastructure.db_router.get_use_smar",
         lambda: True,
     )
     router = SmarDatabaseRouter()
@@ -51,10 +51,27 @@ def test_router_keeps_branch_auth_on_default_when_authenticated(
             app_label = "branch_auth_infrastructure"
 
     monkeypatch.setattr(
-        "apps.users.infrastructure.db_router.get_use_smar",
+        "apps.shared.infrastructure.db_router.get_use_smar",
         lambda: True,
     )
     router = SmarDatabaseRouter()
 
     assert router.db_for_read(BranchAuthModel) == "default"
     assert router.db_for_write(BranchAuthModel) == "default"
+
+
+def test_router_keeps_arquivos_on_default_when_authenticated(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class ArquivosModel(models.Model):
+        class Meta:
+            app_label = "files_infrastructure"
+
+    monkeypatch.setattr(
+        "apps.shared.infrastructure.db_router.get_use_smar",
+        lambda: True,
+    )
+    router = SmarDatabaseRouter()
+
+    assert router.db_for_read(ArquivosModel) == "default"
+    assert router.db_for_write(ArquivosModel) == "default"

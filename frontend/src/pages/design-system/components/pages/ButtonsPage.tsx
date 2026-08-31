@@ -1,8 +1,11 @@
 import { Mail, Plus, Trash2, Edit, Eye, Save, X, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, Grid3x3, List, LayoutGrid } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button, type ButtonColor, type ButtonTone } from '@/components/ui/button';
+import { SEMANTIC_COLORS } from '@/components/ui/color-tone';
 import { ActionButton, IconButton, ButtonGroup, SegmentedControl, Toolbar, SimplePager } from '@/components/ui/buttons';
 import { ComponentDoc, DocSection, VariantSection, PropsTable, UsageNote } from '../_docs';
+
+const BUTTON_TONES: ButtonTone[] = ['solid', 'light', 'outline'];
 
 export default function ButtonsPage() {
   const [view, setView] = useState<'grid' | 'list' | 'gallery'>('grid');
@@ -12,9 +15,71 @@ export default function ButtonsPage() {
 
   return (
     <ComponentDoc
-      summary="Componentes de ação de alto nível: ActionButton (com ícones e loading), IconButton (apenas ícone), ButtonGroup (agrupador), SegmentedControl (toggle de visualização), Toolbar (formatação) e SimplePager (paginação compacta). Todos baseados no Button primitivo, com 14 variantes de cor."
+      summary="Componentes de ação de alto nível: ActionButton (com ícones e loading), IconButton (apenas ícone), ButtonGroup (agrupador), SegmentedControl (toggle de visualização), Toolbar (formatação) e SimplePager (paginação compacta). O Button primitivo aceita color + tone (solid, light, outline) nas 10 cores semânticas."
       importPath="@/components/ui/buttons"
     >
+      {/* ============== Button (primitivo) ============== */}
+      <DocSection
+        title="Button"
+        description="Primitivo com 10 cores × 3 tons. Prefira color + tone; variant permanece para ghost, link e atalhos legados."
+      >
+        <VariantSection
+          title="Variantes principais"
+          description="solid preenche, light suaviza o fundo, outline só desenha a borda — o mesmo vocabulário de Alert e Panel."
+          preview={
+            <div className="flex flex-wrap gap-3">
+              <Button color="info" tone="light">Ver detalhes</Button>
+              <Button color="success" tone="light">Confirmar</Button>
+              <Button color="warning" tone="solid">Estoque baixo</Button>
+              <Button color="destructive" tone="outline">Tentar de novo</Button>
+            </div>
+          }
+          code={`<Button color="info" tone="light">Ver detalhes</Button>
+<Button color="success" tone="light">Confirmar</Button>
+<Button color="warning" tone="solid">Estoque baixo</Button>
+<Button color="destructive" tone="outline">Tentar de novo</Button>`}
+        />
+
+        <VariantSection
+          title="Matriz: cor × tom"
+          description="As 10 cores semânticas em solid, light e outline."
+          preview={
+            <div className="space-y-4">
+              {BUTTON_TONES.map((tone) => (
+                <div key={tone} className="space-y-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    {tone}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {SEMANTIC_COLORS.map((color) => (
+                      <Button key={`${tone}-${color}`} color={color as ButtonColor} tone={tone} size="sm">
+                        {color}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          }
+          code={`<Button color="primary" tone="solid">Salvar</Button>
+<Button color="primary" tone="light">Salvar</Button>
+<Button color="primary" tone="outline">Salvar</Button>`}
+        />
+
+        <PropsTable
+          rows={[
+            { name: 'color', type: 'ButtonColor', description: '10 cores semânticas. Quando definido, sobrepõe variant.' },
+            { name: 'tone', type: '"solid" | "light" | "outline"', default: '"solid"', description: 'Tom visual. soft é alias de light.' },
+            { name: 'variant', type: '"default" | "primary" | "outline" | "ghost" | "link" | …', default: '"default"', description: 'Atalhos legados quando color não é usado.' },
+            { name: 'size', type: '"sm" | "default" | "lg" | "icon"', default: '"default"', description: 'Tamanho do botão.' },
+          ]}
+        />
+        <UsageNote type="tip">
+          API recomendada: <code>color</code> + <code>tone</code>. Use <code>variant="ghost"</code> e{' '}
+          <code>variant="link"</code> só para ações terciárias. ActionButton e IconButton herdam as mesmas props.
+        </UsageNote>
+      </DocSection>
+
       {/* ============== ActionButton ============== */}
       <DocSection
         title="ActionButton"
@@ -22,21 +87,19 @@ export default function ButtonsPage() {
       >
         <VariantSection
           title="Cores e variantes"
-          description="14 variantes de cor: primary, secondary, accent, success, warning, alert, info, destructive, outline, ghost, link…"
+          description="Use color + tone (solid, light, outline) ou os atalhos variant."
           preview={
             <div className="flex flex-wrap gap-3">
               <ActionButton label="Primary" icon={Save} />
-              <ActionButton label="Secondary" variant="secondary" icon={Edit} />
-              <ActionButton label="Success" variant="success" icon={Save} />
-              <ActionButton label="Warning" variant="warning" />
-              <ActionButton label="Destructive" variant="destructive" icon={Trash2} />
-              <ActionButton label="Outline" variant="outline" icon={Eye} />
+              <ActionButton label="Success light" color="success" tone="light" icon={Save} />
+              <ActionButton label="Warning" color="warning" tone="solid" />
+              <ActionButton label="Destructive" color="destructive" tone="outline" icon={Trash2} />
               <ActionButton label="Ghost" variant="ghost" />
             </div>
           }
           code={`<ActionButton label="Salvar" icon={Save} />
-<ActionButton label="Editar" variant="secondary" icon={Edit} />
-<ActionButton label="Excluir" variant="destructive" icon={Trash2} />`}
+<ActionButton label="Confirmar" color="success" tone="light" icon={Save} />
+<ActionButton label="Excluir" color="destructive" tone="outline" icon={Trash2} />`}
         />
 
         <VariantSection
@@ -74,7 +137,9 @@ export default function ButtonsPage() {
             { name: 'iconSize', type: 'number', default: '16', description: 'Tamanho dos ícones em px.' },
             { name: 'loading', type: 'boolean', default: 'false', description: 'Mostra spinner e desabilita o botão.' },
             { name: 'loadingLabel', type: 'string', description: 'Texto durante loading. Se ausente mantém o label.' },
-            { name: 'variant', type: '"primary" | "secondary" | "destructive" | "success" | "warning" | "alert" | "info" | "outline" | "ghost" | "link" | …', default: '"primary"', description: 'Variante de cor do design system.' },
+            { name: 'color', type: 'ButtonColor', description: 'Cor semântica (com tone). Sobrepõe variant.' },
+            { name: 'tone', type: '"solid" | "light" | "outline"', default: '"solid"', description: 'Tom visual quando color é usado.' },
+            { name: 'variant', type: '"primary" | "secondary" | "destructive" | "success" | "warning" | "alert" | "info" | "outline" | "ghost" | "link" | …', default: '"primary"', description: 'Atalho legado quando color não é usado.' },
             { name: 'size', type: '"sm" | "default" | "lg" | "icon"', default: '"default"', description: 'Tamanho do botão.' },
             { name: '...ButtonProps', type: 'ButtonHTMLAttributes', description: 'Aceita todas as props nativas de <Button>.' },
           ]}
@@ -93,9 +158,9 @@ export default function ButtonsPage() {
               <IconButton icon={Edit} label="Editar" size="sm" />
               <IconButton icon={Edit} label="Editar" />
               <IconButton icon={Edit} label="Editar" size="lg" />
-              <IconButton icon={Trash2} label="Excluir" variant="destructive" />
+              <IconButton icon={Trash2} label="Excluir" color="destructive" tone="outline" />
               <IconButton icon={Eye} label="Ver" variant="ghost" />
-              <IconButton icon={Plus} label="Adicionar" variant="default" />
+              <IconButton icon={Plus} label="Adicionar" color="success" tone="light" />
             </div>
           }
           code={`<IconButton icon={Edit} label="Editar" />
@@ -109,7 +174,8 @@ export default function ButtonsPage() {
             { name: 'label', type: 'string', required: true, description: 'Texto acessível (sr-only + aria-label + title).' },
             { name: 'size', type: '"sm" | "md" | "lg"', default: '"md"', description: 'Tamanho do quadrado clicável.' },
             { name: 'iconSize', type: 'number', default: '15', description: 'Tamanho do ícone em px.' },
-            { name: 'variant', type: 'ButtonVariant', default: '"outline"', description: 'Variante de cor herdada de <Button>.' },
+            { name: 'color / tone', type: 'ButtonColor + ButtonTone', description: 'Mesma API de <Button>.' },
+            { name: 'variant', type: 'ButtonVariant', default: '"outline"', description: 'Atalho legado herdado de <Button>.' },
           ]}
         />
       </DocSection>

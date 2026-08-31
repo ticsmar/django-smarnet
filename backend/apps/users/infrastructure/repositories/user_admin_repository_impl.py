@@ -29,9 +29,9 @@ from apps.users.infrastructure.models import (
 )
 
 PRODUCT_PERMISSION_APP_LABELS = (
-    "compras_infrastructure",
+    "purchasing_infrastructure",
     "branch_auth_infrastructure",
-    "administracao_infrastructure",
+    "commercial_infrastructure",
 )
 _SMAR_DB_ALIAS = "smar"
 _PRODUCT_PERMISSIONS_CACHE_ATTR = "_product_permissions_cache"

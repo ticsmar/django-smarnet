@@ -74,6 +74,10 @@ export default function PaginationPage() {
             { name: 'total', type: 'number', required: true, description: 'Total de registros.' },
             { name: 'onPageChange', type: '(p) => void', required: true, description: 'Callback.' },
             { name: 'recordLabel', type: 'string', default: '"registros"', description: 'Label do tipo de registro.' },
+            { name: 'showingLabel', type: 'string', default: '"Exibindo"', description: 'Prefixo do intervalo (i18n).' },
+            { name: 'ofLabel', type: 'string', default: '"de"', description: 'Preposição do total (i18n).' },
+            { name: 'prevLabel', type: 'string', default: '"Anterior"', description: 'Botão página anterior (i18n).' },
+            { name: 'nextLabel', type: 'string', default: '"Próxima"', description: 'Botão próxima página (i18n).' },
           ]}
         />
       </DocSection>
