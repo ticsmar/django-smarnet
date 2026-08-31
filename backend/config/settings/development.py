@@ -23,9 +23,7 @@ _logging_mapping("loggers", "django.request")["level"] = "DEBUG"
 
 # Optional SQL query logging: set DJANGO_SQL_LOG=1 in .env
 if env.bool("DJANGO_SQL_LOG", default=False):  # noqa: F405
-    loggers = LOGGING["loggers"]
-    assert isinstance(loggers, dict)
-    loggers["django.db.backends"] = {
+    _logging_mapping("loggers")["django.db.backends"] = {
         "handlers": ["console"],
         "level": "DEBUG",
         "propagate": False,
