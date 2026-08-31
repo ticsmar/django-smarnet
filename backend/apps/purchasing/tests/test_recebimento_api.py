@@ -327,7 +327,9 @@ def test_list_msg_erros_api(mock_build: MagicMock, auth_client: APIClient) -> No
     assert response.data["items"][0]["msg_erro_bd"] == "ORA-1"
 
 
-@patch("apps.purchasing.presentation.views.recebimento_views.build_list_paises_use_case")
+@patch(
+    "apps.purchasing.presentation.views.recebimento_views.build_list_paises_use_case"
+)
 def test_list_paises_api(mock_build: MagicMock, auth_client: APIClient) -> None:
     use_case = MagicMock()
     use_case.execute.return_value = [

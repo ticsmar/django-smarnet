@@ -151,9 +151,7 @@ def test_create_file(
     mock_tx.atomic.return_value.__exit__.return_value = False
     cursor = MagicMock()
     cursor.fetchone.return_value = (10,)
-    mock_connections.__getitem__.return_value.cursor.return_value.__enter__.return_value = (
-        cursor
-    )
+    mock_connections.__getitem__.return_value.cursor.return_value.__enter__.return_value = cursor
     result = OracleArquivoRepositoryImpl().create_file(
         CreateFileParams(
             sistema=7,
@@ -187,9 +185,7 @@ def test_move_node(
     mock_tx.atomic.return_value.__exit__.return_value = False
     cursor = MagicMock()
     cursor.fetchone.return_value = (5, "old", 0, 1)
-    mock_connections.__getitem__.return_value.cursor.return_value.__enter__.return_value = (
-        cursor
-    )
+    mock_connections.__getitem__.return_value.cursor.return_value.__enter__.return_value = cursor
     OracleArquivoRepositoryImpl().move_node(
         MoveNodeParams(
             sistema=7,

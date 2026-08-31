@@ -3,6 +3,9 @@
 from apps.administration.presentation.exception_mappings import (
     ADMINISTRATION_EXCEPTION_STATUS_MAP,
 )
+from apps.branch_auth.presentation.exception_mappings import (
+    BRANCH_AUTH_EXCEPTION_STATUS_MAP,
+)
 from apps.commercial.presentation.exception_mappings import (
     COMMERCIAL_EXCEPTION_STATUS_MAP,
 )
@@ -11,10 +14,9 @@ from apps.portal.presentation.exception_mappings import PORTAL_EXCEPTION_STATUS_
 from apps.production.presentation.exception_mappings import (
     PRODUCTION_EXCEPTION_STATUS_MAP,
 )
-from apps.branch_auth.presentation.exception_mappings import (
-    BRANCH_AUTH_EXCEPTION_STATUS_MAP,
+from apps.purchasing.presentation.exception_mappings import (
+    PURCHASING_EXCEPTION_STATUS_MAP,
 )
-from apps.purchasing.presentation.exception_mappings import PURCHASING_EXCEPTION_STATUS_MAP
 from apps.shared.presentation.exceptions.handler import build_exception_handler
 from apps.users.presentation.exception_mappings import AUTH_EXCEPTION_STATUS_MAP
 

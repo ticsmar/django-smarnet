@@ -44,7 +44,11 @@ def run() -> None:
     row = cur.fetchone()
     if row:
         body = row[2]
-        text = body.decode("utf-8", "replace") if isinstance(body, bytes) else str(body or "")
+        text = (
+            body.decode("utf-8", "replace")
+            if isinstance(body, bytes)
+            else str(body or "")
+        )
         print(f"=== TG_B_IU_EMBARQUE status={row[1]} ===")
         for i, line in enumerate(text.splitlines(), 1):
             if i >= 80:

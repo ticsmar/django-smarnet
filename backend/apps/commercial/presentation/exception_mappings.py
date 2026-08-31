@@ -5,11 +5,11 @@ from apps.commercial.domain.exceptions.cliente_exceptions import (
     ClienteDocumentoInvalidError,
     ClienteError,
     ClienteForbiddenError,
-    ClienteRiscoInvalidError,
     ClienteFuncionarioNotFoundError,
     ClienteNotFoundError,
     ClienteOwnershipError,
     ClienteProcedureError,
+    ClienteRiscoInvalidError,
 )
 
 COMMERCIAL_EXCEPTION_STATUS_MAP: dict[type[Exception], tuple[int, str | None]] = {

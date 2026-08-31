@@ -9,7 +9,7 @@ from apps.shared.presentation.auth.permissions import IsOracleAuthenticated
 
 
 class PortalHealthView(APIView):
-    permission_classes = [IsOracleAuthenticated]
+    permission_classes = (IsOracleAuthenticated,)
 
     def get(self, request: Request) -> Response:
         return Response({"module": "portal"})

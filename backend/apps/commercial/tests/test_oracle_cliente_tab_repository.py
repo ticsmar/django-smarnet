@@ -20,9 +20,7 @@ def _mock_raw_cursor(mock_connections: MagicMock) -> tuple[MagicMock, MagicMock]
     django_cursor = MagicMock()
     raw_cursor = MagicMock()
     django_cursor.cursor.cursor = raw_cursor
-    mock_connections.__getitem__.return_value.cursor.return_value.__enter__.return_value = (
-        django_cursor
-    )
+    mock_connections.__getitem__.return_value.cursor.return_value.__enter__.return_value = django_cursor
     return django_cursor, raw_cursor
 
 
@@ -57,7 +55,7 @@ def _finan(**overrides: object) -> GravaClienteDadosFinanParams:
         "apply_limites": True,
     }
     data.update(overrides)
-    return GravaClienteDadosFinanParams(**data)  # type: ignore[arg-type]
+    return GravaClienteDadosFinanParams(**data)
 
 
 @patch(

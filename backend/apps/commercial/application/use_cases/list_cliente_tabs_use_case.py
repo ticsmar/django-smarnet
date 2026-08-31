@@ -29,16 +29,15 @@ def _assert_in_scope(
     actor: ActorContextDTO,
     codigo: int,
 ) -> None:
-    record = repository.get_cliente(
-        actor_owner=actor.owner_emp_codigo, codigo=codigo
-    )
+    record = repository.get_cliente(actor_owner=actor.owner_emp_codigo, codigo=codigo)
     if record is None:
-        raise ClienteNotFoundError(
-            f"Cliente '{codigo}' not found or out of scope."
+        raise ClienteNotFoundError(f"Cliente '{codigo}' not found or out of scope.")
+    if (
+        not can_edit_customer(
+            actor_link_emp=actor.link_emp_codigo, cliente_emp=record.emp_codigo
         )
-    if not can_edit_customer(
-        actor_link_emp=actor.link_emp_codigo, cliente_emp=record.emp_codigo
-    ) and actor.owner_emp_codigo != record.emp_codigo:
+        and actor.owner_emp_codigo != record.emp_codigo
+    ):
         raise ClienteForbiddenError(
             f"Cliente '{codigo}' is out of the actor's empresa scope."
         )
@@ -55,9 +54,7 @@ class ListClienteContatosUseCase:
             actor_owner=actor.owner_emp_codigo, codigo=codigo
         )
         if record is None:
-            raise ClienteNotFoundError(
-                f"Cliente '{codigo}' not found or out of scope."
-            )
+            raise ClienteNotFoundError(f"Cliente '{codigo}' not found or out of scope.")
         return [
             to_contato_dto(
                 item,

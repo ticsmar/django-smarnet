@@ -12,8 +12,8 @@ from apps.commercial.domain.exceptions.cliente_exceptions import (
     ClienteDatabaseError,
 )
 from apps.commercial.domain.repositories.cliente_query_repository import (
-    ClienteAreaOsRecord,
     ClienteArclassRecord,
+    ClienteAreaOsRecord,
     ClienteArlevelRecord,
     ClienteArsalespRecord,
     ClienteCidadeRecord,
@@ -76,9 +76,7 @@ _BLOQUEADO_JOIN = (
     f"ON r.CRS_COD_SIAOS = {sql_effective_bloqueado('c.BLOQUEADO')}"
 )
 
-_ENDERECO_REF_CLIENTE_JOIN = (
-    "LEFT JOIN SIAOS.CLIENTE C ON C.CODIGO = T.CLI_CODIGO_REF"
-)
+_ENDERECO_REF_CLIENTE_JOIN = "LEFT JOIN SIAOS.CLIENTE C ON C.CODIGO = T.CLI_CODIGO_REF"
 _ENDERECO_ESTADO_PAIS_JOINS = (
     " LEFT JOIN GERAL.ESTADO E ON E.EST_CODIGO = NVL("
     "C.EST_CODIGO,"
@@ -259,9 +257,7 @@ class OracleClienteQueryRepositoryImpl:
         if row is None:
             return None
         record = _row_to_detail_record(row)
-        letra, desc, desc_longa, restricao, protheus = _risco_catalog(
-            record.bloqueado
-        )
+        letra, desc, desc_longa, restricao, protheus = _risco_catalog(record.bloqueado)
         return replace(
             record,
             crs_cod_letra=letra,
@@ -781,7 +777,10 @@ class OracleClienteQueryRepositoryImpl:
         )
         try:
             with connections[_DB_ALIAS].cursor() as cursor:
-                cursor.execute(sql, params)
+                cursor.execute(
+                    sql,
+                    params,  # type: ignore[arg-type]
+                )
                 rows = cursor.fetchall()
         except (DatabaseError, oracledb.Error) as exc:
             raise ClienteDatabaseError(str(exc)) from exc
@@ -813,7 +812,10 @@ class OracleClienteQueryRepositoryImpl:
         sql += " ORDER BY CON_ATIVO DESC, NOME"
         try:
             with connections[_DB_ALIAS].cursor() as cursor:
-                cursor.execute(sql, params)
+                cursor.execute(
+                    sql,
+                    params,  # type: ignore[arg-type]
+                )
                 rows = cursor.fetchall()
         except (DatabaseError, oracledb.Error) as exc:
             raise ClienteDatabaseError(str(exc)) from exc
@@ -953,16 +955,17 @@ class OracleClienteQueryRepositoryImpl:
         ensure_smar_client_identifier()
         try:
             with connections[_DB_ALIAS].cursor() as cursor:
-                cursor.execute(sql, params)
+                cursor.execute(
+                    sql,
+                    params,  # type: ignore[arg-type]
+                )
                 rows = cursor.fetchall()
         except (DatabaseError, oracledb.Error) as extra:
             raise ClienteDatabaseError(str(extra)) from extra
         return {_require_int(row[0]): int(row[1]) for row in rows if row[0] is not None}
 
     def _modelo_risco_codigos(self, risco_protheus: str) -> list[int]:
-        sql = (
-            "SELECT MPG_CODIGO FROM SIAOS.MODELO_RISCO WHERE MRI_RISCO = %s"
-        )
+        sql = "SELECT MPG_CODIGO FROM SIAOS.MODELO_RISCO WHERE MRI_RISCO = %s"
         try:
             with connections[_DB_ALIAS].cursor() as cursor:
                 cursor.execute(sql, [risco_protheus])
@@ -1068,6 +1071,9 @@ def _row_to_list_record(row: tuple[object, ...]) -> ClienteListRecord:
     )
 
 
+_MENSAGEM_BLOQUEIO_COL = 71
+
+
 def _row_to_detail_record(row: tuple[object, ...]) -> ClienteRecord:
     return ClienteRecord(
         codigo=_require_int(row[0]),
@@ -1141,7 +1147,11 @@ def _row_to_detail_record(row: tuple[object, ...]) -> ClienteRecord:
         con_codigo_com=_as_int(row[68]),
         con_codigo_tec=_as_int(row[69]),
         con_codigo_fin=_as_int(row[70]),
-        mensagem_bloqueio=_as_str(row[71]) if len(row) > 71 else None,
+        mensagem_bloqueio=(
+            _as_str(row[_MENSAGEM_BLOQUEIO_COL])
+            if len(row) > _MENSAGEM_BLOQUEIO_COL
+            else None
+        ),
     )
 
 
@@ -1229,7 +1239,7 @@ def _cobranca_from_row(
         e_mail=_as_str(row[14]),
         ativo=_as_int(row[15]),
         cli_codigo_ref=_as_int(row[16]),
-        is_padrao=bool(padrao) and chave == padrao.strip(),
+        is_padrao=bool(padrao) and chave == (padrao or "").strip(),
     )
 
 
@@ -1257,7 +1267,7 @@ def _embarque_from_row(
         e_mail=_as_str(row[14]),
         ativo=_as_int(row[15]),
         cli_codigo_ref=_as_int(row[16]),
-        is_padrao=bool(padrao) and chave == padrao.strip(),
+        is_padrao=bool(padrao) and chave == (padrao or "").strip(),
     )
 
 

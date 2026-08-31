@@ -53,7 +53,7 @@ def _node(**overrides: object) -> ArquivoNodeRecord:
         "pasta_fixa": False,
         "in_lixeira": False,
     }
-    base.update(overrides)
+    base.update(overrides)  # type: ignore[arg-type]
     return ArquivoNodeRecord(**base)  # type: ignore[arg-type]
 
 

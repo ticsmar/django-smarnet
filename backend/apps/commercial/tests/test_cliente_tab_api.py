@@ -250,8 +250,7 @@ def test_list_grupos_tributarios_api(auth_client: APIClient) -> None:
         return_value=use_case,
     ):
         response = auth_client.get(
-            "/api/commercial/catalogos/grupos-tributarios/"
-            "?est_codigo=25&cli_tipo=R"
+            "/api/commercial/catalogos/grupos-tributarios/?est_codigo=25&cli_tipo=R"
         )
     assert response.status_code == 200
     assert response.data[0]["codigo"] == "077"
@@ -302,9 +301,7 @@ def test_list_modelos_pagto_api_unrestricted_for_superuser(
         "apps.commercial.presentation.views.cliente_tab_views.build_list_cliente_modelos_pagto_use_case",
         return_value=use_case,
     ):
-        response = auth_client.get(
-            "/api/commercial/catalogos/modelos-pagto/?origem=BR"
-        )
+        response = auth_client.get("/api/commercial/catalogos/modelos-pagto/?origem=BR")
     assert response.status_code == 200
     assert response.data[0]["mpg_codigo"] == 7
     use_case.execute.assert_called_once_with(

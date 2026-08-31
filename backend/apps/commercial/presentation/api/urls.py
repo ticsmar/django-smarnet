@@ -3,10 +3,11 @@
 from django.urls import path
 
 from apps.commercial.presentation.views.cliente_tab_views import (
-    ClienteAreasOsView,
     ClienteArclassesView,
+    ClienteAreasOsView,
     ClienteArlevelsView,
     ClienteArsalespsView,
+    ClienteBloqueioView,
     ClienteCidadesView,
     ClienteCobrancaPadraoView,
     ClienteCobrancasView,
@@ -20,7 +21,6 @@ from apps.commercial.presentation.views.cliente_tab_views import (
     ClienteModelosPagtoView,
     ClienteObsView,
     ClienteRiscosView,
-    ClienteBloqueioView,
 )
 from apps.commercial.presentation.views.cliente_views import (
     ClienteCnpjConsultaView,

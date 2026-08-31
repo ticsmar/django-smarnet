@@ -1,7 +1,5 @@
 """Composition helpers for administracao presentation layer."""
 
-from typing import TypeVar
-
 from django.conf import settings
 
 from apps.commercial.application.use_cases.consulta_cnpj_use_case import (
@@ -16,11 +14,11 @@ from apps.commercial.application.use_cases.create_cliente_from_funcionario_use_c
 from apps.commercial.application.use_cases.get_cliente_use_case import (
     GetClienteUseCase,
 )
-from apps.commercial.application.use_cases.grava_cliente_dados_gerais_use_case import (  # noqa: E501
-    GravaClienteDadosGeraisUseCase,
-)
 from apps.commercial.application.use_cases.grava_cliente_bloqueio_use_case import (
     GravaClienteBloqueioUseCase,
+)
+from apps.commercial.application.use_cases.grava_cliente_dados_gerais_use_case import (
+    GravaClienteDadosGeraisUseCase,
 )
 from apps.commercial.application.use_cases.grava_cliente_tabs_use_case import (
     GravaClienteCobrancaUseCase,
@@ -35,8 +33,8 @@ from apps.commercial.application.use_cases.list_cliente_catalogs_use_case import
     ListClienteCatalogsUseCase,
 )
 from apps.commercial.application.use_cases.list_cliente_lookups_use_case import (
-    ListClienteAreasOsUseCase,
     ListClienteArclassesUseCase,
+    ListClienteAreasOsUseCase,
     ListClienteArlevelsUseCase,
     ListClienteArsalespsUseCase,
     ListClienteCidadesUseCase,
@@ -133,9 +131,7 @@ def build_list_cliente_arsalesps_use_case() -> ListClienteArsalespsUseCase:
 def build_list_cliente_grupos_tributarios_use_case() -> (
     ListClienteGruposTributariosUseCase
 ):
-    return ListClienteGruposTributariosUseCase(
-        build_oracle_cliente_query_repository()
-    )
+    return ListClienteGruposTributariosUseCase(build_oracle_cliente_query_repository())
 
 
 def build_list_cliente_areas_os_use_case() -> ListClienteAreasOsUseCase:
@@ -162,11 +158,8 @@ def build_list_cliente_logs_use_case() -> ListClienteLogsUseCase:
     return ListClienteLogsUseCase(build_oracle_cliente_query_repository())
 
 
-_T = TypeVar("_T")
-
-
-def _write_use_case(cls: type[_T]) -> _T:
-    return cls(
+def _write_use_case[T](cls: type[T]) -> T:
+    return cls(  # type: ignore[call-arg]
         build_oracle_cliente_repository(),
         build_oracle_cliente_query_repository(),
     )

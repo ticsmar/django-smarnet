@@ -1,6 +1,7 @@
 """Oracle write repository for PROP_ARQUIVO / PROP_ARQ_LOG."""
 
 from dataclasses import dataclass
+from typing import Protocol, cast
 
 import oracledb
 from django.db import DatabaseError, connections, transaction
@@ -26,6 +27,13 @@ from apps.shared.infrastructure.oracle_session_context import (
 )
 
 _DB_ALIAS = "smar"
+
+
+class _SqlCursor(Protocol):
+    def execute(self, sql: str, params: list[object] | None = None) -> object: ...
+
+    def fetchone(self) -> tuple[object, ...] | None: ...
+
 
 _NODE_SQL = """
 SELECT PAR_CODIGO, PAR_NOME, NVL(PAR_PASTA_FIXA, 0), PAR_TIPO
@@ -84,15 +92,16 @@ def _chapa(value: int) -> int | None:
 
 
 def _next_par_codigo(cursor: object) -> int:
-    cursor.execute("LOCK TABLE SIAOS.PROP_ARQUIVO IN EXCLUSIVE MODE")
-    cursor.execute("SELECT NVL(MAX(PAR_CODIGO), 0) FROM SIAOS.PROP_ARQUIVO")
-    row = cursor.fetchone()
-    current = int(row[0]) if row and row[0] is not None else 0
+    typed = cast("_SqlCursor", cursor)
+    typed.execute("LOCK TABLE SIAOS.PROP_ARQUIVO IN EXCLUSIVE MODE")
+    typed.execute("SELECT NVL(MAX(PAR_CODIGO), 0) FROM SIAOS.PROP_ARQUIVO")
+    row = typed.fetchone()
+    current = int(str(row[0])) if row and row[0] is not None else 0
     return current + 1
 
 
 def _insert_log(cursor: object, line: _LogLine) -> None:
-    cursor.execute(
+    cast("_SqlCursor", cursor).execute(
         _INSERT_LOG_SQL,
         [
             line.par_codigo,
@@ -108,8 +117,9 @@ def _insert_log(cursor: object, line: _LogLine) -> None:
 def _fetch_node(
     cursor: object, par_codigo: int, sistema: int, filtro: str
 ) -> tuple[int, str, int, int]:
-    cursor.execute(_NODE_SQL, [par_codigo, sistema, filtro])
-    row = cursor.fetchone()
+    typed = cast("_SqlCursor", cursor)
+    typed.execute(_NODE_SQL, [par_codigo, sistema, filtro])
+    row = typed.fetchone()
     if row is None:
         raise ArquivoNotFoundError("Item não encontrado neste repositório.")
     return (
@@ -259,7 +269,9 @@ def _trash_one(cursor: object, par_codigo: int, params: TrashNodesParams) -> Non
         cursor, par_codigo, params.sistema, params.filtro
     )
     _refuse_fixa(pasta_fixa)
-    cursor.execute(_TRASH_SQL, [par_codigo, params.sistema, params.filtro])
+    cast("_SqlCursor", cursor).execute(
+        _TRASH_SQL, [par_codigo, params.sistema, params.filtro]
+    )
     _insert_log(
         cursor,
         _LogLine(

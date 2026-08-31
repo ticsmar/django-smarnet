@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from django.db import connections  # noqa: TID251
+from django.db import connections
 
 QUERIES: list[tuple[str, str]] = [
     (
@@ -100,7 +100,7 @@ def run() -> None:
 
 
 if __name__ == "__main__":
-    import django  # noqa: TID251
+    import django
 
     django.setup()
     run()

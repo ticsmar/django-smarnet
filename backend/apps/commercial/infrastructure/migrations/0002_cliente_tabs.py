@@ -32,9 +32,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "codcliente",
-                    models.IntegerField(
-                        blank=True, db_column="CODCLIENTE", null=True
-                    ),
+                    models.IntegerField(blank=True, db_column="CODCLIENTE", null=True),
                 ),
                 (
                     "nome",

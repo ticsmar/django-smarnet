@@ -16,7 +16,11 @@ def run() -> None:
         """
     )
     for name, status, body in cur.fetchall():
-        text = body.decode("utf-8", "replace") if isinstance(body, bytes) else str(body or "")
+        text = (
+            body.decode("utf-8", "replace")
+            if isinstance(body, bytes)
+            else str(body or "")
+        )
         print(f"=== {name} status={status} len={len(text)} ===")
         lines = text.splitlines()
         for i, line in enumerate(lines, 1):

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import NoReturn, Protocol
+from typing import NoReturn, Protocol, cast
 
 import oracledb
 from django.db import DatabaseError, connections, transaction
@@ -71,13 +71,15 @@ class _InnerCursorWrapper(Protocol):
 class _DjangoCursorWrapper(Protocol):
     cursor: _InnerCursorWrapper
 
-    def execute(self, sql: str, params: list[object]) -> object: ...
+    def execute(self, sql: str, params: list[object] | None = None) -> object: ...
 
     def fetchone(self) -> tuple[object, ...] | None: ...
 
 
-def _raw_oracle_cursor(django_cursor: _DjangoCursorWrapper) -> oracledb.Cursor:
-    return django_cursor.cursor.cursor
+def _raw_oracle_cursor(django_cursor: object) -> oracledb.Cursor:
+    nested = getattr(django_cursor, "cursor", None)
+    raw = getattr(nested, "cursor", None)
+    return cast("oracledb.Cursor", raw)
 
 
 def _as_str(value: object | None) -> str | None:
@@ -185,7 +187,7 @@ class OracleClienteRepositoryImpl:
                     "UPDATE SIAOS.CLIENTE SET "
                     + ", ".join(extras)
                     + " WHERE CODIGO = %s",
-                    extra_params,
+                    extra_params,  # type: ignore[arg-type]
                 )
         except (DatabaseError, oracledb.Error) as extra:
             _raise_cliente_database_error(extra)
@@ -473,11 +475,10 @@ def _preserved_insert_defaults() -> dict[str, object | None]:
     }
 
 
-def _read_preserved_binds(
-    cursor: _DjangoCursorWrapper, codigo: int
-) -> dict[str, object | None]:
-    cursor.execute(_PRESERVED_SQL, [codigo])
-    row = cursor.fetchone()
+def _read_preserved_binds(cursor: object, codigo: int) -> dict[str, object | None]:
+    typed = cast("_DjangoCursorWrapper", cursor)
+    typed.execute(_PRESERVED_SQL, [codigo])
+    row = typed.fetchone()
     if row is None:
         return {}
     return _preserved_from_row(row)

@@ -1,8 +1,8 @@
-"""Catalog lookups for the cliente form (ajax.php op 2–4 + modeloPagPorRisco)."""
+"""Catalog lookups for the cliente form (ajax.php op 2-4 + modeloPagPorRisco)."""
 
 from apps.commercial.application.dtos.cliente_dtos import (
-    ClienteAreaOsOutputDTO,
     ClienteArclassOutputDTO,
+    ClienteAreaOsOutputDTO,
     ClienteArlevelOutputDTO,
     ClienteArsalespOutputDTO,
     ClienteCidadeOutputDTO,
@@ -11,8 +11,8 @@ from apps.commercial.application.dtos.cliente_dtos import (
     ClienteRiscoOutputDTO,
 )
 from apps.commercial.application.mappers.cliente_mapper import (
-    to_area_os_dto,
     to_arclass_dto,
+    to_area_os_dto,
     to_arlevel_dto,
     to_arsalesp_dto,
     to_cidade_dto,
@@ -78,9 +78,7 @@ class ListClienteGruposTributariosUseCase:
             est_codigo=est_codigo, cli_tipo=cli_tipo
         )
         first = items[0].codigo if items else None
-        chosen = default_grupo_tributario(
-            est_codigo=est_codigo, first_codigo=first
-        )
+        chosen = default_grupo_tributario(est_codigo=est_codigo, first_codigo=first)
         return [
             to_grupo_tributario_dto(item, is_default=item.codigo == chosen)
             for item in items

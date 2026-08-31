@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from django.db import connections  # noqa: TID251
+from django.db import connections
 
 
 def run() -> None:

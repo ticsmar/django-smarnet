@@ -39,12 +39,12 @@ class Fornecedor(models.Model):
     class Meta:
         managed = False
         db_table = '"NOVASMAR"."FORNECEDOR"'
-        permissions = [
+        permissions = (
             (
                 "view_dashboard",
                 "Pode ver o dashboard de compras",
             ),
-        ]
+        )
 
 
 class FornecContato(models.Model):

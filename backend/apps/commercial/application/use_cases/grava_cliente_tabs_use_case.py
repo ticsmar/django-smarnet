@@ -83,9 +83,7 @@ class GravaClienteDadosFinanUseCase:
         self._query = query_repository
 
     def execute(self, input_dto: GravaClienteDadosFinanInputDTO) -> None:
-        _assert_can_edit(
-            self._query, actor=input_dto.actor, codigo=input_dto.codigo
-        )
+        _assert_can_edit(self._query, actor=input_dto.actor, codigo=input_dto.codigo)
         self._repository.grava_dados_finan(
             GravaClienteDadosFinanParams(
                 codigo=input_dto.codigo,
@@ -146,9 +144,7 @@ class GravaClienteContatoUseCase:
     def execute(
         self, input_dto: GravaClienteContatoInputDTO
     ) -> GravaClienteContatoResult:
-        _assert_can_edit(
-            self._query, actor=input_dto.actor, codigo=input_dto.codigo
-        )
+        _assert_can_edit(self._query, actor=input_dto.actor, codigo=input_dto.codigo)
         return self._repository.grava_contato(
             GravaClienteContatoParams(
                 codigo=input_dto.codigo,
@@ -184,9 +180,7 @@ class SetClienteContatoPadraoUseCase:
         self._query = query_repository
 
     def execute(self, input_dto: SetClienteContatoPadraoInputDTO) -> None:
-        _assert_can_edit(
-            self._query, actor=input_dto.actor, codigo=input_dto.codigo
-        )
+        _assert_can_edit(self._query, actor=input_dto.actor, codigo=input_dto.codigo)
         self._repository.set_contato_padrao(
             SetClienteContatoPadraoParams(
                 codigo=input_dto.codigo,
@@ -215,9 +209,7 @@ class GravaClienteCobrancaUseCase:
         self._query = query_repository
 
     def execute(self, input_dto: GravaClienteCobrancaInputDTO) -> None:
-        _assert_can_edit(
-            self._query, actor=input_dto.actor, codigo=input_dto.codigo
-        )
+        _assert_can_edit(self._query, actor=input_dto.actor, codigo=input_dto.codigo)
         self._repository.grava_cobranca(
             GravaClienteCobrancaParams(
                 codigo=input_dto.codigo,
@@ -247,9 +239,7 @@ class GravaClienteEmbarqueUseCase:
         self._query = query_repository
 
     def execute(self, input_dto: GravaClienteEmbarqueInputDTO) -> None:
-        _assert_can_edit(
-            self._query, actor=input_dto.actor, codigo=input_dto.codigo
-        )
+        _assert_can_edit(self._query, actor=input_dto.actor, codigo=input_dto.codigo)
         self._repository.grava_embarque(
             GravaClienteEmbarqueParams(
                 codigo=input_dto.codigo,
@@ -277,9 +267,7 @@ class SetClienteEnderecoPadraoUseCase:
         self._query = query_repository
 
     def execute(self, input_dto: SetClienteEnderecoPadraoInputDTO) -> None:
-        _assert_can_edit(
-            self._query, actor=input_dto.actor, codigo=input_dto.codigo
-        )
+        _assert_can_edit(self._query, actor=input_dto.actor, codigo=input_dto.codigo)
         params = SetClienteEnderecoPadraoParams(
             codigo=input_dto.codigo, chave=input_dto.chave
         )
@@ -304,9 +292,7 @@ class GravaClienteObsUseCase:
         self._query = query_repository
 
     def execute(self, input_dto: GravaClienteObsInputDTO) -> None:
-        _assert_can_edit(
-            self._query, actor=input_dto.actor, codigo=input_dto.codigo
-        )
+        _assert_can_edit(self._query, actor=input_dto.actor, codigo=input_dto.codigo)
         self._repository.grava_obs(
             GravaClienteObsParams(codigo=input_dto.codigo, observa=input_dto.observa)
         )

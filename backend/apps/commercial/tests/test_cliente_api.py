@@ -125,9 +125,7 @@ def _detail(codigo: int = 1) -> ClienteDetailOutputDTO:
     )
 
 
-@patch(
-    "apps.commercial.presentation.views.cliente_views.build_list_clientes_use_case"
-)
+@patch("apps.commercial.presentation.views.cliente_views.build_list_clientes_use_case")
 def test_list_clientes_api(mock_build: MagicMock, auth_client: APIClient) -> None:
     use_case = MagicMock()
     use_case.execute.return_value = PaginatedClientesOutputDTO(
@@ -323,9 +321,7 @@ def test_lookup_documento_api(mock_build: MagicMock, auth_client: APIClient) -> 
     assert response.data["copy_fields"]["cliente"] == "ACME"
 
 
-@patch(
-    "apps.commercial.presentation.views.cliente_views.build_consulta_cnpj_use_case"
-)
+@patch("apps.commercial.presentation.views.cliente_views.build_consulta_cnpj_use_case")
 def test_consulta_cnpj_api(mock_build: MagicMock, auth_client: APIClient) -> None:
     use_case = MagicMock()
     use_case.execute.return_value = ConsultaCnpjOutputDTO(

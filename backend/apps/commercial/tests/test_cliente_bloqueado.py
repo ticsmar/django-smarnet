@@ -71,8 +71,5 @@ def test_risco_letra_never_empty() -> None:
 
 def test_risco_desc_curta_prefers_crs_desc_then_longa() -> None:
     assert resolve_risco_desc_curta("Sem crédito") == "Sem crédito"
-    assert (
-        resolve_risco_desc_curta(None, "Nota B   : Sem crédito")
-        == "Sem crédito"
-    )
+    assert resolve_risco_desc_curta(None, "Nota B   : Sem crédito") == "Sem crédito"
     assert resolve_risco_desc_curta(None, None) == DEFAULT_RISCO_DESC_CURTA

@@ -9,16 +9,25 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.development")
 django.setup()
 
-from django.db import connections  # noqa: E402, TID251
+from typing import Protocol, cast
+
+from django.db import connections  # noqa: E402
 
 CPF = "25595670835"
 
 
-def _run(cursor, label: str, sql: str, params: list[str] | None = None) -> None:
+class _Cursor(Protocol):
+    def execute(self, *args: object, **kwargs: object) -> object: ...
+
+    def fetchall(self) -> object: ...
+
+
+def _run(cursor: object, label: str, sql: str, params: list[str] | None = None) -> None:
     print(f"=== {label} ===")
     try:
-        cursor.execute(sql, params or [])
-        rows = cursor.fetchall()
+        typed = cast(_Cursor, cursor)
+        typed.execute(sql, params or [])
+        rows = typed.fetchall()
         print(rows if rows else "(empty)")
     except Exception as exc:
         print(f"ERROR: {exc}")
