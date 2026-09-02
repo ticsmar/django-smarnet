@@ -1,5 +1,6 @@
 """Tests for OracleClienteRepositoryImpl tab stored-procedure binds."""
 
+from decimal import Decimal
 from unittest.mock import MagicMock, patch
 
 from apps.commercial.domain.repositories.cliente_repository import (
@@ -292,3 +293,29 @@ def test_grava_bloqueio_updates_bloqueado_and_mensagem(
     assert "MENSAGEM_BLOQUEIO" in sql
     assert "CRS_COD_SIAOS" not in sql
     assert binds == [4, "Pendência financeira", 10]
+
+
+@patch(
+    "apps.commercial.infrastructure.repositories.oracle_cliente_repository_impl.transaction.atomic"
+)
+@patch(
+    "apps.commercial.infrastructure.repositories.oracle_cliente_repository_impl.ensure_smar_client_identifier"
+)
+@patch(
+    "apps.commercial.infrastructure.repositories.oracle_cliente_repository_impl.connections"
+)
+def test_grava_limites_updates_limitecr_and_crv(
+    mock_connections: MagicMock, _ident: MagicMock, mock_atomic: MagicMock
+) -> None:
+    mock_atomic.return_value.__enter__.return_value = None
+    django_cursor, _raw = _mock_raw_cursor(mock_connections)
+    OracleClienteRepositoryImpl().grava_limites(
+        codigo=10,
+        limitecr=Decimal("1000.50"),
+        cli_limite_crv=Decimal("200"),
+    )
+    sql, binds = django_cursor.execute.call_args.args
+    assert "SET LIMITECR" in sql
+    assert "CLI_LIMITE_CRV" in sql
+    assert "$campo" not in sql
+    assert binds == [Decimal("1000.50"), Decimal("200"), 10]

@@ -65,13 +65,13 @@ const tabsTriggerVariants = cva(
 );
 
 const tabsContentVariants = cva(
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring data-[state=inactive]:hidden",
   {
     variants: {
       variant: {
         default: "mt-2 ring-offset-background focus-visible:ring-offset-2",
         folder:
-          "mt-0 min-w-0 flex-1 rounded-b-2xl rounded-tr-2xl border-x border-b border-border/50 bg-card p-3 shadow-sm ring-inset sm:p-5",
+          "mt-0 min-w-0 flex-1 rounded-b-2xl rounded-tr-2xl border-x border-b border-border/50 bg-card p-3 shadow-sm ring-inset data-[state=active]:flex data-[state=active]:min-h-0 data-[state=active]:flex-col sm:p-5",
       },
       fill: {
         true: "lg:min-h-0 lg:overflow-auto",
@@ -129,7 +129,7 @@ const TabsList = React.forwardRef<
   );
   if (resolved !== "folder") return list;
   return (
-    <div className="max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-surface-container-low">
+    <div className="shrink-0 max-lg:sticky max-lg:top-0 max-lg:z-10 max-lg:bg-surface-container-low">
       {list}
     </div>
   );

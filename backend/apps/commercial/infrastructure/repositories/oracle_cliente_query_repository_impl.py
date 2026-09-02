@@ -69,12 +69,22 @@ _LIST_COLUMNS = (
     "NVL(TRIM(r.CRS_DESC_LONGA), 'Nota A   : Sem restrições') AS CRS_DESC_LONGA",
     "r.CRS_RESTRICAO",
     "r.CRS_CORES",
+    "c.PAI_CODIGO",
+    "NVL(TRIM(p.PAI_NOME), TRIM(c.PAIS)) AS PAIS_NOME",
+    "c.ENDERECO1",
+    "c.ENDERECO2",
+    "c.CLI_BAIRRO",
+    "c.CEP",
+    "c.TELEFONE1",
+    "c.EMAIL",
 )
 
 _BLOQUEADO_JOIN = (
     "LEFT JOIN INTEGRACAO.CLIENTE_RISCO r "
     f"ON r.CRS_COD_SIAOS = {sql_effective_bloqueado('c.BLOQUEADO')}"
 )
+
+_LIST_JOINS = f"{_BLOQUEADO_JOIN} LEFT JOIN GERAL.PAIS p ON p.PAI_CODIGO = c.PAI_CODIGO"
 
 _ENDERECO_REF_CLIENTE_JOIN = "LEFT JOIN SIAOS.CLIENTE C ON C.CODIGO = T.CLI_CODIGO_REF"
 _ENDERECO_ESTADO_PAIS_JOINS = (
@@ -214,7 +224,7 @@ class OracleClienteQueryRepositoryImpl:
         list_sql = (
             f"SELECT {', '.join(_LIST_COLUMNS)} "
             "FROM SIAOS.CLIENTE c "
-            f"{_BLOQUEADO_JOIN} "
+            f"{_LIST_JOINS} "
             f"{where_sql} "
             "ORDER BY c.CLIENTE, c.CIDADE "
             "OFFSET %s ROWS FETCH NEXT %s ROWS ONLY"
@@ -1068,6 +1078,14 @@ def _row_to_list_record(row: tuple[object, ...]) -> ClienteListRecord:
         crs_desc_longa=resolve_risco_desc(_as_int(row[7]), _as_str(row[10])),
         crs_restricao=_as_int(row[11]),
         crs_cores=_as_str(row[12]),
+        pai_codigo=_as_int(row[13]),
+        pais_nome=_as_str(row[14]),
+        endereco1=_as_str(row[15]),
+        endereco2=_as_str(row[16]),
+        cli_bairro=_as_str(row[17]),
+        cep=_as_str(row[18]),
+        telefone1=_as_str(row[19]),
+        email=_as_str(row[20]),
     )
 
 

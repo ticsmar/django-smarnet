@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   ClienteRiscoStatusBadge,
   clienteRiscoBadgeColor,
+  riscoLongDesc,
   riscoShortDesc,
 } from "./ClienteRiscoStatusBadge";
 
@@ -23,6 +24,15 @@ describe("riscoShortDesc", () => {
     expect(riscoShortDesc("Sem crédito")).toBe("Sem crédito");
     expect(riscoShortDesc(null, "Nota B   : Sem crédito")).toBe("Sem crédito");
     expect(riscoShortDesc("  ", "")).toBe("");
+  });
+});
+
+describe("riscoLongDesc", () => {
+  it("collapses extra spaces in CRS_DESC_LONGA", () => {
+    expect(riscoLongDesc("Nota A   : Sem restrições")).toBe(
+      "Nota A : Sem restrições",
+    );
+    expect(riscoLongDesc("  ")).toBe("");
   });
 });
 
@@ -52,6 +62,18 @@ describe("ClienteRiscoStatusBadge", () => {
     const badge = screen.getByText("Sem restrições");
     expect(badge).toBeInTheDocument();
     expect(screen.queryByText(/^A Sem restrições$/)).not.toBeInTheDocument();
-    expect(badge).toHaveAttribute("title", "Nota A   : Sem restrições");
+    expect(badge).toHaveAttribute("title", "Nota A : Sem restrições");
+  });
+
+  it("shows the full CRS_DESC_LONGA when showLongDesc is set", () => {
+    render(
+      <ClienteRiscoStatusBadge
+        letra="A"
+        descLonga="Nota A   : Sem restrições"
+        showLongDesc
+      />,
+    );
+    expect(screen.getByText("Nota A : Sem restrições")).toBeInTheDocument();
+    expect(screen.queryByText(/^A$/)).not.toBeInTheDocument();
   });
 });

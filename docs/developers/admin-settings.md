@@ -2,7 +2,7 @@
 
 Área `/settings/*` para **admin de acesso** (`can_manage_access` / grupo `access_admins` ou superusuário).
 
-**Não** é um bounded context Django. Não criar `backend/apps/settings/` — o nome colide com [`backend/config/settings/`](../../backend/config/settings/) (`base.py`, `development.py`, …) e com `from django.conf import settings`. As telas desta área chamam `users` (`/api/admin/`) e `files` (`/api/files/sistemas/`). Se o shell precisar de API própria no futuro, o contexto deve se chamar `platform` ou `identity`, não `settings`.
+**Não** é um bounded context Django. Não criar `backend/apps/settings/` — o nome colide com [`backend/config/settings/`](../../backend/config/settings/) (`base.py`, `development.py`, …) e com `from django.conf import settings`. As telas desta área chamam `users` (`/api/admin/`), `files` (`/api/files/sistemas/`) e `followup` (`/api/followup/sistemas/`). Se o shell precisar de API própria no futuro, o contexto deve se chamar `platform` ou `identity`, não `settings`.
 
 Gate: `ProtectedAdminLayout` + `AccessAdminRoute` (flag ou sonda `GET /api/admin/users/`).
 
@@ -59,6 +59,7 @@ Fora do card da listagem, alinhada à direita: Anterior / página / Próxima.
 | `/settings/masters/countries` | CountriesAdmin | Listagem e busca conectadas a `GERAL.PAIS_NOME` via `/api/admin/countries/`; modal de edição/criação local (sem gravação Oracle nesta etapa) |
 | `/settings/masters/states` | StatesAdmin | Listagem paginada com busca/filtro por país via `/api/admin/states-catalog/`; consulta auxiliar de país em `/api/admin/countries/`; modal de edição/criação local |
 | `/settings/file-manager` | FileManagerSistemasAdmin | **Live** — vínculo sistema do Smarnet ↔ código do gerenciador (`PAR_SISTEMA`); seed 1–12; `codigo` imutável; mostra chave `PAR_FILTRO` e tela no Novo (Cliente live, demais reservados) |
+| `/settings/follow-up` | FollowUpSistemasAdmin | **Live** — vínculo sistema do Smarnet ↔ código do follow-up (`PRE_SISTEMA`); seed 3/117/121/281/292; custom a partir de 300; mostra chave `PRE_FILTRO` e tela no Novo (Cliente live, Proposta 121 reservada) |
 | `/settings/system` | SystemAdmin | **Mock** de formulários |
 | `/settings/integrations`, `/settings/notifications` | SystemAdmin | Mock |
 | `/settings/logs` | Overview | Placeholder |
@@ -80,6 +81,7 @@ Fora do card da listagem, alinhada à direita: Anterior / página / Próxima.
 | `/settings/integracoes` | `/settings/integrations` |
 | `/settings/notificacoes` | `/settings/notifications` |
 | `/settings/gerenciador-arquivos` | `/settings/file-manager` |
+| `/settings/followup` | `/settings/follow-up` |
 
 ## API relacionada
 

@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Mail, Search, User, Lock, DollarSign, Globe } from 'lucide-react';
-import { FormInput, FormTextarea, FormMaskedInput, FloatingLabelInput } from '@/components/ui/forms';
+import { FormInput, FormTextarea, FormMaskedInput, FloatingLabelInput, formatMoneyMask } from '@/components/ui/forms';
 import { ComponentDoc, DocSection, VariantSection, PropsTable, UsageNote } from '../_docs';
 
 export default function InputsPage() {
   const [textValue, setTextValue] = useState('');
   const [phone, setPhone] = useState('');
   const [cnpj, setCnpj] = useState('');
+  const [money, setMoney] = useState(formatMoneyMask(1246990));
   const [floating, setFloating] = useState('');
 
   return (
@@ -210,7 +211,7 @@ export default function InputsPage() {
               <FormMaskedInput mask="cpf" label="CPF" value="" onChange={() => {}} placeholder="000.000.000-00" />
               <FormMaskedInput mask="cep" label="CEP" value="" onChange={() => {}} placeholder="00000-000" />
               <FormMaskedInput mask="date" label="Data" value="" onChange={() => {}} placeholder="dd/mm/aaaa" />
-              <FormMaskedInput mask="money" label="Valor" prefix="R$" value="" onChange={() => {}} placeholder="0,00" />
+              <FormMaskedInput mask="money" label="Valor" prefix="R$" value={money} onChange={setMoney} placeholder="0,00" />
             </div>
           }
           code={`const [phone, setPhone] = useState('');
@@ -223,14 +224,20 @@ export default function InputsPage() {
 />
 
 <FormMaskedInput mask="cnpj" label="CNPJ" value={cnpj} onChange={setCnpj} />
-<FormMaskedInput mask="money" label="Valor" prefix="R$" value={value} onChange={setValue} />`}
+<FormMaskedInput
+  mask="money"
+  label="Valor"
+  prefix="R$"
+  value={formatMoneyMask(1246990)}
+  onChange={setMoney}
+/>`}
         />
 
         <PropsTable
           rows={[
             { name: 'mask', type: '"cpf" | "cnpj" | "phone" | "cep" | "date" | "money" | "percent" | "custom"', required: true, description: 'Tipo de máscara.' },
-            { name: 'value', type: 'string', required: true, description: 'Valor controlado já mascarado.' },
-            { name: 'onChange', type: '(value: string) => void', required: true, description: 'Callback recebe valor mascarado.' },
+            { name: 'value', type: 'string', required: true, description: 'Valor controlado já mascarado. Moeda: use formatMoneyMask no carregamento.' },
+            { name: 'onChange', type: '(value: string) => void', required: true, description: 'Callback recebe valor mascarado. Moeda: grave com parseMoneyMask.' },
             { name: 'customMask', type: '(value: string) => string', description: 'Função própria de máscara (mask="custom").' },
             { name: '...FormInputProps', type: 'FormInputProps', description: 'Aceita todas as props de FormInput.' },
           ]}
@@ -263,6 +270,13 @@ export default function InputsPage() {
         />
       </DocSection>
 
+      <UsageNote type="tip">
+        Moeda: <code className="font-mono text-[11px]">FormMaskedInput mask=&quot;money&quot;</code> com{' '}
+        <code className="font-mono text-[11px]">prefix=&quot;R$&quot;</code>. Número da API entra com{' '}
+        <code className="font-mono text-[11px]">formatMoneyMask</code>; o POST sai com{' '}
+        <code className="font-mono text-[11px]">parseMoneyMask</code>. Não usar{' '}
+        <code className="font-mono text-[11px]">FormInput type=&quot;number&quot;</code> para reais.
+      </UsageNote>
       <UsageNote type="tip">
         Use <strong>FormInput</strong> como padrão. <strong>FloatingLabelInput</strong> é indicado
         apenas em telas de autenticação / formulários compactos onde o efeito visual é desejado.

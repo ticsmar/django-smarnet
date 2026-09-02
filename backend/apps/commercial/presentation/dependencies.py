@@ -11,6 +11,9 @@ from apps.commercial.application.use_cases.consulta_funcionario_use_case import 
 from apps.commercial.application.use_cases.create_cliente_from_funcionario_use_case import (  # noqa: E501
     CreateClienteFromFuncionarioUseCase,
 )
+from apps.commercial.application.use_cases.get_cliente_dashboard_credito_use_case import (  # noqa: E501
+    GetClienteDashboardCreditoUseCase,
+)
 from apps.commercial.application.use_cases.get_cliente_use_case import (
     GetClienteUseCase,
 )
@@ -19,6 +22,9 @@ from apps.commercial.application.use_cases.grava_cliente_bloqueio_use_case impor
 )
 from apps.commercial.application.use_cases.grava_cliente_dados_gerais_use_case import (
     GravaClienteDadosGeraisUseCase,
+)
+from apps.commercial.application.use_cases.grava_cliente_limites_use_case import (
+    GravaClienteLimitesUseCase,
 )
 from apps.commercial.application.use_cases.grava_cliente_tabs_use_case import (
     GravaClienteCobrancaUseCase,
@@ -31,6 +37,12 @@ from apps.commercial.application.use_cases.grava_cliente_tabs_use_case import (
 )
 from apps.commercial.application.use_cases.list_cliente_catalogs_use_case import (
     ListClienteCatalogsUseCase,
+)
+from apps.commercial.application.use_cases.list_cliente_dashboard_os_use_case import (
+    ListClienteDashboardOsUseCase,
+)
+from apps.commercial.application.use_cases.list_cliente_dashboard_titulos_use_case import (  # noqa: E501
+    ListClienteDashboardTitulosUseCase,
 )
 from apps.commercial.application.use_cases.list_cliente_lookups_use_case import (
     ListClienteArclassesUseCase,
@@ -59,6 +71,7 @@ from apps.commercial.infrastructure.cnpj_consulta import (
     ViaCepClient,
 )
 from apps.commercial.infrastructure.repositories import (
+    build_oracle_cliente_dashboard_repository,
     build_oracle_cliente_query_repository,
     build_oracle_cliente_repository,
 )
@@ -195,3 +208,25 @@ def build_grava_cliente_obs_use_case() -> GravaClienteObsUseCase:
 
 def build_grava_cliente_bloqueio_use_case() -> GravaClienteBloqueioUseCase:
     return _write_use_case(GravaClienteBloqueioUseCase)
+
+
+def build_grava_cliente_limites_use_case() -> GravaClienteLimitesUseCase:
+    return _write_use_case(GravaClienteLimitesUseCase)
+
+
+def build_get_cliente_dashboard_credito_use_case() -> GetClienteDashboardCreditoUseCase:
+    return GetClienteDashboardCreditoUseCase(
+        build_oracle_cliente_dashboard_repository()
+    )
+
+
+def build_list_cliente_dashboard_os_use_case() -> ListClienteDashboardOsUseCase:
+    return ListClienteDashboardOsUseCase(build_oracle_cliente_dashboard_repository())
+
+
+def build_list_cliente_dashboard_titulos_use_case() -> (
+    ListClienteDashboardTitulosUseCase
+):
+    return ListClienteDashboardTitulosUseCase(
+        build_oracle_cliente_dashboard_repository()
+    )

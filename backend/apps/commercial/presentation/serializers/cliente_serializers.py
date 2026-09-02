@@ -33,6 +33,14 @@ class ClienteListItemSerializer(serializers.Serializer):
     crs_restricao = serializers.IntegerField(allow_null=True, required=False)
     crs_cores = serializers.CharField(allow_null=True, required=False)
     cadastro_checagem = serializers.IntegerField(allow_null=True, required=False)
+    pai_codigo = serializers.IntegerField(allow_null=True, required=False)
+    pais_nome = serializers.CharField(allow_null=True, required=False)
+    endereco1 = serializers.CharField(allow_null=True, required=False)
+    endereco2 = serializers.CharField(allow_null=True, required=False)
+    cli_bairro = serializers.CharField(allow_null=True, required=False)
+    cep = serializers.CharField(allow_null=True, required=False)
+    telefone1 = serializers.CharField(allow_null=True, required=False)
+    email = serializers.CharField(allow_null=True, required=False)
 
 
 class PaginatedClientesSerializer(serializers.Serializer):

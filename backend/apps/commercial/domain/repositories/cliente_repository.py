@@ -1,6 +1,7 @@
 """Write repository contract for SIAOS.CLIENTE Oracle procedures."""
 
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Literal, Protocol
 
 TipoCadastro = Literal["I", "A"]
@@ -205,6 +206,15 @@ class ClienteRepository(Protocol):
         self, *, codigo: int, bloqueado: int, mensagem_bloqueio: str | None
     ) -> None:
         """UPDATE SIAOS.CLIENTE BLOQUEADO (= CRS_COD_SIAOS) and MENSAGEM_BLOQUEIO."""
+
+    def grava_limites(
+        self,
+        *,
+        codigo: int,
+        limitecr: Decimal | None,
+        cli_limite_crv: Decimal | None,
+    ) -> None:
+        """UPDATE SIAOS.CLIENTE LIMITECR and CLI_LIMITE_CRV (estCli cadastros)."""
 
     def read_emp_codigo(self, codigo: int) -> int | None:
         """Return the raw EMP_CODIGO of the given cliente (no scope filter)."""

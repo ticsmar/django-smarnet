@@ -45,6 +45,7 @@ const StatesAdmin = lazy(() => import("./pages/admin/StatesAdmin"));
 const AccessAdmin = lazy(() => import("./pages/admin/AccessAdmin"));
 const SystemAdmin = lazy(() => import("./pages/admin/SystemAdmin"));
 const FileManagerSistemasAdmin = lazy(() => import("./pages/admin/FileManagerSistemasAdmin"));
+const FollowUpSistemasAdmin = lazy(() => import("./pages/admin/FollowUpSistemasAdmin"));
 
 // Profile (TopNav) + Home hub
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
@@ -104,6 +105,7 @@ const DSCPanels = lazy(() => import("./pages/design-system/components/pages/Pane
 const DSCListGroups = lazy(() => import("./pages/design-system/components/pages/ListGroupsPage"));
 const DSCDropdowns = lazy(() => import("./pages/design-system/components/pages/DropdownsPage"));
 const DSCFileManager = lazy(() => import("./pages/design-system/components/pages/FileManagerPage"));
+const DSCFollowUp = lazy(() => import("./pages/design-system/components/pages/FollowUpPage"));
 const DSCCollection = lazy(() => import("./pages/design-system/components/pages/CollectionPage"));
 const DSPatterns = lazy(() => import("./pages/design-system/PatternsPage"));
 const DSDashboards = lazy(() => import("./pages/design-system/DashboardsPage"));
@@ -290,6 +292,7 @@ function AppRoutes() {
           <Route path="list-groups" element={<LazyRoute><DSCListGroups /></LazyRoute>} />
           <Route path="dropdowns" element={<LazyRoute><DSCDropdowns /></LazyRoute>} />
           <Route path="file-manager" element={<LazyRoute><DSCFileManager /></LazyRoute>} />
+          <Route path="follow-up" element={<LazyRoute><DSCFollowUp /></LazyRoute>} />
           <Route path="collection" element={<LazyRoute><DSCCollection /></LazyRoute>} />
         </Route>
         <Route path="patterns" element={<LazyRoute><DSPatterns /></LazyRoute>} />
@@ -436,6 +439,7 @@ function AppRoutes() {
         <Route path="access-profiles" element={<LazyRoute><AccessAdmin /></LazyRoute>} />
         <Route path="system" element={<LazyRoute><SystemAdmin /></LazyRoute>} />
         <Route path="file-manager" element={<LazyRoute><FileManagerSistemasAdmin /></LazyRoute>} />
+        <Route path="follow-up" element={<LazyRoute><FollowUpSistemasAdmin /></LazyRoute>} />
         <Route path="activity" element={<LazyRoute><SettingsOverview /></LazyRoute>} />
         <Route path="integrations" element={<LazyRoute><SystemAdmin /></LazyRoute>} />
         <Route path="notifications" element={<LazyRoute><SystemAdmin /></LazyRoute>} />
@@ -455,6 +459,7 @@ function AppRoutes() {
         <Route path="integracoes" element={<Navigate to="/settings/integrations" replace />} />
         <Route path="notificacoes" element={<Navigate to="/settings/notifications" replace />} />
         <Route path="gerenciador-arquivos" element={<Navigate to="/settings/file-manager" replace />} />
+        <Route path="followup" element={<Navigate to="/settings/follow-up" replace />} />
         </Route>
       </Route>
 

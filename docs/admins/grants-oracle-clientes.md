@@ -43,7 +43,7 @@ GRANT SELECT ON SIAOS.VW_PAGTO_DIAS TO API_SMAR;
 GRANT SELECT ON SIAOS.VW_ARQUIVOS TO API_SMAR;
 GRANT SELECT ON SIAOS.PROP_ARQ_MOD TO API_SMAR;
 
--- Fora do cadastro migrado (legado op=estCli). Concedidos; a tela Novo não chama.
+-- Dashboard do Cliente (estCli: faturamento OEHDR/OELIN + calendário)
 GRANT EXECUTE ON SIAOS.PCK_SMART_SALES3 TO API_SMAR;
 GRANT SELECT ON SIAOS.OEHDR TO API_SMAR;
 GRANT SELECT ON SIAOS.OELIN TO API_SMAR;
@@ -72,8 +72,7 @@ Não conceder `INSERT` em `LOG_CLIENTE` à API — as triggers `TG_B_IU_EMBARQUE
 
 ## Não portar
 
-- `ajax.php?op=5` (UPDATE genérico `SET $campo = $limite`)
-- `op=estCli` (`PCK_SMART_SALES3` / `OEHDR` / `OELIN` / `CALENDARIO`) — grants existem; a aplicação não usa
+- `ajax.php?op=5` (UPDATE genérico `SET $campo = $limite`) — o Dashboard grava só `LIMITECR` e `CLI_LIMITE_CRV`, com `change_clienterisco`
 
 ## Comportamento sem grant
 

@@ -27,9 +27,9 @@ Perguntar quando qualquer um destes for verdadeiro:
 
 - A feature cabe em mais de um contexto (ex. Cliente em Comercial vs cadastro mestre em Settings).
 - O menu legado 3.01 diz “Administração” mas a rota Novo já é outra (caso Cliente).
-- É componente compartilhado (`files`) usado por um host (Cliente, futuramente OP).
+- É componente compartilhado (`files` / `followup`) usado por um host (Cliente, futuramente OP).
 - Ainda não existe o app e a tentação é jogar em `pages/` ou em `users`.
-- É “configuração” (`/settings/*`) — shell vs `users` vs `files` vs `administration`.
+- É “configuração” (`/settings/*`) — shell vs `users` vs `files` vs `followup` vs `administration`.
 - Cruzar dois contextos: quem é dono do write?
 
 | Contexto já fechado | Módulo |
@@ -40,10 +40,11 @@ Perguntar quando qualquer um destes for verdadeiro:
 | Ordem de Produção | `production` |
 | Notícia/grupo/menu público | `portal` |
 | Árvore de arquivos / `PAR_SISTEMA` | `files` (o host só passa `sistema` + `filtro`) |
+| Follow-up / recado / `PRE_SISTEMA` | `followup` (o host só passa `sistema` + `filtro`) |
 | Usuário, pessoa, empresa, grupo, solicitação de acesso | `users` (UI em `/settings`) |
 | Token de filial | `branch_auth` |
 
-**Não** criar `backend/apps/settings/` — `/settings` é shell React sobre `users` + `files`; o nome colide com `config/settings/`.
+**Não** criar `backend/apps/settings/` — `/settings` é shell React sobre `users` + `files` + `followup`; o nome colide com `config/settings/`.
 
 Se a resposta criar contexto novo: checklist em [`AI_DEVELOPMENT_RULES.md`](../../AI_DEVELOPMENT_RULES.md) e termo em [`CONTEXT.md`](../../CONTEXT.md).
 

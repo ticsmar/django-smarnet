@@ -28,11 +28,12 @@ Importar de `@/components/ui/forms`.
 | Agrupamento de seção | `FormSection` — título DS: `text-[10px] font-bold uppercase tracking-widest text-accent` |
 | Grade de campos | `FormGrid` (`cols={2}` etc.) |
 | Texto / número | `FormInput` |
+| Valor (R$) | `FormMaskedInput mask="money"` + `prefix="R$"` — carregar com `formatMoneyMask`, gravar com `parseMoneyMask` |
 | Combo com busca | `FormCombobox` |
 | Select simples | `FormSelect` |
 | Checkbox / switch / rádio | `FormCheckbox`, `FormSwitch`, `FormRadioGroup` |
 | Data | `FormDatePicker` / `FormDateRangePicker` |
-| Máscara | `FormMaskedInput` |
+| Máscara (CPF, CNPJ, telefone, CEP, data, %) | `FormMaskedInput` |
 | Ações do form | `FormActions` + `Button` / `ActionButton` |
 
 **Estados do campo** (`fieldControlClassName` / `choiceControlClassName` em `@/components/ui/forms`):
@@ -104,10 +105,11 @@ Código de referência: `frontend/src/modules/commercial/pages/ClientesPage.tsx`
 | Tabela | §3.2 — `Table` do DS; demo `/design-system/components/table` |
 | Listagem 3 modos | §3 — página inteira como Clientes; demo `/design-system/components/collection` |
 | Alertas / toasts | `@/components/ui/alert`, `@/components/ui/alerts`, `@/components/ui/toasts` |
-| Dialog / sheet | `@/components/ui/dialog`, `sheet`, `alert-dialog` |
+| Dialog / sheet | `@/components/ui/dialog`, `sheet`, `alert-dialog` — consultas densas: modal quase tela cheia (`max-w-[min(96vw,1400px)]`, `h-[92vh]`), ex. Dashboard do Cliente na listagem |
 | Tabs | `@/components/ui/tabs` — cadastros/fichas: `variant="folder"`; painel da ficha preenchendo o `main`: `fill` (opt-in). Demo: `/design-system/components/tabs` |
 | Cards / KPIs | `@/components/ui/cards`, `@/components/ui/panels` — Panel: `color` + `tone` (`solid` / `light` / `outline`) |
 | Gerenciador de Arquivos | `@/components/ui/file-manager` — toolbar + árvore + modais do 3.01; props `sistema` + `filtro` + `disabled`. Demo: `/design-system/components/file-manager` |
+| Follow-up | `@/components/ui/follow-up` — lista, formulário e ícone de alerta; modal com abas por host (`sistema` + `filtro` + `disabled`). Demo: `/design-system/components/follow-up` |
 
 Índice do catálogo: `/design-system/components`.
 

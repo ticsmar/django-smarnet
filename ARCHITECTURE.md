@@ -32,14 +32,15 @@ backend/
 │   ├── administration/ # Administration dashboards/reports (no Cliente)
 │   ├── production/      # Production (OP)
 │   ├── portal/          # Public portal (news / groups / menus)
-│   └── files/           # File manager (sistemas nativos + PROP_ARQUIVO)
+│   ├── files/           # File manager (sistemas nativos + PROP_ARQUIVO)
+│   └── followup/        # Follow-up / recado (sistemas nativos + PROP_RECADO)
 ├── static/
 ├── media/
 ├── templates/
 └── scripts/             # Auditoria Oracle (não é deploy de package)
 ```
 
-`/settings` is a **frontend shell**, not `backend/apps/settings/` (that name collides with `config/settings/`). Settings screens call `users` and `files` APIs.
+`/settings` is a **frontend shell**, not `backend/apps/settings/` (that name collides with `config/settings/`). Settings screens call `users`, `files` and `followup` APIs.
 
 Do not put business code in `config/`. If a bounded context is unclear, **ask which module** before creating folders (see `docs/developers/novas-telas.md`).
 
@@ -68,6 +69,7 @@ Python imports use the `apps.` prefix:
 - `apps.production.*`
 - `apps.portal.*`
 - `apps.files.*`
+- `apps.followup.*`
 - `apps.shared.*`
 - `config.*` (project configuration, not under `apps/`)
 
@@ -79,10 +81,11 @@ Python imports use the `apps.` prefix:
 | production | `/api/production/` | `/app/production/*` | `production_infrastructure` |
 | portal | `/api/portal/` | `/portal` | `portal_infrastructure` |
 | files | `/api/files/` | FileManager + `/settings/file-manager` | `files_infrastructure` |
+| followup | `/api/followup/` | FollowUp + `/settings/follow-up` | `followup_infrastructure` |
 | users | `/api/users/`, `/api/admin/` | `/settings/*` | `users_infrastructure` |
 | branch_auth | `/api/branch-auth/` | `/app/devices` | `branch_auth_infrastructure` |
 
-Legacy API prefixes (`/api/administracao/`, `/api/compras/`, `/api/arquivos/`) remain as aliases.
+Legacy API prefixes (`/api/administracao/`, `/api/compras/`, `/api/arquivos/`, `/api/recados/`) remain as aliases.
 
 ## Domain Structure
 

@@ -53,7 +53,12 @@ export type { FormRichTextProps } from './FormRichText';
 export { FormRichTextTinyMCE } from './FormRichTextTinyMCE';
 export type { FormRichTextTinyMCEProps } from './FormRichTextTinyMCE';
 
-export { FormMaskedInput } from './FormMaskedInput';
+export {
+  FormMaskedInput,
+  applyMoneyMask,
+  formatMoneyMask,
+  parseMoneyMask,
+} from './FormMaskedInput';
 export type { FormMaskedInputProps, MaskType } from './FormMaskedInput';
 
 export { FormSection, FormGrid, FormRow, FormInline, FormActions } from './FormLayout';

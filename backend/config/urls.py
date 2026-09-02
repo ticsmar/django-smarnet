@@ -27,6 +27,8 @@ urlpatterns = [
     path("api/administracao/", include("apps.commercial.presentation.api.urls")),
     path("api/files/", include("apps.files.presentation.api.urls")),
     path("api/arquivos/", include("apps.files.presentation.api.urls")),
+    path("api/followup/", include("apps.followup.presentation.api.urls")),
+    path("api/recados/", include("apps.followup.presentation.api.urls")),
     path("api/administration/", include("apps.administration.presentation.api.urls")),
     path("api/production/", include("apps.production.presentation.api.urls")),
     path("api/portal/", include("apps.portal.presentation.api.urls")),

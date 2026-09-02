@@ -23,6 +23,10 @@ export function clienteRiscoBadgeColor(
   return "neutral";
 }
 
+export function riscoLongDesc(descLonga?: string | null): string {
+  return (descLonga || "").trim().replace(/\s+/g, " ");
+}
+
 export function riscoShortDesc(
   desc?: string | null,
   descLonga?: string | null,
@@ -31,7 +35,7 @@ export function riscoShortDesc(
   if (short) {
     return short;
   }
-  const longa = (descLonga || "").trim();
+  const longa = riscoLongDesc(descLonga);
   const sep = longa.indexOf(":");
   if (sep >= 0) {
     return longa.slice(sep + 1).trim();
@@ -45,6 +49,7 @@ type ClienteRiscoStatusBadgeProps = {
   descLonga?: string | null;
   restricao?: number | null;
   showDesc?: boolean;
+  showLongDesc?: boolean;
   tone?: BadgeTone;
   className?: string;
 };
@@ -55,17 +60,25 @@ export function ClienteRiscoStatusBadge({
   descLonga,
   restricao,
   showDesc = false,
+  showLongDesc = false,
   tone = "soft",
   className,
 }: ClienteRiscoStatusBadgeProps) {
   const letter = (letra || "").trim() || "A";
   const short = riscoShortDesc(desc, descLonga);
-  const longa = descLonga?.trim() || undefined;
-  const label = showDesc ? short || letter : letter;
+  const longa = riscoLongDesc(descLonga);
+  const label = showLongDesc
+    ? longa || short || letter
+    : showDesc
+      ? short || letter
+      : letter;
+  const title = showLongDesc
+    ? undefined
+    : longa || (showDesc ? undefined : short) || undefined;
   return (
     <StatusBadge
       label={label}
-      title={longa || (showDesc ? undefined : short) || undefined}
+      title={title}
       color={clienteRiscoBadgeColor(restricao, letter)}
       tone={tone}
       showDot

@@ -172,3 +172,35 @@ _Avoid_: filtrar só por sistema; usar `PAR_CODIGO` como filtro do host
 **desabilita (`disabled`)**:
 Flag do host (3.01 `desabilita` = `0` ou `1`). `1` / `true` bloqueia incluir, alterar e excluir no gerenciador; listar, baixar e histórico continuam. Não é coluna Oracle.
 _Avoid_: reimplementar a trava no host; esconder download/histórico quando só as escritas devem travar
+
+**Follow-up (recado)**:
+Componente único (`sistema` + `filtro` + `disabled`) que lê/grava `SIAOS.PROP_RECADO` via `PCK_SMART_SALES3.SP_GRAVA_FOLLOWUP`. O modal genérico usa **abas** (uma por host; rótulo `Cliente: 5415`). No Cliente o 3.01 tinha um segundo follow-up específico (`FOLLOW_CLIENTE`); está **descontinuado** e não entra nesta tela. Hosts só passam `sistema`, `filtro` e `disabled`.
+_Avoid_: um recado.php por tela; misturar com o Gerenciador de Arquivos (`PAR_SISTEMA=7`); reexibir o post-it `FOLLOW_CLIENTE`
+
+**PRE_SISTEMA (`sit_codigo`)**:
+Código do sistema em que o follow-up atua (`PROP_RECADO.PRE_SISTEMA`). Cadastro nativo em `/settings/follow-up`. Seed 3, **117 = Cliente**, 121, 281, 292; custom a partir de **300**.
+_Avoid_: usar `7` (arquivo) como follow-up de Cliente; alterar `codigo` depois de criado; inventar código abaixo de 300
+
+**PRE_FILTRO**:
+Chave primária do registro host em `PROP_RECADO.PRE_FILTRO` (INTEGER no Oracle). No Cliente: `SIAOS.CLIENTE.CODIGO`. Toda lista/gravação usa **os dois** (`PRE_SISTEMA` + `PRE_FILTRO`).
+_Avoid_: filtrar só por sistema; confundir com `PAR_FILTRO` (varchar do gerenciador); usar `PRE_CODIGO` como filtro do host
+
+**TRE_ATIVO**:
+Só tipo com `TRE_ATIVO = 1` entra no combo Referência.
+_Avoid_: tratar `NULL` como ativo
+
+**TRE_TIPO_CANC**:
+`1` = tipo de cancelamento: o operador **escolhe** um `SIAOS.MOTIVO` (`MOT_CODIGO`) junto com a mensagem.
+_Avoid_: gravar recado de cancelamento sem motivo
+
+**TRE_DESCRICAO / MOT_DESCRICAO**:
+Rótulo exibido no combo Referência e no catálogo de motivos. Vem direto de `SIAOS.TIPO_RECADO.TRE_DESCRICAO` e `SIAOS.MOTIVO.MOT_DESCRICAO` (sem `TRE_LEGENDA` / `MOT_LEGENDA` por enquanto).
+_Avoid_: usar `SMARNET.LEGENDA_TEXTO` no follow-up genérico
+
+**Dashboard do Cliente**:
+Modal de consulta na **listagem** de Clientes (menu ⋮, abaixo de Follow-up). Abas **Crédito** (limites, risco, totais de OS) e **Histórico** (OSs e Títulos). Filtro **Cliente** vs **Grupo econômico** via `SIAOS.CLIENTE.CLI_GRUPO` (cabeça = `NVL(CLI_GRUPO, CODIGO)`). API nativa `/api/commercial/clientes/<codigo>/dashboard/*`; legado `cliente_des_ajax.php` só como referência.
+_Avoid_: iframe do PHP 3.01; botão na ficha (v1 só listagem); confundir com dashboard de Administração (`/app/administration/dashboard`)
+
+**Escopo grupo (`CLI_GRUPO`)**:
+`scope=grupo` agrega membros onde `CODIGO = cabeça OR CLI_GRUPO = cabeça`; `scope=cliente` restringe ao `CODIGO` do anchor.
+_Avoid_: tratar `CLI_GRUPO` como nome do grupo; filtrar só pelo anchor sem resolver a cabeça

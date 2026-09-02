@@ -16,6 +16,14 @@ export type ClienteListItem = {
   crs_restricao?: number | null;
   crs_cores?: string | null;
   cadastro_checagem?: number | null;
+  pai_codigo?: number | null;
+  pais_nome?: string | null;
+  endereco1?: string | null;
+  endereco2?: string | null;
+  cli_bairro?: string | null;
+  cep?: string | null;
+  telefone1?: string | null;
+  email?: string | null;
 };
 
 export type ClienteDetail = {

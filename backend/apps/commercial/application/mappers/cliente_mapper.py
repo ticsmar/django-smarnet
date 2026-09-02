@@ -87,6 +87,14 @@ def to_list_item_dto(
         crs_restricao=record.crs_restricao,
         crs_cores=record.crs_cores,
         cadastro_checagem=record.cadastro_checagem,
+        pai_codigo=record.pai_codigo,
+        pais_nome=record.pais_nome,
+        endereco1=record.endereco1,
+        endereco2=record.endereco2,
+        cli_bairro=record.cli_bairro,
+        cep=record.cep,
+        telefone1=record.telefone1,
+        email=record.email,
     )
 
 

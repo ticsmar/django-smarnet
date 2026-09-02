@@ -108,7 +108,8 @@ export function ProfileDropdown({
                 onClick={item.onClick}
                 className={cn(item.destructive && 'text-destructive focus:text-destructive')}
               >
-                {Icon && <Icon size={14} />} {item.label}
+                {Icon && <Icon size={14} />}
+                {item.label}
               </DropdownMenuItem>
             </span>
           );
@@ -120,7 +121,8 @@ export function ProfileDropdown({
               onClick={onLogout}
               className="text-destructive focus:text-destructive"
             >
-              <LogOut size={14} /> {logoutLabel}
+              <LogOut size={14} />
+              {logoutLabel}
             </DropdownMenuItem>
           </>
         )}

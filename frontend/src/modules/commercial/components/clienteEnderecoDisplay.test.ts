@@ -4,6 +4,8 @@ import {
   addressLines,
   fromCobranca,
   enderecoMatches,
+  visitCardAddressLines,
+  formatCepVisitCard,
   type EnderecoRefRow,
 } from "./clienteEnderecoDisplay";
 
@@ -80,5 +82,36 @@ describe("fromCobranca / enderecoMatches", () => {
     expect(mapped.chave).toBe("000000001");
     expect(enderecoMatches(mapped, "piracicaba")).toBe(true);
     expect(enderecoMatches(mapped, "santos")).toBe(false);
+  });
+});
+
+describe("visitCardAddressLines", () => {
+  it("stacks street, neighborhood and city/UF", () => {
+    expect(
+      visitCardAddressLines({
+        endereco1: "Rua Tal",
+        endereco2: "100",
+        cli_bairro: "Centro",
+        cidade: "Piracicaba",
+        estado: "SP",
+        cep: "13400-000",
+      }),
+    ).toEqual(["Rua Tal, 100", "Centro", "Piracicaba / SP"]);
+  });
+
+  it("omits empty parts", () => {
+    expect(
+      visitCardAddressLines({
+        endereco1: "Av. Brasil",
+        cidade: "Sertaozinho",
+      }),
+    ).toEqual(["Av. Brasil", "Sertaozinho"]);
+  });
+});
+
+describe("formatCepVisitCard", () => {
+  it("formats 8 digits as NN.NNN-NNN", () => {
+    expect(formatCepVisitCard("37701108")).toBe("37.701-108");
+    expect(formatCepVisitCard("37701-108")).toBe("37.701-108");
   });
 });

@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
-from typing import NoReturn, Protocol, cast
+from typing import TYPE_CHECKING, NoReturn, Protocol, cast
 
 import oracledb
 from django.db import DatabaseError, connections, transaction
+
+if TYPE_CHECKING:
+    from decimal import Decimal
 
 from apps.commercial.domain.exceptions.cliente_exceptions import (
     ClienteDatabaseError,
@@ -302,6 +305,33 @@ class OracleClienteRepositoryImpl:
                     "SET BLOQUEADO = %s, MENSAGEM_BLOQUEIO = %s, "
                     "DT_ATUAL = SYSDATE WHERE CODIGO = %s",
                     [bloqueado, _as_str(mensagem_bloqueio), codigo],
+                )
+        except (DatabaseError, oracledb.Error) as extra:
+            _raise_cliente_database_error(extra)
+
+    def grava_limites(
+        self,
+        *,
+        codigo: int,
+        limitecr: Decimal | None,
+        cli_limite_crv: Decimal | None,
+    ) -> None:
+        """Persist LIMITECR and CLI_LIMITE_CRV (estCli Cadastros).
+
+        Via 2 (ADR 0005): ajax.php?op=5 used SET $campo — not ported.
+        SP_ATUALIZA_DADOS_FINAN would rewrite the rest of the finan tab.
+        """
+        ensure_smar_client_identifier()
+        try:
+            with (
+                transaction.atomic(using=_DB_ALIAS),
+                connections[_DB_ALIAS].cursor() as cursor,
+            ):
+                cursor.execute(
+                    "UPDATE SIAOS.CLIENTE "
+                    "SET LIMITECR = %s, CLI_LIMITE_CRV = %s, "
+                    "DT_ATUAL = SYSDATE WHERE CODIGO = %s",
+                    [limitecr, cli_limite_crv, codigo],
                 )
         except (DatabaseError, oracledb.Error) as extra:
             _raise_cliente_database_error(extra)

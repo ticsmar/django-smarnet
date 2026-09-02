@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { FormCombobox, FormInput, FormRow } from "@/components/ui/forms";
+import { FormCombobox, FormInput, FormMaskedInput, FormRow, formatMoneyMask, parseMoneyMask } from "@/components/ui/forms";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useT } from "@/hooks/useT";
 import { ApiError } from "../api/commercialApi";
@@ -103,15 +103,18 @@ export function ClienteFinanceiroForm({
           htmlFor="limitecr"
           label={t("administracao.clientes.fields.limitecr")}
         >
-          <FormInput
+          <FormMaskedInput
             id="limitecr"
-            type="number"
-            value={form.limitecr ?? ""}
+            mask="money"
+            prefix="R$"
+            value={formatMoneyMask(form.limitecr)}
             disabled={!canEdit || limitesLocked}
-            onChange={(event) =>
+            placeholder="0,00"
+            inputClassName="tabular-nums text-right"
+            onChange={(masked) =>
               setForm((current) => ({
                 ...current,
-                limitecr: event.target.value ? Number(event.target.value) : null,
+                limitecr: parseMoneyMask(masked),
               }))
             }
           />
@@ -120,17 +123,18 @@ export function ClienteFinanceiroForm({
           htmlFor="limite-crv"
           label={t("administracao.clientes.fields.cli_limite_crv")}
         >
-          <FormInput
+          <FormMaskedInput
             id="limite-crv"
-            type="number"
-            value={form.cli_limite_crv ?? ""}
+            mask="money"
+            prefix="R$"
+            value={formatMoneyMask(form.cli_limite_crv)}
             disabled={!canEdit || limitesLocked}
-            onChange={(event) =>
+            placeholder="0,00"
+            inputClassName="tabular-nums text-right"
+            onChange={(masked) =>
               setForm((current) => ({
                 ...current,
-                cli_limite_crv: event.target.value
-                  ? Number(event.target.value)
-                  : null,
+                cli_limite_crv: parseMoneyMask(masked),
               }))
             }
           />

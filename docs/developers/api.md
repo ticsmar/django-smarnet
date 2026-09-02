@@ -12,6 +12,7 @@
 | `/api/purchasing/` | Fornecedores, contatos, países |
 | `/api/commercial/` | Clientes, catálogos (países, estados, origens) |
 | `/api/files/` | Gerenciador de Arquivos (sistemas, árvore, upload, log) |
+| `/api/followup/` | Follow-up / recados (sistemas, lista, gravação, status) |
 | `/admin/` | Django Admin |
 
 ## Spectacular
@@ -31,5 +32,6 @@ Base URL: `VITE_DJANGO_API_URL` ou fallback `http://localhost:8000/api` (`fronte
 - Usuários: [auth.md](./auth.md)
 - Administração — Clientes: [administracao-clientes.md](./administracao-clientes.md)
 - Gerenciador de Arquivos: [arquivos.md](./arquivos.md)
+- Follow-up: [followup.md](./followup.md)
 - Compras: [compras.md](./compras.md)
 - Devices: [producao-devices.md](./producao-devices.md)

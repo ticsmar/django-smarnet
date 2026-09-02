@@ -105,6 +105,7 @@ export const componentGroups = [
       { to: '/design-system/components/resizable', label: 'Resizable' },
       { to: '/design-system/components/chart', label: 'Chart' },
       { to: '/design-system/components/file-manager', label: 'File Manager' },
+      { to: '/design-system/components/follow-up', label: 'Follow-up' },
     ],
   },
 ];

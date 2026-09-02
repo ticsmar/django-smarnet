@@ -26,7 +26,7 @@ Não usar `SF_TEM_ACESSO` como gate HTTP de tipo A.
 
 | 3.01 | Novo | Uso |
 |------|------|-----|
-| ACE 370 (`cad_bloqueio.php`) | `commercial_infrastructure.change_clienterisco` | Alterar status/bloqueio (`BLOQUEADO` = `CRS_COD_SIAOS`, `MENSAGEM_BLOQUEIO`) |
-| (mesmo ACE 370 no PHP misturava limite) | `commercial_infrastructure.change_clientelimite` | Limite especial; modelos de pagamento sem filtro de risco |
+| ACE 370 (`cad_bloqueio.php` e aba Cadastros do `estCli`) | `commercial_infrastructure.change_clienterisco` | Status/bloqueio; no Dashboard também limites `LIMITECR` / `CLI_LIMITE_CRV` |
+| (mesmo ACE 370 no PHP misturava limite na ficha) | `commercial_infrastructure.change_clientelimite` | Limite especial na aba Dados Financeiros; modelos de pagamento sem filtro de risco |
 
 `view_cliente` / `change_cliente` cobrem o cadastro. Status **não** reutiliza `change_clientelimite`.

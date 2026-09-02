@@ -21,6 +21,14 @@ class ClienteListRecord:
     crs_restricao: int | None = None
     crs_cores: str | None = None
     cadastro_checagem: int | None = None
+    pai_codigo: int | None = None
+    pais_nome: str | None = None
+    endereco1: str | None = None
+    endereco2: str | None = None
+    cli_bairro: str | None = None
+    cep: str | None = None
+    telefone1: str | None = None
+    email: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { DASHBOARD_KEY } from "./useClienteDashboard";
 import {
   atualizaCliente,
   atualizaClienteFinanceiro,
@@ -11,6 +12,7 @@ import {
   gravaClienteBloqueio,
   gravaClienteCobranca,
   gravaClienteContato,
+  gravaClienteDashboardLimites,
   gravaClienteEmbarque,
   listClienteAreasOs,
   listClienteArclasses,
@@ -41,6 +43,7 @@ import type {
   GravaEnderecoRefInput,
   ListClientesParams,
 } from "../types/cliente";
+import type { GravaClienteDashboardLimitesInput } from "../types/clienteDashboard";
 
 const CLIENTES_KEY = ["administracao", "clientes"] as const;
 const CATALOGOS_KEY = ["administracao", "catalogos"] as const;
@@ -294,6 +297,24 @@ export function useGravaClienteBloqueio() {
     }) => gravaClienteBloqueio(codigo, input),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: CLIENTES_KEY });
+      void queryClient.invalidateQueries({ queryKey: DASHBOARD_KEY });
+    },
+  });
+}
+
+export function useGravaClienteDashboardLimites() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      codigo,
+      input,
+    }: {
+      codigo: number;
+      input: GravaClienteDashboardLimitesInput;
+    }) => gravaClienteDashboardLimites(codigo, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: CLIENTES_KEY });
+      void queryClient.invalidateQueries({ queryKey: DASHBOARD_KEY });
     },
   });
 }

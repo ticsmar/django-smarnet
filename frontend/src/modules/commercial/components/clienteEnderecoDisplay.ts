@@ -165,3 +165,38 @@ export function enderecoMatches(row: EnderecoRefRow, needle: string): boolean {
     .toLowerCase();
   return hay.includes(needle);
 }
+
+export type VisitCardAddressSource = {
+  endereco1?: string | null;
+  endereco2?: string | null;
+  cli_bairro?: string | null;
+  cidade?: string | null;
+  estado?: string | null;
+  cep?: string | null;
+};
+
+/** Brazilian CEP as `NN.NNN-NNN` (8 digits). */
+export function formatCepVisitCard(cep?: string | null): string | null {
+  const digits = (cep || "").replace(/\D/g, "");
+  if (digits.length === 8) {
+    return `${digits.slice(0, 2)}.${digits.slice(2, 5)}-${digits.slice(5)}`;
+  }
+  return present(cep);
+}
+
+export function visitCardAddressLines(src: VisitCardAddressSource): string[] {
+  const lines: string[] = [];
+  const street = joinPresent([src.endereco1, src.endereco2], ", ");
+  if (street) {
+    lines.push(street);
+  }
+  const bairro = present(src.cli_bairro);
+  if (bairro) {
+    lines.push(bairro);
+  }
+  const cityUf = joinPresent([src.cidade, src.estado], " / ");
+  if (cityUf) {
+    lines.push(cityUf);
+  }
+  return lines;
+}

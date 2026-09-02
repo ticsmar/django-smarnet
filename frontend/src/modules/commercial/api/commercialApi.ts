@@ -30,6 +30,13 @@ import type {
   Paginated,
   Pais,
 } from "../types/cliente";
+import type {
+  ClienteDashboardCredito,
+  ClienteDashboardListParams,
+  GravaClienteDashboardLimitesInput,
+  PaginatedDashboardOs,
+  PaginatedDashboardTitulos,
+} from "../types/clienteDashboard";
 
 export { ApiError };
 
@@ -229,6 +236,16 @@ export async function gravaClienteBloqueio(
   });
 }
 
+export async function gravaClienteDashboardLimites(
+  codigo: number,
+  input: GravaClienteDashboardLimitesInput,
+): Promise<void> {
+  await apiRequest<void>(`/administracao/clientes/${codigo}/dashboard/limites/`, {
+    method: "PUT",
+    body: JSON.stringify(input),
+  });
+}
+
 export async function listClienteContatos(
   codigo: number,
   search = "",
@@ -349,4 +366,41 @@ export async function atualizaClienteObs(
     method: "PUT",
     body: JSON.stringify({ observa }),
   });
+}
+
+export async function getClienteDashboardCredito(
+  codigo: number,
+  params: { scope?: string } = {},
+): Promise<ClienteDashboardCredito> {
+  return apiRequest(
+    `/administracao/clientes/${codigo}/dashboard/credito/${buildQuery({
+      scope: params.scope,
+    })}`,
+  );
+}
+
+export async function listClienteDashboardOs(
+  codigo: number,
+  params: ClienteDashboardListParams = {},
+): Promise<PaginatedDashboardOs> {
+  return apiRequest(
+    `/administracao/clientes/${codigo}/dashboard/historico/os/${buildQuery({
+      scope: params.scope,
+      page: params.page,
+      page_size: params.page_size,
+    })}`,
+  );
+}
+
+export async function listClienteDashboardTitulos(
+  codigo: number,
+  params: ClienteDashboardListParams = {},
+): Promise<PaginatedDashboardTitulos> {
+  return apiRequest(
+    `/administracao/clientes/${codigo}/dashboard/historico/titulos/${buildQuery({
+      scope: params.scope,
+      page: params.page,
+      page_size: params.page_size,
+    })}`,
+  );
 }

@@ -1,4 +1,4 @@
-import { Eye, MoreVertical, Pencil } from "lucide-react";
+import { Eye, LayoutDashboard, MessageSquare, MoreVertical, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   ActionsDropdown,
@@ -11,6 +11,8 @@ type ClienteRowActionsProps = {
   canEdit?: boolean;
   onView?: () => void;
   onEdit?: () => void;
+  onFollowUp?: () => void;
+  onDashboard?: () => void;
   variant?: "menu" | "buttons";
 };
 
@@ -19,6 +21,8 @@ export function ClienteRowActions({
   canEdit = false,
   onView,
   onEdit,
+  onFollowUp,
+  onDashboard,
   variant = "menu",
 }: ClienteRowActionsProps) {
   const t = useT();
@@ -43,6 +47,22 @@ export function ClienteRowActions({
       label: t("module.edit"),
       icon: Pencil,
       onClick: onEdit,
+    });
+  }
+  if (canView && onFollowUp) {
+    defs.push({
+      key: "follow-up",
+      label: t("followUp.title"),
+      icon: MessageSquare,
+      onClick: onFollowUp,
+    });
+  }
+  if (canView && onDashboard) {
+    defs.push({
+      key: "dashboard",
+      label: t("cliente.dashboard.menu"),
+      icon: LayoutDashboard,
+      onClick: onDashboard,
     });
   }
 

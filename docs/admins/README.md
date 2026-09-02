@@ -9,4 +9,5 @@ Guias para quem administra o ambiente: usuários, acessos, tokens de filial e co
 - [Ambiente e deploy](./ambiente.md) — setup local, CORS, OpenAPI, checklist
 - [Grants Oracle — Clientes](./grants-oracle-clientes.md) — privilégios `API_SMAR` para cadastro de clientes
 - [Grants Oracle — Gerenciador de Arquivos](./grants-oracle-arquivos.md) — DML em `PROP_ARQUIVO` / `PROP_ARQ_LOG` e SELECT em legendas
+- [Grants Oracle — Follow-up / Recado](./grants-oracle-followup.md) — `PROP_RECADO`, `FOLLOW_CLIENTE`, `SP_UPDATE_FOLLOWUP`
 - [Stack e infraestrutura](../developers/stack-e-infraestrutura.md) — plataformas, libs, versões, Docker/Oracle

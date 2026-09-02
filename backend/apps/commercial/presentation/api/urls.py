@@ -2,6 +2,12 @@
 
 from django.urls import path
 
+from apps.commercial.presentation.views.cliente_dashboard_views import (
+    ClienteDashboardCreditoView,
+    ClienteDashboardHistoricoOsView,
+    ClienteDashboardHistoricoTitulosView,
+    ClienteDashboardLimitesView,
+)
 from apps.commercial.presentation.views.cliente_tab_views import (
     ClienteArclassesView,
     ClienteAreasOsView,
@@ -110,6 +116,26 @@ urlpatterns = [
         "clientes/<int:codigo>/bloqueio/",
         ClienteBloqueioView.as_view(),
         name="administracao-cliente-bloqueio",
+    ),
+    path(
+        "clientes/<int:codigo>/dashboard/credito/",
+        ClienteDashboardCreditoView.as_view(),
+        name="administracao-cliente-dashboard-credito",
+    ),
+    path(
+        "clientes/<int:codigo>/dashboard/limites/",
+        ClienteDashboardLimitesView.as_view(),
+        name="administracao-cliente-dashboard-limites",
+    ),
+    path(
+        "clientes/<int:codigo>/dashboard/historico/os/",
+        ClienteDashboardHistoricoOsView.as_view(),
+        name="administracao-cliente-dashboard-historico-os",
+    ),
+    path(
+        "clientes/<int:codigo>/dashboard/historico/titulos/",
+        ClienteDashboardHistoricoTitulosView.as_view(),
+        name="administracao-cliente-dashboard-historico-titulos",
     ),
     path(
         "catalogos/paises/",

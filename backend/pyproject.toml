@@ -45,6 +45,13 @@ select = [
 "apps/commercial/tests/*.py" = ["E501"]
 "apps/files/tests/*.py" = ["E501"]
 "apps/files/infrastructure/models.py" = ["RUF012"]
+"apps/followup/tests/*.py" = ["E501"]
+"apps/followup/infrastructure/models.py" = ["RUF012"]
+"apps/followup/domain/repositories/recado_repository.py" = ["PLR0913", "PLR0917"]
+"apps/followup/infrastructure/repositories/oracle_recado_write_repository_impl.py" = [
+    "PLR0913",
+    "PLR0917",
+]
 "manage.py" = ["TID251"]
 
 [tool.ruff.lint.flake8-tidy-imports.banned-api]

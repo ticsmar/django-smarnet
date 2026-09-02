@@ -58,6 +58,12 @@ def _list_record(codigo: int = 1) -> ClienteListRecord:
         emp_codigo=1,
         bloqueado=0,
         tipo="J",
+        pai_codigo=76,
+        pais_nome="Brasil",
+        endereco1="Rua A",
+        cli_bairro="Centro",
+        cep="01000-000",
+        telefone1="1111",
     )
 
 
@@ -130,6 +136,9 @@ def test_list_clientes_clamps_pagination_and_forwards_owner() -> None:
         page_size=100,
     )
     assert result.items[0].codigo == 1
+    assert result.items[0].pai_codigo == 76
+    assert result.items[0].pais_nome == "Brasil"
+    assert result.items[0].endereco1 == "Rua A"
     assert result.total == 1
 
 

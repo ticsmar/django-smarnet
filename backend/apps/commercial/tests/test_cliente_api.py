@@ -73,6 +73,8 @@ def _list_item(codigo: int = 1) -> ClienteListItemOutputDTO:
         bloqueado=0,
         tipo="J",
         can_edit=True,
+        pai_codigo=76,
+        pais_nome="Brasil",
     )
 
 
@@ -141,6 +143,8 @@ def test_list_clientes_api(mock_build: MagicMock, auth_client: APIClient) -> Non
     assert response.status_code == 200
     assert response.data["total"] == 1
     assert response.data["items"][0]["codigo"] == 1
+    assert response.data["items"][0]["pai_codigo"] == 76
+    assert response.data["items"][0]["pais_nome"] == "Brasil"
     assert use_case.execute.call_args.args[0].actor == _ACTOR
     assert use_case.execute.call_args.args[0].search == "ACME"
 

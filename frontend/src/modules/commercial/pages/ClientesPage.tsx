@@ -15,13 +15,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { FollowUpDialog, type FollowUpHostTab } from "@/modules/followup";
+import { SISTEMA_CLIENTE_FOLLOWUP, followUpHostKey } from "@/modules/followup/sistemas";
 import { useT } from "@/hooks/useT";
 import { useViewMode } from "@/hooks/useViewMode";
+import { flagClass } from "@/lib/paisFlags";
 import { usePageBreadcrumb } from "@/contexts/PageBreadcrumbContext";
 import { ApiError } from "../api/commercialApi";
+import { ClienteDashboardDialog } from "../components/ClienteDashboardDialog";
 import { ClienteFormDialog } from "../components/ClienteFormDialog";
 import { ClienteCadastroCheckBadge } from "../components/ClienteCadastroCheckBadge";
 import { ClienteRiscoStatusBadge } from "../components/ClienteRiscoStatusBadge";
+import { visitCardAddressLines, formatCepVisitCard } from "../components/clienteEnderecoDisplay";
+import { formatCnpj, isCnpjKey } from "../cnpj";
 import { ClienteRowActions } from "../components/ClienteRowActions";
 import { useCommercialAccess } from "../hooks/useCommercialAccess";
 import {
@@ -41,6 +47,13 @@ export function ClientesPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [createOpen, setCreateOpen] = useState(false);
+  const [followUpOpen, setFollowUpOpen] = useState(false);
+  const [followUpHosts, setFollowUpHosts] = useState<FollowUpHostTab[]>([]);
+  const [followUpActiveKey, setFollowUpActiveKey] = useState("");
+  const [dashboardOpen, setDashboardOpen] = useState(false);
+  const [dashboardCliente, setDashboardCliente] = useState<ClienteListItem | null>(
+    null,
+  );
   const [formError, setFormError] = useState("");
   const [viewMode, setViewMode] = useViewMode(VIEW_STORAGE_KEY, "tabela");
 
@@ -72,6 +85,41 @@ export function ClientesPage() {
     navigate(`/app/commercial/customers/${item.codigo}/edit`);
   }
 
+  function openFollowUp(item: ClienteListItem) {
+    const filtro = String(item.codigo);
+    const key = followUpHostKey(SISTEMA_CLIENTE_FOLLOWUP, filtro);
+    setFollowUpHosts((prev) => {
+      if (prev.some((host) => followUpHostKey(host.sistema, host.filtro) === key)) {
+        return prev;
+      }
+      return [
+        ...prev,
+        {
+          sistema: SISTEMA_CLIENTE_FOLLOWUP,
+          filtro,
+          disabled: !canChangeCliente || !item.can_edit,
+        },
+      ];
+    });
+    setFollowUpActiveKey(key);
+    setFollowUpOpen(true);
+  }
+
+  function openDashboard(item: ClienteListItem) {
+    setDashboardCliente(item);
+    setDashboardOpen(true);
+  }
+
+  function paisCell(item: ClienteListItem) {
+    const cls = flagClass(item.pai_codigo);
+    return (
+      <span className="inline-flex items-center gap-2">
+        {cls ? <span className={cls} /> : null}
+        <span>{item.pais_nome || "—"}</span>
+      </span>
+    );
+  }
+
   function rowActions(
     item: ClienteListItem,
     variant: "menu" | "buttons" = "menu",
@@ -83,6 +131,8 @@ export function ClientesPage() {
         canEdit={canChangeCliente && item.can_edit}
         onView={() => openDetail(item)}
         onEdit={() => openEdit(item)}
+        onFollowUp={() => openFollowUp(item)}
+        onDashboard={() => openDashboard(item)}
       />
     );
   }
@@ -188,13 +238,13 @@ export function ClientesPage() {
                         {t("administracao.clientes.col.nome")}
                       </TableHead>
                       <TableHead>
-                        {t("administracao.clientes.fields.reduzido")}
-                      </TableHead>
-                      <TableHead>
                         {t("administracao.clientes.col.documento")}
                       </TableHead>
                       <TableHead>
                         {t("administracao.clientes.col.cidade")}
+                      </TableHead>
+                      <TableHead>
+                        {t("administracao.clientes.col.pais")}
                       </TableHead>
                     </TableRow>
                   </TableHeader>
@@ -236,7 +286,6 @@ export function ClientesPage() {
                             </span>
                           </span>
                         </TableCell>
-                        <TableCell>{item.reduzido || "—"}</TableCell>
                         <TableCell className="font-mono text-xs text-muted-foreground">
                           {item.cgc || "—"}
                         </TableCell>
@@ -244,6 +293,7 @@ export function ClientesPage() {
                           {item.cidade || "—"}
                           {item.estado ? ` / ${item.estado}` : ""}
                         </TableCell>
+                        <TableCell>{paisCell(item)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -252,56 +302,91 @@ export function ClientesPage() {
 
             {viewMode === "lista" ? (
               <div className="space-y-2">
-                {items.map((item) => (
-                  <div
-                    key={item.codigo}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => openDetail(item)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        openDetail(item);
-                      }
-                    }}
-                    className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-border/50 bg-background px-3 py-3 text-left transition-colors hover:border-primary/30 hover:bg-surface-container-low sm:gap-4 sm:px-4"
-                  >
-                    {showActionsColumn ? (
-                      <div className="shrink-0">{rowActions(item)}</div>
-                    ) : null}
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-container-low font-mono text-xs font-bold text-muted-foreground">
-                      {item.codigo}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="flex min-w-0 items-center gap-2 text-sm font-semibold text-foreground">
+                {items.map((item) => {
+                  const cidade =
+                    item.cidade
+                      ? `${item.cidade}${item.estado ? ` / ${item.estado}` : ""}`
+                      : "";
+                  return (
+                    <div
+                      key={item.codigo}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => openDetail(item)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          openDetail(item);
+                        }
+                      }}
+                      className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-border/50 bg-background px-3 py-3.5 text-left transition-colors hover:border-primary/30 hover:bg-surface-container-low sm:gap-4 sm:px-4"
+                    >
+                      {showActionsColumn ? (
+                        <div className="shrink-0">{rowActions(item)}</div>
+                      ) : null}
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-container-low font-mono text-xs font-bold text-muted-foreground">
+                        {item.codigo}
+                      </div>
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <p className="truncate text-sm font-semibold text-foreground">
+                          {item.cliente || "—"}
+                        </p>
+                        <p className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted-foreground">
+                          <span className="inline-flex min-w-0 max-w-full items-baseline gap-1.5">
+                            <span className="shrink-0 text-[10px] font-bold uppercase tracking-widest text-accent">
+                              {t("administracao.clientes.fields.reduzido")}
+                            </span>
+                            <span className="truncate font-medium text-foreground">
+                              {item.reduzido || "—"}
+                            </span>
+                          </span>
+                          {cidade ? (
+                            <>
+                              <span className="text-border" aria-hidden>
+                                ·
+                              </span>
+                              <span>{cidade}</span>
+                            </>
+                          ) : null}
+                          <span className="text-border" aria-hidden>
+                            ·
+                          </span>
+                          <span className="inline-flex min-w-0 items-center">
+                            {paisCell(item)}
+                          </span>
+                          <span className="text-border" aria-hidden>
+                            ·
+                          </span>
+                          <span className="font-mono">{item.cgc || "—"}</span>
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <ClienteCadastroCheckBadge
+                          checagem={item.cadastro_checagem}
+                        />
                         <ClienteRiscoStatusBadge
                           letra={item.crs_cod_letra}
                           descLonga={item.crs_desc_longa}
                           restricao={item.crs_restricao}
+                          showLongDesc
+                          className="max-w-[min(100%,22rem)] text-left"
                         />
-                        <ClienteCadastroCheckBadge
-                          checagem={item.cadastro_checagem}
-                        />
-                        <span className="truncate">{item.cliente || "—"}</span>
-                      </p>
-                      <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                        {item.reduzido || "—"}
-                        {item.cidade
-                          ? ` · ${item.cidade}${item.estado ? ` / ${item.estado}` : ""}`
-                          : ""}
-                      </p>
+                      </div>
                     </div>
-                    <span className="hidden shrink-0 font-mono text-xs text-muted-foreground sm:inline">
-                      {item.cgc || "—"}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : null}
 
             {viewMode === "cards" ? (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {items.map((item) => (
+                {items.map((item) => {
+                  const addressLines = visitCardAddressLines(item);
+                  const cepFormatted = formatCepVisitCard(item.cep);
+                  const cnpjFormatted =
+                    item.cgc && isCnpjKey(item.cgc) ? formatCnpj(item.cgc) : null;
+                  const showPais = Boolean(item.pais_nome || item.pai_codigo);
+                  return (
                   <div
                     key={item.codigo}
                     role="button"
@@ -313,62 +398,83 @@ export function ClientesPage() {
                         openDetail(item);
                       }
                     }}
-                    className="flex cursor-pointer flex-col rounded-2xl border border-border/50 bg-background p-5 text-left shadow-sm transition-colors hover:border-primary/30 hover:bg-surface-container-low"
+                    className="flex h-full cursor-pointer flex-col rounded-2xl border border-border/50 bg-background p-5 text-left shadow-sm transition-colors hover:border-primary/30 hover:bg-surface-container-low"
                   >
-                    <div className="mb-4 flex items-start gap-3">
+                    <div className="flex items-start gap-3">
                       <div className="min-w-0 flex-1">
-                        <p className="flex min-w-0 items-center gap-2 text-sm font-semibold text-foreground">
-                          <ClienteRiscoStatusBadge
-                            letra={item.crs_cod_letra}
-                            descLonga={item.crs_desc_longa}
-                            restricao={item.crs_restricao}
-                          />
-                          <ClienteCadastroCheckBadge
-                            checagem={item.cadastro_checagem}
-                          />
-                          <span className="truncate">
-                            {item.cliente || "—"}
-                          </span>
+                        <p className="truncate text-base font-semibold tracking-tight text-foreground">
+                          {item.cliente || "—"}
                         </p>
-                        <p className="mt-0.5 font-mono text-xs text-muted-foreground">
-                          {item.codigo}
+                        <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                          <span className="font-mono">{item.codigo}</span>
+                          {` - ${item.reduzido || "—"}`}
                         </p>
+                        {cnpjFormatted ? (
+                          <p className="mt-0.5 truncate font-mono text-xs text-foreground">
+                            {cnpjFormatted}
+                          </p>
+                        ) : null}
+                      </div>
+                      <div className="flex max-w-[min(100%,14rem)] shrink-0 flex-col items-end gap-1.5">
+                        <ClienteRiscoStatusBadge
+                          letra={item.crs_cod_letra}
+                          descLonga={item.crs_desc_longa}
+                          restricao={item.crs_restricao}
+                          showLongDesc
+                          className="max-w-full text-left"
+                        />
+                        <ClienteCadastroCheckBadge
+                          checagem={item.cadastro_checagem}
+                        />
                       </div>
                     </div>
-                    <dl className="space-y-2 text-xs">
-                      <div className="flex justify-between gap-3">
-                        <dt className="text-muted-foreground">
-                          {t("administracao.clientes.fields.reduzido")}
-                        </dt>
-                        <dd className="truncate font-medium text-foreground">
-                          {item.reduzido || "—"}
-                        </dd>
+                    <div className="mt-4 flex-1 space-y-3 border-t border-border/40 pt-4">
+                      <address className="not-italic text-xs leading-5 text-muted-foreground">
+                        {addressLines.length > 0 ? (
+                          addressLines.map((line, index) => (
+                            <p
+                              key={`${item.codigo}-addr-${index}`}
+                              className="text-foreground"
+                            >
+                              {line}
+                            </p>
+                          ))
+                        ) : addressLines.length === 0 &&
+                          !cepFormatted &&
+                          !showPais ? (
+                          <p>—</p>
+                        ) : null}
+                        {cepFormatted || showPais ? (
+                          <p className="mt-1.5 inline-flex flex-wrap items-center gap-x-1.5 text-foreground">
+                            {cepFormatted ? (
+                              <span className="font-mono">{cepFormatted}</span>
+                            ) : null}
+                            {cepFormatted && showPais ? (
+                              <span className="text-muted-foreground">-</span>
+                            ) : null}
+                            {showPais ? paisCell(item) : null}
+                          </p>
+                        ) : null}
+                      </address>
+                      <div className="space-y-0.5 text-xs">
+                        {item.telefone1 ? (
+                          <p className="text-foreground">{item.telefone1}</p>
+                        ) : null}
+                        {item.email ? (
+                          <p className="truncate text-muted-foreground">
+                            {item.email}
+                          </p>
+                        ) : null}
                       </div>
-                      <div className="flex justify-between gap-3">
-                        <dt className="text-muted-foreground">
-                          {t("administracao.clientes.col.documento")}
-                        </dt>
-                        <dd className="truncate font-mono font-medium text-foreground">
-                          {item.cgc || "—"}
-                        </dd>
-                      </div>
-                      <div className="flex justify-between gap-3">
-                        <dt className="text-muted-foreground">
-                          {t("administracao.clientes.col.cidade")}
-                        </dt>
-                        <dd className="truncate font-medium text-foreground">
-                          {item.cidade || "—"}
-                          {item.estado ? ` / ${item.estado}` : ""}
-                        </dd>
-                      </div>
-                    </dl>
+                    </div>
                     {showActionsColumn ? (
-                      <div className="mt-4 border-t border-border/40 pt-3">
+                      <div className="mt-auto border-t border-border/40 pt-3">
                         {rowActions(item, "buttons")}
                       </div>
                     ) : null}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             ) : null}
 
@@ -403,6 +509,32 @@ export function ClientesPage() {
           }}
         />
       ) : null}
+
+      <FollowUpDialog
+        open={followUpOpen}
+        onOpenChange={(open) => {
+          setFollowUpOpen(open);
+          if (!open) {
+            setFollowUpHosts([]);
+            setFollowUpActiveKey("");
+          }
+        }}
+        hosts={followUpHosts}
+        activeHostKey={followUpActiveKey}
+        onActiveHostKeyChange={setFollowUpActiveKey}
+      />
+
+      <ClienteDashboardDialog
+        open={dashboardOpen}
+        onOpenChange={(open) => {
+          setDashboardOpen(open);
+          if (!open) {
+            setDashboardCliente(null);
+          }
+        }}
+        codigo={dashboardCliente?.codigo ?? null}
+        nome={dashboardCliente?.cliente}
+      />
     </>
   );
 }

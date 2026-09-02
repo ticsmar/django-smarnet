@@ -34,6 +34,7 @@ Catálogo in-app `/design-system` (superusuário em dev) + código em `frontend/
 - [Comercial — Clientes](./administracao-clientes.md) (`apps.commercial`; Administração é outro módulo)
 - [ACE de atividade vs ACE na linha](./acesso-atividade.md) — extra Django vs `ACESSO_FUNC` ([ADR 0007](../adr/0007-ace-codigo-django-vs-acesso-func.md))
 - [Gerenciador de Arquivos](./arquivos.md) — componente compartilhado (`sistema` + `filtro`); Settings + aba Cliente
+- [Follow-up](./followup.md) — componente compartilhado (`sistema` + `filtro`); Settings + modal no Cliente
 - [Produção e devices](./producao-devices.md)
 - [Admin e settings](./admin-settings.md) — rotas `/settings/*` (paths EN) + API admin
 - [Rotas do app (`/app/*`)](./app-routes.md) — paths EN canônicos + redirects legados

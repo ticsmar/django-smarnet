@@ -82,6 +82,8 @@ INSTALLED_APPS = [
     "apps.commercial.presentation",
     "apps.files.infrastructure",
     "apps.files.presentation",
+    "apps.followup.infrastructure",
+    "apps.followup.presentation",
     "apps.administration.infrastructure",
     "apps.administration.presentation",
     "apps.production.infrastructure",

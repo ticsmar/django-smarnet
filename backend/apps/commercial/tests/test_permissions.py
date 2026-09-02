@@ -19,6 +19,9 @@ from apps.commercial.presentation.permissions import (
     contato_list_or_grava_perms,
     embarque_list_or_grava_perms,
 )
+from apps.commercial.presentation.views.cliente_dashboard_views import (
+    ClienteDashboardLimitesView,
+)
 from apps.commercial.presentation.views.cliente_tab_views import ClienteBloqueioView
 
 
@@ -75,3 +78,7 @@ def test_embarque_create_requires_add() -> None:
 
 def test_bloqueio_view_requires_change_cliente_risco() -> None:
     assert ClienteBloqueioView.required_permissions == [CHANGE_CLIENTE_RISCO]
+
+
+def test_dashboard_limites_view_requires_change_cliente_risco() -> None:
+    assert ClienteDashboardLimitesView.required_permissions == [CHANGE_CLIENTE_RISCO]

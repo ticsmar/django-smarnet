@@ -5,6 +5,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileManager } from "@/modules/files";
+import { FollowUpTrigger } from "@/modules/followup";
+import { SISTEMA_CLIENTE_FOLLOWUP } from "@/modules/followup/sistemas";
 import { usePageBreadcrumb } from "@/contexts/PageBreadcrumbContext";
 import { useT } from "@/hooks/useT";
 import { SISTEMA_CLIENTE } from "@/modules/files/sistemas";
@@ -165,6 +167,11 @@ export function ClienteDetailPage() {
                 <Pencil size={16} /> {t("module.edit")}
               </Button>
             ) : null}
+            <FollowUpTrigger
+              sistema={SISTEMA_CLIENTE_FOLLOWUP}
+              filtro={String(cliente.codigo)}
+              disabled={!editing}
+            />
           </div>
         </div>
       </div>

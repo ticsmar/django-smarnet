@@ -10,6 +10,7 @@ from apps.commercial.presentation.exception_mappings import (
     COMMERCIAL_EXCEPTION_STATUS_MAP,
 )
 from apps.files.presentation.exception_mappings import FILES_EXCEPTION_STATUS_MAP
+from apps.followup.presentation.exception_mappings import FOLLOWUP_EXCEPTION_STATUS_MAP
 from apps.portal.presentation.exception_mappings import PORTAL_EXCEPTION_STATUS_MAP
 from apps.production.presentation.exception_mappings import (
     PRODUCTION_EXCEPTION_STATUS_MAP,
@@ -29,4 +30,5 @@ exception_handler = build_exception_handler(
     ADMINISTRATION_EXCEPTION_STATUS_MAP,
     PRODUCTION_EXCEPTION_STATUS_MAP,
     PORTAL_EXCEPTION_STATUS_MAP,
+    FOLLOWUP_EXCEPTION_STATUS_MAP,
 )

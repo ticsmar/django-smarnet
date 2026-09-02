@@ -302,6 +302,41 @@ forbidden_modules =
     apps.portal.application
     apps.portal.presentation
 
+
+[importlinter:contract:followup-layers]
+name = Followup layer dependencies
+type = layers
+layers =
+    apps.followup.presentation
+    apps.followup.application
+    apps.followup.domain
+
+[importlinter:contract:followup-domain-isolation]
+name = Followup domain layer isolation
+type = forbidden
+source_modules =
+    apps.followup.domain
+forbidden_modules =
+    apps.followup.application
+    apps.followup.infrastructure
+    apps.followup.presentation
+
+[importlinter:contract:followup-app-no-presentation]
+name = Followup application cannot import presentation
+type = forbidden
+source_modules =
+    apps.followup.application
+forbidden_modules =
+    apps.followup.presentation
+
+[importlinter:contract:followup-infra-boundary]
+name = Followup infrastructure boundary
+type = forbidden
+source_modules =
+    apps.followup.infrastructure
+forbidden_modules =
+    apps.followup.application
+    apps.followup.presentation
 [importlinter:contract:domain-independence]
 name = Domains are independent
 type = independence
@@ -331,6 +366,7 @@ source_modules =
     apps.production.domain
     apps.portal.domain
 forbidden_modules =
+    apps.followup
     django
     oracledb
     cx_Oracle

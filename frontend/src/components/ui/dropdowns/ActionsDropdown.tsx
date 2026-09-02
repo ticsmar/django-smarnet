@@ -66,7 +66,8 @@ function renderItems(actions: DropdownAction[]): ReactNode {
     const node = action.children?.length ? (
       <DropdownMenuSub key={action.key}>
         <DropdownMenuSubTrigger disabled={action.disabled}>
-          {Icon && <Icon size={14} />} {action.label}
+          {Icon && <Icon size={14} />}
+          {action.label}
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent>{renderItems(action.children)}</DropdownMenuSubContent>
       </DropdownMenuSub>
@@ -77,7 +78,8 @@ function renderItems(actions: DropdownAction[]): ReactNode {
         disabled={action.disabled}
         className={cn(action.destructive && 'text-destructive focus:text-destructive')}
       >
-        {Icon && <Icon size={14} />} {action.label}
+        {Icon && <Icon size={14} />}
+        {action.label}
       </DropdownMenuItem>
     );
 
